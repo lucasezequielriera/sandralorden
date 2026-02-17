@@ -37,7 +37,7 @@ const pressItems = [
 
 export default function Press() {
   return (
-    <section id="prensa" className="py-28 md:py-36 bg-white">
+    <section id="prensa" className="py-28 md:py-36 bg-white" aria-labelledby="press-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-20">
@@ -47,7 +47,7 @@ export default function Press() {
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <h2 className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
+            <h2 id="press-heading" className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
               Apariciones en{" "}
               <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">medios</span>
             </h2>

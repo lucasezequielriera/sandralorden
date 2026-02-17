@@ -55,7 +55,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="servicios" className="py-28 md:py-36 bg-crema">
+    <section id="servicios" className="py-28 md:py-36 bg-crema" aria-labelledby="services-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-20">
@@ -65,7 +65,7 @@ export default function Services() {
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <h2 className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
+            <h2 id="services-heading" className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
               Tu camino hacia el{" "}
               <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">bienestar</span>
             </h2>

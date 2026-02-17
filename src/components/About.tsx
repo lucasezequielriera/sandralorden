@@ -4,14 +4,13 @@ import AnimatedSection from "./AnimatedSection";
 
 export default function About() {
   return (
-    <section id="sobre-mi" className="py-28 md:py-36 bg-white">
+    <section id="sobre-mi" className="py-28 md:py-36 bg-white" aria-labelledby="about-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           {/* Image placeholder */}
           <AnimatedSection direction="left">
             <div className="relative">
-              <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-rosa-100 to-marron-100 overflow-hidden relative">
-                {/* Placeholder - replace with actual image */}
+              <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-rosa-100 to-marron-100 overflow-hidden relative" role="img" aria-label="Sandra Lorden, entrenadora personal y nutricionista">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-24 h-24 mx-auto rounded-full bg-rosa-200/50 flex items-center justify-center mb-4">
@@ -48,8 +47,8 @@ export default function About() {
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.1}>
-              <h2 className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-                Pasion por el
+              <h2 id="about-heading" className="font-[family-name:var(--font-display)] italic text-4xl md:text-5xl font-light text-warm-dark leading-tight">
+                Pasión por el
                 <br />
                 <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">bienestar integral</span>
               </h2>

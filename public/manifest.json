@@ -1,0 +1,26 @@
+{
+  "name": "Sandra Lorden — Entrenadora Personal y Nutricionista",
+  "short_name": "Sandra Lorden",
+  "description": "Entrenadora personal certificada y nutricionista deportiva. Planes personalizados de entrenamiento y nutrición.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFAF7",
+  "theme_color": "#FFFAF7",
+  "orientation": "portrait-primary",
+  "lang": "es-ES",
+  "categories": ["fitness", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
