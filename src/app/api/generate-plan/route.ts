@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { Resend } from "resend";
-import { buildAnalysisEmailHtml } from "@/lib/email-template";
+import { buildAnalysisEmailHtml, buildLeadNotificationEmailHtml } from "@/lib/email-template";
 
 function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -78,6 +78,17 @@ REGLAS: Espanol, tuteo cercano y profesional. Markdown (**, -). Max 150 palabras
       html: buildAnalysisEmailHtml(name, analysis, formUrl),
     });
     console.log("Client email result:", JSON.stringify(clientEmailResult));
+
+    const sandraEmail = process.env.SANDRA_EMAIL;
+    if (sandraEmail) {
+      const sandraEmailResult = await resend.emails.send({
+        from: emailFrom,
+        to: sandraEmail,
+        subject: `🔔 Nuevo lead: ${name} — ${service || "Sin especificar"}`,
+        html: buildLeadNotificationEmailHtml({ name, email, phone, service, goal, levelAndDays, duration, obstacle, extra }),
+      });
+      console.log("Sandra lead notification result:", JSON.stringify(sandraEmailResult));
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

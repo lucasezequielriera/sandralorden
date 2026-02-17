@@ -56,6 +56,99 @@ export function buildAnalysisEmailHtml(name: string, analysisMarkdown: string, f
 </html>`;
 }
 
+/* ── Email para SANDRA (nuevo lead desde el primer formulario) ── */
+
+export function buildLeadNotificationEmailHtml(lead: { name: string; email: string; phone: string; service: string; goal: string; levelAndDays: string; duration: string; obstacle: string; extra: string }): string {
+  const cleanPhone = lead.phone.replace(/\D/g, "");
+  const waPhone = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
+  const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(`Hola ${lead.name}! Soy Sandra. He visto que te has apuntado a mi programa, ¿qué tal? ¿Has podido rellenar el formulario completo? 💪`)}`;
+
+  const rows = [
+    { label: "Servicio", value: lead.service },
+    { label: "Objetivo", value: lead.goal },
+    { label: "Nivel y disponibilidad", value: lead.levelAndDays },
+    { label: "Tiempo de compromiso", value: lead.duration },
+    { label: "Mayor obstáculo", value: lead.obstacle },
+    { label: "Info adicional", value: lead.extra },
+  ].filter((r) => r.value);
+
+  const rowsHtml = rows.map((r) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
+        <p style="font-size:11px;color:#C9A88E;margin:0 0 3px;text-transform:uppercase;letter-spacing:0.8px;">${r.label}</p>
+        <p style="font-size:13px;color:#3D2C2C;margin:0;">${r.value}</p>
+      </td>
+    </tr>`).join("");
+
+  return `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Lead - ${lead.name}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FFFAF7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3D2C2C;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFFAF7;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td style="background-color:#3D2C2C;border-radius:16px 16px 0 0;padding:20px 28px;">
+              <p style="color:#F2D1D1;font-size:13px;margin:0;letter-spacing:1px;text-transform:uppercase;">🔔 Nuevo lead — primer formulario</p>
+              <p style="color:#ffffff;font-size:22px;margin:6px 0 0;font-style:italic;font-family:Georgia,'Times New Roman',serif;">${lead.name}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#ffffff;padding:28px;border-radius:0 0 16px 16px;box-shadow:0 2px 12px rgba(61,44,44,0.06);">
+
+              <!-- Contacto -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+                <tr>
+                  <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
+                    <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">Email</span>
+                    <a href="mailto:${lead.email}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${lead.email}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
+                    <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">WhatsApp</span>
+                    <a href="tel:${lead.phone}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${lead.phone}</a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Datos del formulario -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                ${rowsHtml}
+              </table>
+
+              <!-- Aviso -->
+              <div style="background-color:#FFF5F5;border-radius:12px;padding:16px;margin-top:20px;">
+                <p style="font-size:12px;color:#D4908F;margin:0;font-weight:600;">⏳ Pendiente del formulario completo</p>
+                <p style="font-size:12px;color:#8B7E7E;margin:6px 0 0;">Si no lo completa en 24-48h, escríbele por WhatsApp para recordárselo.</p>
+              </div>
+
+              <!-- WA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
+                <tr>
+                  <td align="center">
+                    <a href="${waUrl}" style="display:inline-block;background-color:#25D366;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:12px;font-size:14px;font-weight:600;">
+                      Escribirle por WhatsApp
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 /* ── Email para SANDRA (cliente completo el formulario detallado) ── */
 
 export interface IntakeData {
