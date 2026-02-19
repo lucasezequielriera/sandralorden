@@ -3,11 +3,11 @@
 import AnimatedSection from "./AnimatedSection";
 
 const mediaLogos = [
-  { name: "Vogue", src: "/images/logos/vogue.svg", width: 128, height: 30 },
-  { name: "¡Hola!", src: "/images/logos/hola.svg", width: 120, height: 40 },
-  { name: "Semana", src: "/images/logos/semana.svg", width: 140, height: 32 },
-  { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg", width: 130, height: 32 },
-  { name: "JeFemme", src: "/images/logos/jefemme.svg", width: 120, height: 32 },
+  { name: "Vogue", src: "/images/logos/vogue.svg" },
+  { name: "¡Hola!", src: "/images/logos/hola.svg" },
+  { name: "Semana", src: "/images/logos/semana.svg" },
+  { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg" },
+  { name: "JeFemme", src: "/images/logos/jefemme.svg" },
 ];
 
 const pressItems = [
@@ -113,9 +113,7 @@ export default function Press() {
                 <img
                   src={logo.src}
                   alt={logo.name}
-                  width={logo.width}
-                  height={logo.height}
-                  className="h-6 sm:h-8 md:h-10 w-auto"
+                  className="w-24 sm:w-28 md:w-32 h-auto object-contain"
                 />
               </div>
             ))}
