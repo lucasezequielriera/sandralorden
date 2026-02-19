@@ -179,6 +179,7 @@ function JsonLd() {
     ],
     sameAs: [
       "https://www.instagram.com/sandralordenfit",
+      "https://www.instagram.com/sandralorden",
     ],
     address: {
       "@type": "PostalAddress",
@@ -267,6 +268,7 @@ function JsonLd() {
     },
     sameAs: [
       "https://www.instagram.com/sandralordenfit",
+      "https://www.instagram.com/sandralorden",
     ],
   };
 
