@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import AnimatedSection from "./AnimatedSection";
 
 export default function About() {
@@ -7,30 +8,16 @@ export default function About() {
     <section id="sobre-mi" className="py-20 sm:py-28 md:py-36 bg-white" aria-labelledby="about-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-24 items-center">
-          {/* Image placeholder */}
           <AnimatedSection direction="left">
             <div className="relative max-w-sm mx-auto lg:max-w-none">
-              <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-rosa-100 to-marron-100 overflow-hidden relative" role="img" aria-label="Sandra Lordén Álvarez, entrenadora personal y nutricionista en Madrid">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto rounded-full bg-rosa-200/50 flex items-center justify-center mb-4">
-                      <svg
-                        className="w-8 sm:w-10 h-8 sm:h-10 text-rosa-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-marron-400">Tu foto aquí</p>
-                  </div>
-                </div>
+              <div className="aspect-[3/4] rounded-3xl overflow-hidden relative">
+                <Image
+                  src="/images/IMG_1902.jpg"
+                  alt="Sandra Lordén Álvarez, entrenadora personal y nutricionista en Madrid"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 384px, (max-width: 1024px) 448px, 512px"
+                />
               </div>
               <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 w-24 sm:w-32 h-24 sm:h-32 rounded-2xl bg-rosa-200/40 -z-10" />
               <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 w-20 sm:w-24 h-20 sm:h-24 rounded-2xl bg-marron-200/30 -z-10" />
