@@ -2,14 +2,15 @@
 
 import AnimatedSection from "./AnimatedSection";
 
+const mediaLogos = [
+  { name: "Vogue", src: "/images/logos/vogue.svg", width: 128, height: 30 },
+  { name: "¡Hola!", src: "/images/logos/hola.svg", width: 120, height: 40 },
+  { name: "Semana", src: "/images/logos/semana.svg", width: 140, height: 32 },
+  { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg", width: 130, height: 32 },
+  { name: "JeFemme", src: "/images/logos/jefemme.svg", width: 120, height: 32 },
+];
+
 const pressItems = [
-  {
-    name: "Semana",
-    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
-    type: "Revista",
-    date: "Feb 2026",
-    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
-  },
   {
     name: "¡Hola!",
     title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
@@ -18,18 +19,25 @@ const pressItems = [
     url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
   },
   {
-    name: "¡Hola!",
-    title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
-    type: "Digital",
-    date: "Jun 2025",
-    url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
+    name: "Semana",
+    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
+    type: "Revista",
+    date: "Sep 2025",
+    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
   },
   {
     name: "Cuerpomente",
     title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
     type: "Revista",
-    date: "2025",
+    date: "Jul 2025",
     url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
+  },
+  {
+    name: "¡Hola!",
+    title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
+    type: "Digital",
+    date: "Jun 2025",
+    url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
   },
   {
     name: "¡Hola!",
@@ -47,24 +55,24 @@ const pressItems = [
   },
   {
     name: "Vogue España",
-    title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
-    type: "Revista",
-    date: "2020",
-    url: "https://www.vogue.es/belleza/articulos/ejercicios-abdominales-velocidad-repeticiones-primer-dia-gimnasio",
-  },
-  {
-    name: "Vogue España",
     title: "Este es el número de días (y el tiempo) que hay que entrenar a la semana para tener un cuerpo tonificado",
     type: "Revista",
-    date: "2020",
+    date: "Sep 2020",
     url: "https://www.vogue.es/belleza/articulos/cuantos-dias-semana-tiempo-entrenar-obtener-resultados-tonificar-cuerpo",
   },
   {
     name: "Vogue España",
     title: "Así deberías entrenar si solo tienes 20-30 minutos al día para hacer ejercicio",
     type: "Revista",
-    date: "2020",
+    date: "Sep 2020",
     url: "https://www.vogue.es/belleza/articulos/entrenar-20-30-minutos-al-dia-entrenamientos-hacer-ejercicio-tonificar-cuerpo",
+  },
+  {
+    name: "Vogue España",
+    title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
+    type: "Revista",
+    date: "Ene 2020",
+    url: "https://www.vogue.es/belleza/articulos/ejercicios-abdominales-velocidad-repeticiones-primer-dia-gimnasio",
   },
 ];
 
@@ -95,14 +103,21 @@ export default function Press() {
 
         {/* Featured media logos */}
         <AnimatedSection delay={0.15}>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-14 mb-12 sm:mb-16">
-            {["Vogue", "¡Hola!", "Semana", "Cuerpomente", "JeFemme"].map((media) => (
-              <span
-                key={media}
-                className="font-[family-name:var(--font-display)] italic text-xl sm:text-2xl md:text-3xl font-light text-warm-gray-300 hover:text-warm-dark transition-colors duration-300"
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 mb-12 sm:mb-16">
+            {mediaLogos.map((logo) => (
+              <div
+                key={logo.name}
+                className="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
               >
-                {media}
-              </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo.src}
+                  alt={logo.name}
+                  width={logo.width}
+                  height={logo.height}
+                  className="h-6 sm:h-8 md:h-10 w-auto"
+                />
+              </div>
             ))}
           </div>
         </AnimatedSection>
