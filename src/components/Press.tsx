@@ -7,54 +7,63 @@ const pressItems = [
     name: "Semana",
     title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
     type: "Revista",
+    date: "Feb 2026",
     url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
   },
   {
     name: "¡Hola!",
     title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
     type: "Digital",
+    date: "Oct 2025",
     url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
   },
   {
     name: "¡Hola!",
     title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
     type: "Digital",
+    date: "Jun 2025",
     url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
   },
   {
     name: "Cuerpomente",
     title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
     type: "Revista",
+    date: "2025",
     url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
   },
   {
     name: "¡Hola!",
     title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
     type: "Digital",
+    date: "Sep 2024",
     url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
   },
   {
     name: "JeFemme",
     title: "Entrevista a Sandra Lordén Álvarez, entrenadora personal",
     type: "Entrevista",
+    date: "Dic 2022",
     url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
   },
   {
     name: "Vogue España",
     title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
     type: "Revista",
+    date: "2020",
     url: "https://www.vogue.es/belleza/articulos/ejercicios-abdominales-velocidad-repeticiones-primer-dia-gimnasio",
   },
   {
     name: "Vogue España",
     title: "Este es el número de días (y el tiempo) que hay que entrenar a la semana para tener un cuerpo tonificado",
     type: "Revista",
+    date: "2020",
     url: "https://www.vogue.es/belleza/articulos/cuantos-dias-semana-tiempo-entrenar-obtener-resultados-tonificar-cuerpo",
   },
   {
     name: "Vogue España",
     title: "Así deberías entrenar si solo tienes 20-30 minutos al día para hacer ejercicio",
     type: "Revista",
+    date: "2020",
     url: "https://www.vogue.es/belleza/articulos/entrenar-20-30-minutos-al-dia-entrenamientos-hacer-ejercicio-tonificar-cuerpo",
   },
 ];
@@ -108,10 +117,15 @@ export default function Press() {
                 rel="noopener noreferrer"
                 className="group relative flex flex-col bg-gradient-to-br from-rosa-50/50 to-marron-50/50 rounded-xl sm:rounded-2xl p-5 sm:p-6 transition-all duration-500 hover:shadow-lg hover:-translate-y-1 border border-warm-gray-100/30 h-full"
               >
-                {/* Type badge */}
-                <span className="inline-block text-[10px] sm:text-xs uppercase tracking-widest text-marron-400 font-medium mb-2 sm:mb-3">
-                  {item.type}
-                </span>
+                {/* Type badge + date */}
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <span className="inline-block text-[10px] sm:text-xs uppercase tracking-widest text-marron-400 font-medium">
+                    {item.type}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-warm-gray-300">
+                    {item.date}
+                  </span>
+                </div>
 
                 {/* Magazine name */}
                 <h3 className="font-[family-name:var(--font-display)] italic text-base sm:text-lg font-light text-warm-dark mb-2">
