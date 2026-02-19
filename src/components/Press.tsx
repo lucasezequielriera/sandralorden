@@ -53,9 +53,9 @@ const pressItems = [
   },
   {
     name: "Semana",
-    title: "Sandra Lordén, entrenadora personal: consejos de ejercicio y nutrición para transformar tu cuerpo",
+    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
     type: "Revista",
-    url: "https://www.semana.com",
+    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
   },
 ];
 
