@@ -15,7 +15,6 @@ const videoStyle: React.CSSProperties = {
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const desktopRef = useRef<HTMLVideoElement>(null);
-  const tabletRef = useRef<HTMLVideoElement>(null);
   const mobileRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -28,9 +27,8 @@ export default function Hero() {
     const playVisible = () => {
       const w = window.innerWidth;
       const refs = [
-        { ref: mobileRef, show: w < 640 },
-        { ref: tabletRef, show: w >= 640 && w < 1024 },
-        { ref: desktopRef, show: w >= 1024 },
+        { ref: mobileRef, show: w < 768 },
+        { ref: desktopRef, show: w >= 768 },
       ];
       refs.forEach(({ ref, show }) => {
         if (!ref.current) return;
@@ -57,9 +55,6 @@ export default function Hero() {
         {/* Responsive video backgrounds — JS controls play/pause + display */}
         <video ref={desktopRef} loop muted playsInline poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
-        </video>
-        <video ref={tabletRef} loop muted playsInline poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
-          <source src="/videos/hero-bg-tablet.mp4" type="video/mp4" />
         </video>
         <video ref={mobileRef} loop muted playsInline poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
           <source src="/videos/hero-bg-mobile.mp4" type="video/mp4" />
