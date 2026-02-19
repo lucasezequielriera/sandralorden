@@ -26,19 +26,19 @@ export default function Hero() {
   useEffect(() => {
     const playVisible = () => {
       const w = window.innerWidth;
-      const refs = [
-        { ref: mobileRef, show: w < 768 },
-        { ref: desktopRef, show: w >= 768 },
-      ];
-      refs.forEach(({ ref, show }) => {
+      const isMobile = w < 768;
+      [
+        { ref: mobileRef, show: isMobile },
+        { ref: desktopRef, show: !isMobile },
+      ].forEach(({ ref, show }) => {
         if (!ref.current) return;
         if (show) {
-          ref.current.preload = "auto";
           ref.current.style.display = "block";
           ref.current.play().catch(() => {});
         } else {
           ref.current.pause();
           ref.current.style.display = "none";
+          ref.current.preload = "none";
         }
       });
     };
@@ -53,11 +53,11 @@ export default function Hero() {
         id="inicio"
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
       >
-        {/* Responsive video backgrounds — JS controls play/pause + display */}
-        <video ref={desktopRef} loop muted playsInline preload="none" poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
+        {/* Responsive video backgrounds */}
+        <video ref={desktopRef} autoPlay loop muted playsInline poster="/images/IMG_1632.JPG" className="hidden md:block" style={videoStyle}>
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
-        <video ref={mobileRef} loop muted playsInline preload="none" poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
+        <video ref={mobileRef} autoPlay loop muted playsInline poster="/images/IMG_1632.JPG" className="block md:hidden" style={videoStyle}>
           <source src="/videos/hero-bg-mobile.mp4" type="video/mp4" />
         </video>
 
