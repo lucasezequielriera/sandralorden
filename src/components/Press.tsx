@@ -4,6 +4,42 @@ import AnimatedSection from "./AnimatedSection";
 
 const pressItems = [
   {
+    name: "Semana",
+    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
+    type: "Revista",
+    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
+  },
+  {
+    name: "¡Hola!",
+    title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
+    type: "Digital",
+    url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
+  },
+  {
+    name: "¡Hola!",
+    title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
+    type: "Digital",
+    url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
+  },
+  {
+    name: "Cuerpomente",
+    title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
+    type: "Revista",
+    url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
+  },
+  {
+    name: "¡Hola!",
+    title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
+    type: "Digital",
+    url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
+  },
+  {
+    name: "JeFemme",
+    title: "Entrevista a Sandra Lordén Álvarez, entrenadora personal",
+    type: "Entrevista",
+    url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
+  },
+  {
     name: "Vogue España",
     title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
     type: "Revista",
@@ -20,42 +56,6 @@ const pressItems = [
     title: "Así deberías entrenar si solo tienes 20-30 minutos al día para hacer ejercicio",
     type: "Revista",
     url: "https://www.vogue.es/belleza/articulos/entrenar-20-30-minutos-al-dia-entrenamientos-hacer-ejercicio-tonificar-cuerpo",
-  },
-  {
-    name: "¡Hola!",
-    title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
-    type: "Digital",
-    url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
-  },
-  {
-    name: "¡Hola!",
-    title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
-    type: "Digital",
-    url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
-  },
-  {
-    name: "¡Hola!",
-    title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
-    type: "Digital",
-    url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
-  },
-  {
-    name: "Cuerpomente",
-    title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
-    type: "Revista",
-    url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
-  },
-  {
-    name: "JeFemme",
-    title: "Entrevista a Sandra Lordén Álvarez, entrenadora personal",
-    type: "Entrevista",
-    url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
-  },
-  {
-    name: "Semana",
-    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
-    type: "Revista",
-    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
   },
 ];
 
