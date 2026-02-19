@@ -36,8 +36,10 @@ yarn-error.log*
 # large original video files (only keep compressed hero-bg*.mp4)
 public/videos/*.MOV
 public/videos/*.mov
+public/videos/*.MP4
 public/videos/Untitled*
 public/videos/Sandra*
+public/videos/C8152*
 public/videos/a46547*
 !public/videos/hero-bg*.mp4
 

@@ -33,6 +33,7 @@ export default function Hero() {
       refs.forEach(({ ref, show }) => {
         if (!ref.current) return;
         if (show) {
+          ref.current.preload = "auto";
           ref.current.style.display = "block";
           ref.current.play().catch(() => {});
         } else {
@@ -53,10 +54,10 @@ export default function Hero() {
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
       >
         {/* Responsive video backgrounds — JS controls play/pause + display */}
-        <video ref={desktopRef} loop muted playsInline poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
+        <video ref={desktopRef} loop muted playsInline preload="none" poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
-        <video ref={mobileRef} loop muted playsInline poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
+        <video ref={mobileRef} loop muted playsInline preload="none" poster="/images/IMG_1632.JPG" style={{ ...videoStyle, display: "none" }}>
           <source src="/videos/hero-bg-mobile.mp4" type="video/mp4" />
         </video>
 
