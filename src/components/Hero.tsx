@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import TransformationModal from "./TransformationModal";
 
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const openModal = () => setIsModalOpen(true);
+    window.addEventListener("open-transformation-modal", openModal);
+    return () => window.removeEventListener("open-transformation-modal", openModal);
+  }, []);
 
   return (
     <>

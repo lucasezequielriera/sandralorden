@@ -60,12 +60,12 @@ export default function Navigation() {
           </div>
 
           {/* CTA Button Desktop */}
-          <a
-            href="#contacto"
-            className="hidden md:inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg"
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("open-transformation-modal"))}
+            className="hidden md:inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
           >
-            Reservar Sesión
-          </a>
+            Empieza Ya
+          </button>
 
           {/* Mobile Menu Button */}
           <button
@@ -114,13 +114,15 @@ export default function Navigation() {
                   {link.label}
                 </m.a>
               ))}
-              <a
-                href="#contacto"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full"
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  window.dispatchEvent(new CustomEvent("open-transformation-modal"));
+                }}
+                className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full cursor-pointer"
               >
-                Reservar Sesión
-              </a>
+                Empieza Ya
+              </button>
             </div>
           </m.div>
         )}
