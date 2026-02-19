@@ -4,8 +4,28 @@ import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import TransformationModal from "./TransformationModal";
 
+function useVideoSrc() {
+  const [src, setSrc] = useState("/videos/hero-bg.mp4");
+
+  useEffect(() => {
+    const pick = () => {
+      const w = window.innerWidth;
+      if (w < 768) return "/videos/hero-bg-mobile.mp4";
+      if (w < 1024) return "/videos/hero-bg-tablet.mp4";
+      return "/videos/hero-bg.mp4";
+    };
+    setSrc(pick());
+    const onResize = () => setSrc(pick());
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  return src;
+}
+
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const videoSrc = useVideoSrc();
 
   useEffect(() => {
     const openModal = () => setIsModalOpen(true);
@@ -19,8 +39,21 @@ export default function Hero() {
         id="inicio"
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
       >
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-crema via-rosa-50 to-marron-50" />
+        {/* Video background — switches to vertical on mobile/tablet */}
+        <video
+          key={videoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/IMG_1632.JPG"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-crema/80 via-crema/70 to-crema/85" />
 
         {/* Decorative circles */}
         <m.div
