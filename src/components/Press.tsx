@@ -51,6 +51,12 @@ const pressItems = [
     type: "Entrevista",
     url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
   },
+  {
+    name: "Semana",
+    title: "Sandra Lordén, entrenadora personal: consejos de ejercicio y nutrición para transformar tu cuerpo",
+    type: "Revista",
+    url: "https://www.semana.com",
+  },
 ];
 
 export default function Press() {
@@ -81,7 +87,7 @@ export default function Press() {
         {/* Featured media logos */}
         <AnimatedSection delay={0.15}>
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-14 mb-12 sm:mb-16">
-            {["Vogue", "¡Hola!", "Cuerpomente", "JeFemme"].map((media) => (
+            {["Vogue", "¡Hola!", "Semana", "Cuerpomente", "JeFemme"].map((media) => (
               <span
                 key={media}
                 className="font-[family-name:var(--font-display)] italic text-xl sm:text-2xl md:text-3xl font-light text-warm-gray-300 hover:text-warm-dark transition-colors duration-300"
