@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { href: "#inicio", label: "Inicio" },
-  { href: "#sobre-mi", label: "Sobre Mi" },
+  { href: "#sobre-mi", label: "Sobre Mí" },
   { href: "#servicios", label: "Servicios" },
   { href: "#prensa", label: "Prensa" },
   { href: "#contacto", label: "Contacto" },
@@ -19,12 +19,12 @@ export default function Navigation() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <motion.nav
+    <m.nav
       aria-label="Navegación principal"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -35,18 +35,18 @@ export default function Navigation() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-12">
-        <div className="flex h-20 items-center justify-between">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Logo */}
           <a
             href="#inicio"
-            className="font-[family-name:var(--font-script)] text-2xl text-warm-dark"
+            className="font-[family-name:var(--font-script)] text-xl sm:text-2xl text-warm-dark"
           >
             Sandra Lorden
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-6 lg:gap-10">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -62,9 +62,9 @@ export default function Navigation() {
           {/* CTA Button Desktop */}
           <a
             href="#contacto"
-            className="hidden md:inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg"
+            className="hidden md:inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg"
           >
-            Reservar Sesion
+            Reservar Sesión
           </a>
 
           {/* Mobile Menu Button */}
@@ -74,15 +74,15 @@ export default function Navigation() {
             aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={isMobileMenuOpen}
           >
-            <motion.span
+            <m.span
               animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
               className="block w-6 h-[1.5px] bg-warm-dark origin-center"
             />
-            <motion.span
+            <m.span
               animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
               className="block w-6 h-[1.5px] bg-warm-dark"
             />
-            <motion.span
+            <m.span
               animate={isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
               className="block w-6 h-[1.5px] bg-warm-dark origin-center"
             />
@@ -93,16 +93,16 @@ export default function Navigation() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="md:hidden overflow-hidden bg-white/95 backdrop-blur-xl border-t border-warm-gray-100"
           >
-            <div className="px-6 py-6 flex flex-col gap-4">
+            <div className="px-4 sm:px-6 py-6 flex flex-col gap-4">
               {navLinks.map((link, i) => (
-                <motion.a
+                <m.a
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -112,19 +112,19 @@ export default function Navigation() {
                   className="text-base font-medium text-warm-gray-500 hover:text-warm-dark transition-colors"
                 >
                   {link.label}
-                </motion.a>
+                </m.a>
               ))}
               <a
                 href="#contacto"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full"
               >
-                Reservar Sesion
+                Reservar Sesión
               </a>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </m.nav>
   );
 }

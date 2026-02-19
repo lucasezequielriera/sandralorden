@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 function FormularioContent() {
   const searchParams = useSearchParams();
@@ -100,13 +100,13 @@ function FormularioContent() {
 
   if (isSent) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen flex items-center justify-center p-4 bg-[#FFFAF7]">
-        <div className="w-full max-w-lg text-center">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, delay: 0.2 }} className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#F2D1D1] to-[#E8B4B4] flex items-center justify-center">
+      <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#FFFAF7]">
+        <div className="w-full max-w-lg text-center px-2">
+          <m.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, delay: 0.2 }} className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#F2D1D1] to-[#E8B4B4] flex items-center justify-center">
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             </svg>
-          </motion.div>
+          </m.div>
           <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-3xl font-light italic text-[#3D2C2C] mb-4">
             ¡Recibido, {form.name}!
           </h1>
@@ -124,21 +124,21 @@ function FormularioContent() {
           </div>
           <p className="mt-6 text-xs text-[#C4B8AD]">Sandra Lorden · Entrenadora Personal & Nutricionista</p>
         </div>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFAF7] py-12 px-4">
+    <div className="min-h-screen bg-[#FFFAF7] py-8 sm:py-12 px-3 sm:px-4">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <p style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-3xl font-light italic text-[#3D2C2C] mb-2">Sandra Lorden</p>
-          <p className="text-xs text-[#C9A88E] uppercase tracking-[3px] mb-8">Entrenadora Personal & Nutricionista</p>
-          <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-2xl md:text-3xl font-light italic text-[#3D2C2C] mb-3">Tu formulario de transformación</h1>
-          <p className="text-[#8B7E7E] text-sm max-w-md mx-auto leading-relaxed">Necesito conocerte bien para prepararte un plan hecho a tu medida. Cuantos más detalles me des, mejor te voy a poder ayudar.</p>
+        <div className="text-center mb-8 sm:mb-10">
+          <p style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-2xl sm:text-3xl font-light italic text-[#3D2C2C] mb-2">Sandra Lorden</p>
+          <p className="text-[10px] sm:text-xs text-[#C9A88E] uppercase tracking-[2px] sm:tracking-[3px] mb-6 sm:mb-8">Entrenadora Personal & Nutricionista</p>
+          <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-xl sm:text-2xl md:text-3xl font-light italic text-[#3D2C2C] mb-3">Tu formulario de transformación</h1>
+          <p className="text-[#8B7E7E] text-sm max-w-md mx-auto leading-relaxed px-2">Necesito conocerte bien para prepararte un plan hecho a tu medida. Cuantos más detalles me des, mejor te voy a poder ayudar.</p>
         </div>
 
-        <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="space-y-6">
+        <m.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="space-y-6">
 
           {/* ── DATOS PERSONALES ── */}
           <FormSection title="Cuéntame sobre ti">
@@ -236,15 +236,15 @@ function FormularioContent() {
           {/* Error */}
           <AnimatePresence>
             {error && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
+              <m.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
                 {error}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
           {/* Submit */}
-          <div className="bg-white rounded-3xl shadow-sm border border-[#F7F3F0] p-6 text-center">
-            <button type="submit" disabled={isSending} className="w-full py-4 px-6 bg-[#3D2C2C] text-white rounded-2xl font-medium transition-all hover:bg-[#5A4545] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-[#F7F3F0] p-4 sm:p-6 text-center">
+            <button type="submit" disabled={isSending} className="w-full py-3.5 sm:py-4 px-6 bg-[#3D2C2C] text-white rounded-xl sm:rounded-2xl font-medium transition-all hover:bg-[#5A4545] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm">
               {isSending ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
@@ -254,7 +254,7 @@ function FormularioContent() {
             </button>
             <p className="mt-3 text-xs text-[#C4B8AD]">En cuanto lo reciba, te escribo por WhatsApp y empezamos</p>
           </div>
-        </motion.form>
+        </m.form>
       </div>
     </div>
   );
@@ -272,8 +272,8 @@ export default function FormularioPage() {
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-[#F7F3F0] p-8 md:p-10">
-      <h2 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-lg font-light italic text-[#3D2C2C] mb-5 pb-2 border-b border-[#F2D1D1]">
+    <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-[#F7F3F0] p-5 sm:p-8 md:p-10">
+      <h2 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-base sm:text-lg font-light italic text-[#3D2C2C] mb-4 sm:mb-5 pb-2 border-b border-[#F2D1D1]">
         {title}
       </h2>
       {children}
@@ -333,10 +333,10 @@ const FOOD_CATEGORIES: { name: string; emoji: string; items: string[] }[] = [
 
 function FoodSelector({ selections, onToggle }: { selections: Record<string, "liked" | "disliked">; onToggle: (food: string) => void }) {
   return (
-    <div className="bg-[#FFFAF7] rounded-xl p-4 border border-[#F0EBE6]">
+    <div className="bg-[#FFFAF7] rounded-xl p-3 sm:p-4 border border-[#F0EBE6]">
       <p className="text-sm font-medium text-[#3D2C2C] mb-1">Tus preferencias de alimentos</p>
       <p className="text-xs text-[#C4B8AD] mb-1">Pulsa una vez = <span className="text-emerald-500 font-semibold">me gusta</span> · Pulsa otra vez = <span className="text-red-400 font-semibold">no me gusta</span> · Pulsa otra vez = sin marcar</p>
-      <p className="text-xs text-[#C4B8AD] mb-4">Los que no marques los tomaré como neutros.</p>
+      <p className="text-xs text-[#C4B8AD] mb-3 sm:mb-4">Los que no marques los tomaré como neutros.</p>
       <div className="space-y-4">
         {FOOD_CATEGORIES.map((cat) => (
           <div key={cat.name}>

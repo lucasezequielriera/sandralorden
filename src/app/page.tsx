@@ -1,12 +1,15 @@
+import dynamic from "next/dynamic";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
-import Services from "@/components/Services";
-import Press from "@/components/Press";
-import Partners from "@/components/Partners";
-import Testimonials from "@/components/Testimonials";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import FloatingButtons from "@/components/FloatingButtons";
+
+const Services = dynamic(() => import("@/components/Services"));
+const Press = dynamic(() => import("@/components/Press"));
+const Testimonials = dynamic(() => import("@/components/Testimonials"));
+const FAQ = dynamic(() => import("@/components/FAQ"));
+const Contact = dynamic(() => import("@/components/Contact"));
+const Footer = dynamic(() => import("@/components/Footer"));
 
 export default function Home() {
   return (
@@ -19,12 +22,13 @@ export default function Home() {
         <Hero />
         <About />
         <Services />
-        <Partners />
         <Press />
         <Testimonials />
+        <FAQ />
         <Contact />
       </main>
       <Footer />
+      <FloatingButtons />
     </>
   );
 }

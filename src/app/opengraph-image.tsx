@@ -31,7 +31,7 @@ export default async function Image() {
             height: 300,
             borderRadius: "50%",
             background: "rgba(242, 209, 209, 0.3)",
-            filter: "blur(60px)",
+            filter: "blur(10px)",
           }}
         />
         <div
@@ -43,7 +43,7 @@ export default async function Image() {
             height: 350,
             borderRadius: "50%",
             background: "rgba(232, 213, 196, 0.25)",
-            filter: "blur(60px)",
+            filter: "blur(10px)",
           }}
         />
 
@@ -102,8 +102,8 @@ export default async function Image() {
           }}
         >
           {[
-            { n: "+500", l: "Clientes" },
-            { n: "+8", l: "Años de experiencia" },
+            { n: "+1000", l: "Clientes" },
+            { n: "10", l: "Años de experiencia" },
             { n: "+15", l: "Medios de prensa" },
           ].map((s) => (
             <div

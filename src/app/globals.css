@@ -69,3 +69,37 @@ body {
   background-color: var(--color-rosa-200);
   color: var(--color-warm-dark);
 }
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Better tap targets on mobile */
+@media (max-width: 640px) {
+  input, select, textarea, button {
+    font-size: 16px !important;
+  }
+}
+
+/* Fix iOS input zoom */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

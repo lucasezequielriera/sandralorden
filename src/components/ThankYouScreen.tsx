@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { Answers } from "./TransformationModal";
 
 interface ThankYouScreenProps {
@@ -10,18 +10,18 @@ interface ThankYouScreenProps {
 
 export default function ThankYouScreen({ answers }: ThankYouScreenProps) {
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+    <m.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
       <div className="text-center py-4">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+        <m.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
           className="w-14 h-14 mx-auto mb-5 rounded-full bg-gradient-to-br from-rosa-100 to-rosa-200 flex items-center justify-center"
         >
           <svg className="w-7 h-7 text-rosa-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
           </svg>
-        </motion.div>
+        </m.div>
 
         <h2 className="font-[family-name:var(--font-script)] text-2xl text-rosa-400 mb-3">
           ¡Gracias {answers.name}!
@@ -35,7 +35,7 @@ export default function ThankYouScreen({ answers }: ThankYouScreenProps) {
           Revisa tu email <strong className="text-warm-dark">{answers.email}</strong> — ahí encontrarás mi análisis y un formulario para completar tus datos y empezar con tu transformación.
         </p>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -47,11 +47,11 @@ export default function ThankYouScreen({ answers }: ThankYouScreenProps) {
             <Step number={2} text="Rellena el formulario detallado" />
             <Step number={3} text="Te escribo por WhatsApp y empezamos" />
           </div>
-        </motion.div>
+        </m.div>
 
         <p className="mt-5 text-xs text-warm-gray-300">Mira en spam por si acaso</p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 

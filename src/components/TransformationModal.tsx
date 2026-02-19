@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import ThankYouScreen from "./ThankYouScreen";
 
 interface TransformationModalProps {
@@ -96,25 +96,25 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleClose} className="absolute inset-0 bg-warm-dark/40 backdrop-blur-sm" />
-          <motion.div
+        <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4">
+          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleClose} className="absolute inset-0 bg-warm-dark/40 backdrop-blur-sm" />
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className={`relative w-full overflow-y-auto bg-white rounded-3xl shadow-2xl ${isSent ? "max-w-2xl max-h-[92vh]" : "max-w-lg max-h-[90vh]"}`}
+            className={`relative w-full overflow-y-auto bg-white shadow-2xl rounded-t-3xl sm:rounded-3xl ${isSent ? "max-w-2xl max-h-[95svh] sm:max-h-[92vh]" : "max-w-lg max-h-[92svh] sm:max-h-[90vh]"}`}
           >
             <div className="sticky top-0 z-10 bg-white rounded-t-3xl">
               <div className="h-1 bg-warm-gray-100 rounded-t-3xl overflow-hidden">
-                <motion.div className="h-full bg-gradient-to-r from-rosa-300 to-rosa-400" animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeOut" }} />
+                <m.div className="h-full bg-gradient-to-r from-rosa-300 to-rosa-400" animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeOut" }} />
               </div>
             </div>
             <button onClick={handleClose} className="absolute top-5 right-5 z-20 w-8 h-8 rounded-full bg-warm-gray-100 flex items-center justify-center text-warm-gray-400 hover:bg-warm-gray-200 hover:text-warm-dark transition-all cursor-pointer" aria-label="Cerrar">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="p-8 pt-6">
+            <div className="p-5 sm:p-8 pt-5 sm:pt-6">
               {isSent ? (
                 <ThankYouScreen answers={answers} onClose={handleClose} />
               ) : isSending ? (
@@ -123,7 +123,7 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
                 <ErrorState error={error} onRetry={submitAndGenerate} />
               ) : (
                 <AnimatePresence mode="wait" custom={direction}>
-                  <motion.div key={currentStep} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+                  <m.div key={currentStep} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
                     {currentStep === "contact" && (
                       <StepContact name={answers.name} email={answers.email} phone={answers.phone}
                         onChangeName={(v) => setAnswers({ ...answers, name: v })}
@@ -138,19 +138,19 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
                     {currentStep === "duration" && <StepDuration onSelect={(v) => selectOption("duration", v)} selected={answers.duration} />}
                     {currentStep === "obstacle" && <StepObstacle onSelect={(v) => selectOption("obstacle", v)} selected={answers.obstacle} />}
                     {currentStep === "extra" && <StepExtra value={answers.extra} onChange={(v) => setAnswers({ ...answers, extra: v })} onSubmit={submitAndGenerate} />}
-                  </motion.div>
+                  </m.div>
                 </AnimatePresence>
               )}
 
               {!isSent && !isSending && !error && stepIndex > 0 && (
                 <button onClick={prevStep} className="mt-6 text-sm text-warm-gray-400 hover:text-warm-dark transition-colors flex items-center gap-1 cursor-pointer">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
-                  Atras
+                  Atrás
                 </button>
               )}
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -190,16 +190,16 @@ function StepContact({ name, email, phone, onChangeName, onChangeEmail, onChange
       <StepHeader emoji="✨" title="¡Hola! Vamos a por tu plan" subtitle="Te lo preparo personalmente" />
       <div className="space-y-3.5">
         <div>
-          <label className="block text-sm font-medium text-warm-dark mb-1.5">Tu nombre</label>
-          <input type="text" value={name} onChange={(e) => onChangeName(e.target.value)} placeholder="¿Cómo te llamas?" autoFocus className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-name" className="block text-sm font-medium text-warm-dark mb-1.5">Tu nombre</label>
+          <input id="modal-name" type="text" value={name} onChange={(e) => onChangeName(e.target.value)} placeholder="¿Cómo te llamas?" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-warm-dark mb-1.5">Tu email</label>
-          <input type="email" value={email} onChange={(e) => onChangeEmail(e.target.value)} placeholder="Para enviarte tu plan personalizado" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-email" className="block text-sm font-medium text-warm-dark mb-1.5">Tu email</label>
+          <input id="modal-email" type="email" value={email} onChange={(e) => onChangeEmail(e.target.value)} placeholder="Para enviarte tu plan personalizado" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-warm-dark mb-1.5">Tu WhatsApp</label>
-          <input type="tel" value={phone} onChange={(e) => onChangePhone(e.target.value)} onKeyDown={(e) => e.key === "Enter" && isValid && onNext()} placeholder="+34 600 000 000" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-phone" className="block text-sm font-medium text-warm-dark mb-1.5">Tu WhatsApp</label>
+          <input id="modal-phone" type="tel" value={phone} onChange={(e) => onChangePhone(e.target.value)} onKeyDown={(e) => e.key === "Enter" && isValid && onNext()} placeholder="+34 600 000 000" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
       </div>
       <button onClick={onNext} disabled={!isValid} className="mt-5 w-full px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all hover:bg-warm-gray-500 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">Continuar</button>
@@ -322,7 +322,7 @@ function StepExtra({ value, onChange, onSubmit }: { value: string; onChange: (v:
   return (
     <div>
       <StepHeader emoji="📋" title="¿Algo más que deba saber?" subtitle="Lesiones, alergias, lo que sea" />
-      <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} autoFocus className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all resize-none text-sm" placeholder="Ej: Tengo una lesión de rodilla / Soy intolerante a la lactosa / Nada en especial" />
+      <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all resize-none text-sm" placeholder="Ej: Tengo una lesión de rodilla / Soy intolerante a la lactosa / Nada en especial" />
       <button onClick={onSubmit} className="mt-4 w-full px-6 py-4 text-sm font-medium text-white bg-gradient-to-r from-rosa-400 to-rosa-300 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">Enviar a Sandra</button>
       <p className="mt-3 text-center text-xs text-warm-gray-300">Si no tienes nada, déjalo en blanco y dale al botón</p>
     </div>
@@ -334,12 +334,12 @@ function StepExtra({ value, onChange, onSubmit }: { value: string; onChange: (v:
 function SendingState({ name }: { name: string }) {
   return (
     <div className="py-12 text-center">
-      <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="w-12 h-12 mx-auto mb-6 rounded-full border-2 border-warm-gray-100 border-t-rosa-400" />
+      <m.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="w-12 h-12 mx-auto mb-6 rounded-full border-2 border-warm-gray-100 border-t-rosa-400" />
       <h3 className="font-[family-name:var(--font-display)] italic text-xl font-light text-warm-dark mb-2">Enviando tus datos a Sandra...</h3>
       <p className="text-sm text-warm-gray-400">{name}, en unos minutos recibirás mi análisis por email</p>
       <div className="mt-6 flex justify-center gap-1">
-        {[0, 1, 2].map((i) => (
-          <motion.div key={i} animate={{ y: [0, -8, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }} className="w-2 h-2 rounded-full bg-rosa-300" />
+        {["dot-1", "dot-2", "dot-3"].map((id, i) => (
+          <m.div key={id} animate={{ y: [0, -8, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }} className="w-2 h-2 rounded-full bg-rosa-300" />
         ))}
       </div>
     </div>

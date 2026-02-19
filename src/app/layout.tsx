@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, Dancing_Script } from "next/font/google";
+import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -25,10 +26,10 @@ const dmSans = DM_Sans({
 
 const SITE_URL = "https://www.sandralorden.com";
 const SITE_NAME = "Sandra Lorden";
-const TITLE_DEFAULT = "Sandra Lorden | Entrenadora Personal y Nutricionista en España";
+const TITLE_DEFAULT = "Sandra Lorden | Entrenadora Personal y Nutricionista en Madrid";
 const TITLE_TEMPLATE = "%s | Sandra Lorden";
 const DESCRIPTION =
-  "Sandra Lorden — entrenadora personal certificada y nutricionista deportiva en España. Planes de entrenamiento personalizados (presencial y online) y nutrición deportiva. +500 clientes transformados y +8 años de experiencia. Colaboradora de Gravl y EntrenaVirtual. Empieza tu transformación hoy.";
+  "Sandra Lorden — entrenadora personal certificada y nutricionista deportiva en Madrid. Planes de entrenamiento personalizados (presencial y online) y nutrición deportiva. +1000 clientes transformados y 10 años de experiencia. Especialista en entrenamiento de fuerza para mujeres. Empieza tu transformación hoy.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
 
   keywords: [
     "entrenadora personal",
-    "entrenadora personal España",
+    "entrenadora personal Madrid",
     "entrenadora personal online",
     "entrenadora personal mujer",
     "nutricionista deportiva",
@@ -70,9 +71,10 @@ export const metadata: Metadata = {
     "hábitos saludables",
     "transformación física",
     "Sandra Lorden",
-    "Gravl",
-    "EntrenaVirtual",
+    "entrenamiento de fuerza mujeres",
     "entrenadora personal certificada",
+    "nutricionista Madrid",
+    "entrenadora personal España",
     "nutricionista España",
   ],
 
@@ -110,7 +112,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE_DEFAULT,
     description:
-      "Entrenadora personal certificada y nutricionista deportiva. Planes personalizados de entrenamiento y nutrición. +500 clientes transformados.",
+      "Entrenadora personal certificada y nutricionista deportiva en Madrid. Planes personalizados de entrenamiento y nutrición. +1000 clientes transformados.",
     images: [`${SITE_URL}/og-image.png`],
     creator: "@sandralorden",
   },
@@ -166,14 +168,17 @@ function JsonLd() {
       "Planes de nutrición",
       "Entrenamiento online",
     ],
-    worksFor: [
-      { "@type": "Organization", name: "Gravl" },
-      { "@type": "Organization", name: "EntrenaVirtual" },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Universidad — Grado en Ciencias del Deporte y la Actividad Física",
+    },
+    hasCredential: [
+      { "@type": "EducationalOccupationalCredential", credentialCategory: "degree", name: "Grado en Ciencias del Deporte y la Actividad Física (CAFYD)" },
+      { "@type": "EducationalOccupationalCredential", credentialCategory: "degree", name: "Máster en Nutrición Deportiva" },
+      { "@type": "EducationalOccupationalCredential", credentialCategory: "degree", name: "Máster en Alto Rendimiento" },
     ],
     sameAs: [
-      "https://instagram.com/sandralorden",
-      "https://tiktok.com/@sandralorden",
-      "https://youtube.com/@sandralorden",
+      "https://www.instagram.com/sandralordenfit",
     ],
     address: {
       "@type": "PostalAddress",
@@ -191,7 +196,7 @@ function JsonLd() {
     image: `${SITE_URL}/og-image.png`,
     description: DESCRIPTION,
     telephone: "+34660140063",
-    email: "hola@sandralorden.com",
+    email: "hola@sandralordenfit.com",
     address: {
       "@type": "PostalAddress",
       addressCountry: "ES",
@@ -202,6 +207,7 @@ function JsonLd() {
       longitude: -3.7038,
     },
     areaServed: [
+      { "@type": "City", name: "Madrid" },
       { "@type": "Country", name: "España" },
       { "@type": "Place", name: "Online / Virtual" },
     ],
@@ -215,37 +221,41 @@ function JsonLd() {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Entrenamiento Presencial",
+            name: "Entrenamiento Personal Presencial",
             description:
-              "Sesiones individuales one-to-one con corrección postural en tiempo real y motivación constante.",
+              "Sesiones individuales presenciales a domicilio o al aire libre con corrección postural y material portátil profesional.",
           },
+          priceSpecification: { "@type": "PriceSpecification", price: "50", priceCurrency: "EUR", unitText: "sesión" },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Entrenamiento Virtual",
+            name: "Asesoría Online — Nutrición",
             description:
-              "Sesiones en vivo por videollamada con la misma calidad que presencial, desde cualquier lugar.",
+              "Plan nutricional personalizado adaptado a tus gustos, horarios y objetivos con seguimiento continuo.",
           },
+          priceSpecification: { "@type": "PriceSpecification", price: "59", priceCurrency: "EUR", unitText: "mes" },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Nutrición Deportiva",
+            name: "Asesoría Online — Entrenamiento",
             description:
-              "Planes nutricionales personalizados que complementan tu entrenamiento para resultados reales.",
+              "Plan de entrenamiento individualizado para gimnasio o casa con fotos, anotaciones y seguimiento.",
           },
+          priceSpecification: { "@type": "PriceSpecification", price: "59", priceCurrency: "EUR", unitText: "mes" },
         },
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Programas Online",
+            name: "Asesoría Online — Pack Completo",
             description:
-              "Programas de entrenamiento completos a través de Gravl y EntrenaVirtual desde tu móvil.",
+              "Pack de entrenamiento + nutrición personalizado con seguimiento diario y checking mensual.",
           },
+          priceSpecification: { "@type": "PriceSpecification", price: "79", priceCurrency: "EUR", unitText: "mes" },
         },
       ],
     },
@@ -253,12 +263,10 @@ function JsonLd() {
       "@type": "AggregateRating",
       ratingValue: "4.9",
       bestRating: "5",
-      ratingCount: "500",
+      ratingCount: "1000",
     },
     sameAs: [
-      "https://instagram.com/sandralorden",
-      "https://tiktok.com/@sandralorden",
-      "https://youtube.com/@sandralorden",
+      "https://www.instagram.com/sandralordenfit",
     ],
   };
 
@@ -303,7 +311,7 @@ function JsonLd() {
         name: "¿Sandra Lorden ofrece entrenamiento online?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sí, Sandra Lorden ofrece entrenamiento virtual en vivo por videollamada, con la misma calidad que las sesiones presenciales. También tiene programas online a través de Gravl y EntrenaVirtual.",
+          text: "Sí, Sandra Lorden ofrece asesorías online de entrenamiento y nutrición con seguimiento continuo por WhatsApp, email o videollamada. Los planes se entregan en formato PDF con fotos y anotaciones.",
         },
       },
       {
@@ -311,7 +319,7 @@ function JsonLd() {
         name: "¿Qué servicios ofrece Sandra Lorden?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sandra Lorden ofrece entrenamiento presencial, entrenamiento virtual, nutrición deportiva personalizada y programas online. Todos los planes son personalizados y adaptados a cada persona.",
+          text: "Sandra Lorden ofrece entrenamiento personal presencial (a domicilio o al aire libre) y asesorías online de nutrición, entrenamiento (gym o casa) o pack completo. Todos los planes son personalizados.",
         },
       },
       {
@@ -319,7 +327,7 @@ function JsonLd() {
         name: "¿Sandra Lorden es nutricionista certificada?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sí, Sandra Lorden es entrenadora personal certificada y nutricionista deportiva con más de 8 años de experiencia y más de 500 clientes transformados.",
+          text: "Sí, Sandra Lorden es graduada en Ciencias del Deporte y la Actividad Física (CAFYD) con doble Máster en Nutrición Deportiva y Alto Rendimiento. Tiene 10 años de experiencia y más de 1000 clientes.",
         },
       },
       {
@@ -328,6 +336,22 @@ function JsonLd() {
         acceptedAnswer: {
           "@type": "Answer",
           text: "Puedes empezar rellenando el cuestionario de transformación en la web. Sandra analizará tus datos y te contactará por WhatsApp para iniciar tu plan personalizado.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Necesito experiencia previa para entrenar con Sandra Lorden?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No, Sandra Lorden trabaja con todos los niveles, desde principiantes hasta avanzados. Cada plan se adapta al nivel, objetivos y disponibilidad de cada persona.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cuánto tiempo tardaré en ver resultados con Sandra Lorden?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "La mayoría de clientas notan cambios en las primeras 3-4 semanas. Los resultados sólidos y sostenibles se ven a partir de los 3 meses con constancia en el entrenamiento y la nutrición.",
         },
       },
     ],
@@ -370,7 +394,7 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body className={`${cormorant.variable} ${dancingScript.variable} ${dmSans.variable} antialiased`}>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
