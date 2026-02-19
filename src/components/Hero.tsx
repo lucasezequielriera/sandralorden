@@ -54,10 +54,10 @@ export default function Hero() {
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
       >
         {/* Responsive video backgrounds */}
-        <video ref={desktopRef} autoPlay loop muted playsInline poster="/images/IMG_1632.JPG" className="hidden md:block" style={videoStyle}>
+        <video ref={desktopRef} autoPlay loop muted playsInline className="hidden md:block" style={videoStyle}>
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
-        <video ref={mobileRef} autoPlay loop muted playsInline poster="/images/IMG_1632.JPG" className="block md:hidden" style={videoStyle}>
+        <video ref={mobileRef} autoPlay loop muted playsInline className="block md:hidden" style={videoStyle}>
           <source src="/videos/hero-bg-mobile.mp4" type="video/mp4" />
         </video>
 
