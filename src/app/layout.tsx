@@ -146,7 +146,7 @@ export const metadata: Metadata = {
   category: "fitness",
 
   other: {
-    "google-site-verification": "REPLACE_WITH_YOUR_GOOGLE_VERIFICATION_CODE",
+    "google-site-verification": "KiaTi5WqqMF79O_CBWretnFkteRu3jWF1iTsLwpWmAI",
   },
 };
 
