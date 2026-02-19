@@ -5,7 +5,7 @@ import AnimatedSection from "./AnimatedSection";
 const mediaLogos = [
   { name: "Vogue", src: "/images/logos/vogue.svg" },
   { name: "¡Hola!", src: "/images/logos/hola.svg" },
-  { name: "Semana", src: "/images/logos/semana.svg" },
+  { name: "Semana", src: "/images/logos/logo-semana_header.png" },
   { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg" },
   { name: "JeFemme", src: "/images/logos/jefemme.svg" },
 ];
