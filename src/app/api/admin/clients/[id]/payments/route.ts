@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/supabase/log-activity";
 
+const MONTH_NAMES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -13,9 +15,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     .from("invoices")
     .select("id, amount, status, concept, due_date, paid_date, created_at")
     .eq("client_id", id)
-    .gte("created_at", `${year}-01-01T00:00:00`)
-    .lte("created_at", `${year}-12-31T23:59:59`)
-    .order("created_at");
+    .gte("due_date", `${year}-01-01`)
+    .lte("due_date", `${year}-12-31`)
+    .order("due_date");
 
   return NextResponse.json(data ?? []);
 }
@@ -36,8 +38,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .from("invoices")
     .select("id, status")
     .eq("client_id", id)
-    .gte("created_at", `${monthStart}T00:00:00`)
-    .lt("created_at", `${monthEnd}T00:00:00`)
+    .gte("due_date", monthStart)
+    .lt("due_date", monthEnd)
     .limit(1)
     .single();
 
@@ -46,8 +48,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .select("name")
     .eq("id", id)
     .single();
-
-  const MONTH_NAMES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
   if (action === "toggle") {
     if (existing) {

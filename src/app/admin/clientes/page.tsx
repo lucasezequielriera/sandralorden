@@ -13,13 +13,14 @@ export default async function ClientesPage() {
   const year = new Date().getFullYear();
   const { data: invoices } = await supabase
     .from("invoices")
-    .select("client_id, status, created_at")
-    .gte("created_at", `${year}-01-01T00:00:00`)
-    .lte("created_at", `${year}-12-31T23:59:59`);
+    .select("client_id, status, due_date")
+    .gte("due_date", `${year}-01-01`)
+    .lte("due_date", `${year}-12-31`);
 
   const paymentMap: Record<string, Record<number, string>> = {};
   for (const inv of invoices ?? []) {
-    const month = new Date(inv.created_at).getMonth();
+    if (!inv.due_date) continue;
+    const month = new Date(inv.due_date + "T00:00:00").getMonth();
     if (!paymentMap[inv.client_id]) paymentMap[inv.client_id] = {};
     paymentMap[inv.client_id][month] = inv.status;
   }

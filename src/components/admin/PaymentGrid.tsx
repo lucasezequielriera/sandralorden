@@ -7,6 +7,7 @@ interface InvoiceMonth {
   amount: number;
   status: string;
   concept: string;
+  due_date: string;
   created_at: string;
 }
 
@@ -26,7 +27,10 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
   useEffect(() => { fetchPayments(); }, [fetchPayments]);
 
   const getMonthStatus = (month: number): "paid" | "pending" | "none" => {
-    const inv = invoices.find((i) => new Date(i.created_at).getMonth() === month);
+    const inv = invoices.find((i) => {
+      if (!i.due_date) return false;
+      return new Date(i.due_date + "T00:00:00").getMonth() === month;
+    });
     if (!inv) return "none";
     return inv.status as "paid" | "pending";
   };
