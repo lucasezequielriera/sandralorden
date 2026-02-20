@@ -191,9 +191,10 @@ export default function DashboardContent({
         </div>
 
         {/* Bar chart */}
-        <div className="flex items-end gap-1 sm:gap-1.5 h-32 mb-2">
+        <div className="flex gap-1 sm:gap-1.5 mb-2" style={{ height: 128 }}>
           {monthlyData.map((m, i) => {
-            const height = maxRevenue > 0 ? (m.revenue / maxRevenue) * 100 : 0;
+            const pct = maxRevenue > 0 ? (m.revenue / maxRevenue) * 100 : 0;
+            const barH = Math.max(pct, 6);
             const isCurrentMonth = i === currentMonth;
             const isSelected = selectedMonth === i;
             const hasData = m.revenue > 0 || m.newClients > 0 || m.invoiceCount > 0;
@@ -202,27 +203,30 @@ export default function DashboardContent({
               <button
                 key={i}
                 onClick={() => setSelectedMonth(isSelected ? null : i)}
-                className="flex-1 flex flex-col items-center justify-end gap-1 cursor-pointer group transition-all py-1"
+                className="flex-1 relative cursor-pointer group"
                 title={`${MONTH_NAMES[i]}: ${m.revenue.toFixed(0)}€`}
               >
                 {m.revenue > 0 && (
-                  <span className="text-[8px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity tabular-nums">
+                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity tabular-nums whitespace-nowrap">
                     {m.revenue.toFixed(0)}€
                   </span>
                 )}
-                <div
-                  className={`w-full max-w-[28px] mx-auto rounded-full transition-all duration-300 ${
-                    isSelected
-                      ? "bg-rosa-400"
-                      : isCurrentMonth
-                        ? "bg-marron-300"
-                        : hasData
-                          ? "bg-marron-200/60 group-hover:bg-marron-300"
-                          : "bg-warm-gray-200/40"
-                  }`}
-                  style={{ height: `${Math.max(height, 6)}%` }}
-                />
-                <span className={`text-[9px] mt-0.5 ${
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-5 sm:w-6"
+                  style={{ height: `${barH}%` }}
+                >
+                  <div
+                    className={`w-full h-full rounded-full transition-all duration-300 ${
+                      isSelected
+                        ? "bg-rosa-400"
+                        : isCurrentMonth
+                          ? "bg-marron-300"
+                          : hasData
+                            ? "bg-marron-200/60 group-hover:bg-marron-300"
+                            : "bg-warm-gray-200/40"
+                    }`}
+                  />
+                </div>
+                <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 text-[9px] ${
                   isSelected ? "text-rosa-400 font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
                 }`}>
                   {MONTH_NAMES[i].charAt(0)}
