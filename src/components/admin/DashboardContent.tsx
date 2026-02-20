@@ -191,7 +191,7 @@ export default function DashboardContent({
         </div>
 
         {/* Bar chart */}
-        <div className="flex gap-1 sm:gap-1.5 mb-2" style={{ height: 128 }}>
+        <div className="flex gap-1 sm:gap-1.5 mb-2">
           {monthlyData.map((m, i) => {
             const pct = maxRevenue > 0 ? (m.revenue / maxRevenue) * 100 : 0;
             const barH = Math.max(pct, 6);
@@ -203,19 +203,17 @@ export default function DashboardContent({
               <button
                 key={i}
                 onClick={() => setSelectedMonth(isSelected ? null : i)}
-                className="flex-1 relative cursor-pointer group"
+                className="flex-1 flex flex-col items-center cursor-pointer group"
                 title={`${MONTH_NAMES[i]}: ${m.revenue.toFixed(0)}€`}
               >
-                {m.revenue > 0 && (
-                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity tabular-nums whitespace-nowrap">
-                    {m.revenue.toFixed(0)}€
-                  </span>
-                )}
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-5 sm:w-6"
-                  style={{ height: `${barH}%` }}
-                >
+                <div className="w-full flex flex-col items-center justify-end" style={{ height: 110 }}>
+                  {m.revenue > 0 && (
+                    <span className="text-[8px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity tabular-nums whitespace-nowrap mb-1">
+                      {m.revenue.toFixed(0)}€
+                    </span>
+                  )}
                   <div
-                    className={`w-full h-full rounded-full transition-all duration-300 ${
+                    className={`w-5 sm:w-6 rounded-full transition-all duration-300 ${
                       isSelected
                         ? "bg-rosa-400"
                         : isCurrentMonth
@@ -224,9 +222,10 @@ export default function DashboardContent({
                             ? "bg-marron-200/60 group-hover:bg-marron-300"
                             : "bg-warm-gray-200/40"
                     }`}
+                    style={{ height: `${barH}%` }}
                   />
                 </div>
-                <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 text-[9px] ${
+                <span className={`text-[9px] mt-1.5 ${
                   isSelected ? "text-rosa-400 font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
                 }`}>
                   {MONTH_NAMES[i].charAt(0)}
