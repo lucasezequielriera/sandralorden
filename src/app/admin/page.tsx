@@ -37,10 +37,6 @@ export default async function AdminPage() {
     .select("*", { count: "exact", head: true })
     .eq("modality", "virtual");
 
-  const conversionRate = (totalClients ?? 0) > 0
-    ? Math.round(((activeClients ?? 0) / (totalClients ?? 1)) * 100)
-    : 0;
-
   const { data: allInvoicesYear } = await supabase
     .from("invoices")
     .select("amount, status, paid_date, due_date, created_at")
@@ -116,7 +112,6 @@ export default async function AdminPage() {
           pendingInvoices: pendingInvoices ?? 0,
           presencialClients: presencialClients ?? 0,
           virtualClients: virtualClients ?? 0,
-          conversionRate,
           yearTotalRevenue,
           yearTotalPending,
           thisMonthClients,

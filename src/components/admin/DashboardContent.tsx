@@ -9,7 +9,6 @@ interface Stats {
   pendingInvoices: number;
   presencialClients: number;
   virtualClients: number;
-  conversionRate: number;
   yearTotalRevenue: number;
   yearTotalPending: number;
   thisMonthClients: number;
@@ -109,54 +108,110 @@ export default function DashboardContent({
         <p className="text-sm text-warm-gray-400 mt-1">Resumen de tu negocio</p>
       </div>
 
-      {/* Main stats with month-over-month */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        {/* Clientes totales con desglose presencial/virtual */}
-        <div className="bg-gradient-to-br from-rosa-50 to-rosa-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Clientes totales</p>
-          <p className="text-3xl font-light mt-2 text-rosa-500">{stats.totalClients}</p>
-          <div className="flex items-center gap-3 mt-2">
-            <span className="flex items-center gap-1 text-[10px] text-blue-600">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {/* 1. Clientes totales */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-rosa-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-rosa-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Clientes totales</p>
+          <p className="text-4xl font-light text-warm-dark mt-1">{stats.totalClients}</p>
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-warm-gray-100/60">
+            <span className="flex items-center gap-1.5 text-[11px] text-blue-600 font-medium">
               <span className="w-2 h-2 rounded-full bg-blue-400" />
               {stats.presencialClients} presencial
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-purple-600">
+            <span className="flex items-center gap-1.5 text-[11px] text-purple-600 font-medium">
               <span className="w-2 h-2 rounded-full bg-purple-400" />
               {stats.virtualClients} virtual
             </span>
           </div>
         </div>
-        <StatCard label="Clientes activos" value={stats.activeClients} color="green" />
-        <StatCardWithDelta label={`Nuevos en ${currentMonthName}`} value={stats.thisMonthClients} pct={stats.pctClients} color="amber" />
-        <StatCardWithDelta label={`Ingresos ${currentMonthName}`} value={stats.thisMonthRevenue} pct={stats.pctRevenue} color="green" isCurrency />
-      </div>
 
-      {/* Pending */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <StatCardWithDelta label="Pendiente este mes" value={stats.thisMonthPending} pct={stats.pctPending} color="red" isCurrency invertColor />
-        <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pagos pendientes</p>
-          <p className="text-3xl font-light mt-2 text-red-500">{stats.pendingInvoices}</p>
-        </div>
-      </div>
-
-      {/* Year totals + Conversion */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
-          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Total cobrado {year}</p>
-          <p className="text-2xl font-light text-green-600 mt-2">{stats.yearTotalRevenue.toFixed(0)}€</p>
-        </div>
-        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
-          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Pendiente {year}</p>
-          <p className="text-2xl font-light text-amber-600 mt-2">{stats.yearTotalPending.toFixed(0)}€</p>
-        </div>
-        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
-          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Conversión lead→activo</p>
-          <div className="flex items-end gap-2 mt-2">
-            <p className="text-2xl font-light text-rosa-500">{stats.conversionRate}%</p>
-            <div className="flex-1 h-2 bg-warm-gray-100 rounded-full overflow-hidden mb-1.5">
-              <div className="h-full bg-rosa-400 rounded-full transition-all" style={{ width: `${stats.conversionRate}%` }} />
+        {/* 2. Clientes activos */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
             </div>
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Clientes activos</p>
+          <p className="text-4xl font-light text-warm-dark mt-1">{stats.activeClients}</p>
+          <div className="mt-3 pt-3 border-t border-warm-gray-100/60">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-warm-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${stats.totalClients > 0 ? (stats.activeClients / stats.totalClients) * 100 : 0}%` }} />
+              </div>
+              <span className="text-[11px] text-green-600 font-medium">{stats.totalClients > 0 ? Math.round((stats.activeClients / stats.totalClients) * 100) : 0}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Nuevos este mes */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+              </svg>
+            </div>
+            <DeltaBadge pct={stats.pctClients} />
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Nuevos en {currentMonthName}</p>
+          <p className="text-4xl font-light text-warm-dark mt-1">{stats.thisMonthClients}</p>
+          <p className="text-[10px] text-warm-gray-300 mt-3 pt-3 border-t border-warm-gray-100/60">vs mes anterior</p>
+        </div>
+
+        {/* 4. Ingresos este mes */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+              </svg>
+            </div>
+            <DeltaBadge pct={stats.pctRevenue} />
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Ingresos {currentMonthName}</p>
+          <p className="text-4xl font-light text-green-600 mt-1">{stats.thisMonthRevenue.toFixed(0)}€</p>
+          <p className="text-[10px] text-warm-gray-300 mt-3 pt-3 border-t border-warm-gray-100/60">vs mes anterior</p>
+        </div>
+
+        {/* 5. Pendiente este mes */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <DeltaBadge pct={stats.pctPending} invert />
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Pendiente {currentMonthName}</p>
+          <p className="text-4xl font-light text-amber-600 mt-1">{stats.thisMonthPending.toFixed(0)}€</p>
+          <p className="text-[10px] text-warm-gray-300 mt-3 pt-3 border-t border-warm-gray-100/60">vs mes anterior</p>
+        </div>
+
+        {/* 6. Pagos pendientes (count) */}
+        <div className="bg-white rounded-2xl p-6 border border-warm-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-[11px] text-warm-gray-400 uppercase tracking-wider mt-4">Facturas sin cobrar</p>
+          <p className="text-4xl font-light text-red-500 mt-1">{stats.pendingInvoices}</p>
+          <div className="mt-3 pt-3 border-t border-warm-gray-100/60">
+            <p className="text-[11px] text-warm-gray-300">del año {year}</p>
           </div>
         </div>
       </div>
@@ -387,69 +442,18 @@ export default function DashboardContent({
   );
 }
 
-function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
-  const bgMap: Record<string, string> = {
-    rosa: "from-rosa-50 to-rosa-100/50",
-    green: "from-green-50 to-green-100/50",
-    amber: "from-amber-50 to-amber-100/50",
-    red: "from-red-50 to-red-100/50",
-  };
-  const textMap: Record<string, string> = {
-    rosa: "text-rosa-500",
-    green: "text-green-600",
-    amber: "text-amber-600",
-    red: "text-red-500",
-  };
+function DeltaBadge({ pct, invert }: { pct: number | null; invert?: boolean }) {
+  if (pct === null) return null;
+  const isUp = pct > 0;
+  const isDown = pct < 0;
+  const positive = invert ? isDown : isUp;
+  const negative = invert ? isUp : isDown;
 
   return (
-    <div className={`bg-gradient-to-br ${bgMap[color]} rounded-2xl p-5 border border-warm-gray-100/50`}>
-      <p className="text-xs text-warm-gray-400 uppercase tracking-wider">{label}</p>
-      <p className={`text-3xl font-light mt-2 ${textMap[color]}`}>{value}</p>
-    </div>
-  );
-}
-
-function StatCardWithDelta({
-  label, value, pct, color, isCurrency, invertColor,
-}: {
-  label: string; value: number; pct: number | null; color: string; isCurrency?: boolean; invertColor?: boolean;
-}) {
-  const bgMap: Record<string, string> = {
-    rosa: "from-rosa-50 to-rosa-100/50",
-    green: "from-green-50 to-green-100/50",
-    amber: "from-amber-50 to-amber-100/50",
-    red: "from-red-50 to-red-100/50",
-  };
-  const textMap: Record<string, string> = {
-    rosa: "text-rosa-500",
-    green: "text-green-600",
-    amber: "text-amber-600",
-    red: "text-red-500",
-  };
-
-  const isUp = pct !== null && pct > 0;
-  const isDown = pct !== null && pct < 0;
-  const deltaPositive = invertColor ? isDown : isUp;
-  const deltaNegative = invertColor ? isUp : isDown;
-
-  return (
-    <div className={`bg-gradient-to-br ${bgMap[color]} rounded-2xl p-5 border border-warm-gray-100/50`}>
-      <p className="text-xs text-warm-gray-400 uppercase tracking-wider">{label}</p>
-      <div className="flex items-end gap-2 mt-2">
-        <p className={`text-3xl font-light ${textMap[color]}`}>
-          {isCurrency ? `${value.toFixed(0)}€` : value}
-        </p>
-        {pct !== null && (
-          <span className={`text-[11px] font-medium mb-1 flex items-center gap-0.5 ${
-            deltaPositive ? "text-green-500" : deltaNegative ? "text-red-400" : "text-warm-gray-300"
-          }`}>
-            {isUp ? "↑" : isDown ? "↓" : "="}{Math.abs(pct)}%
-          </span>
-        )}
-      </div>
-      {pct !== null && (
-        <p className="text-[10px] text-warm-gray-300 mt-1">vs mes anterior</p>
-      )}
-    </div>
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
+      positive ? "bg-green-50 text-green-600" : negative ? "bg-red-50 text-red-500" : "bg-warm-gray-100 text-warm-gray-400"
+    }`}>
+      {isUp ? "↑" : isDown ? "↓" : "="} {Math.abs(pct)}%
+    </span>
   );
 }
