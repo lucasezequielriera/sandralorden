@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Client, Session, FileRecord, Invoice } from "@/lib/supabase/types";
+import PaymentGrid from "./PaymentGrid";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
@@ -178,6 +179,11 @@ export default function ClientDetailContent({
           <p className="text-sm text-warm-gray-400 whitespace-pre-wrap">{client.notes}</p>
         </div>
       )}
+
+      {/* Payment Grid */}
+      <div className="mb-6">
+        <PaymentGrid clientId={client.id} />
+      </div>
 
       {/* Tabs: Sessions, Files, Invoices */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

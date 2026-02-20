@@ -26,7 +26,7 @@ const modalityLabels: Record<string, string> = {
   virtual: "Virtual",
 };
 
-export default function ClientsListContent({ clients }: { clients: Client[] }) {
+export default function ClientsListContent({ clients, paymentMap = {} }: { clients: Client[]; paymentMap?: Record<string, Record<number, string>> }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [modalityFilter, setModalityFilter] = useState<string>("all");
@@ -136,7 +136,8 @@ export default function ClientsListContent({ clients }: { clients: Client[] }) {
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden md:table-cell">Servicio</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden sm:table-cell">Modalidad</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Estado</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden lg:table-cell">Fecha</th>
+                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden lg:table-cell">Pagos</th>
+                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden xl:table-cell">Fecha</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -161,7 +162,10 @@ export default function ClientsListContent({ clients }: { clients: Client[] }) {
                         {statusLabels[client.status] ?? client.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-warm-gray-300 text-xs hidden lg:table-cell">
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      <PaymentDots payments={paymentMap[client.id] ?? {}} />
+                    </td>
+                    <td className="px-4 py-3 text-warm-gray-300 text-xs hidden xl:table-cell">
                       {new Date(client.created_at).toLocaleDateString("es-ES")}
                     </td>
                     <td className="px-4 py-3">
@@ -179,6 +183,37 @@ export default function ClientsListContent({ clients }: { clients: Client[] }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const MONTH_SHORT = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+
+function PaymentDots({ payments }: { payments: Record<number, string> }) {
+  const currentMonth = new Date().getMonth();
+  return (
+    <div className="flex items-center gap-0.5" title="Pagos del año (E-D)">
+      {MONTH_SHORT.map((label, i) => {
+        const status = payments[i];
+        const isCurrent = i === currentMonth;
+        return (
+          <div
+            key={i}
+            className={`w-4 h-4 rounded-sm flex items-center justify-center text-[7px] font-bold leading-none ${
+              status === "paid"
+                ? "bg-green-400 text-white"
+                : status === "pending"
+                  ? "bg-amber-400 text-white"
+                  : i > currentMonth
+                    ? "bg-warm-gray-50 text-warm-gray-200"
+                    : "bg-warm-gray-100 text-warm-gray-300"
+            } ${isCurrent ? "ring-1 ring-rosa-300" : ""}`}
+            title={`${["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][i]}: ${status === "paid" ? "Pagado" : status === "pending" ? "Pendiente" : "Sin factura"}`}
+          >
+            {label}
+          </div>
+        );
+      })}
     </div>
   );
 }
