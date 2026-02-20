@@ -52,11 +52,11 @@ interface LogEntry {
 }
 
 const statusColors: Record<string, string> = {
-  active: "bg-marron-100 text-marron-500",
-  lead: "bg-rosa-100 text-rosa-500",
+  active: "bg-[#A8D5BA]/30 text-[#3D6B4F]",
+  lead: "bg-[#E8D5F0]/50 text-[#6B3A7E]",
   inactive: "bg-warm-gray-100 text-warm-gray-400",
-  pending: "bg-rosa-100 text-rosa-400",
-  paid: "bg-marron-100 text-marron-500",
+  pending: "bg-[#F2B8B5]/30 text-[#8C4A47]",
+  paid: "bg-[#A8D5BA]/30 text-[#3D6B4F]",
   cancelled: "bg-warm-gray-200 text-warm-gray-500",
 };
 
@@ -138,23 +138,23 @@ export default function DashboardContent({
 
         {/* Ingresos este mes */}
         <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-marron-200/30 -translate-y-8 translate-x-8" />
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#A8D5BA]/30 -translate-y-8 translate-x-8" />
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.12em]">Ingresos · {currentMonthName.substring(0, 3)}</p>
             <DeltaBadge pct={stats.pctRevenue} />
           </div>
-          <p className="text-3xl font-[family-name:var(--font-display)] italic text-marron-500 mt-1.5 leading-none">{stats.thisMonthRevenue.toFixed(0)}€</p>
+          <p className="text-3xl font-[family-name:var(--font-display)] italic text-[#3D6B4F] mt-1.5 leading-none">{stats.thisMonthRevenue.toFixed(0)}€</p>
           <p className="text-[10px] text-warm-gray-300 mt-3">vs mes anterior</p>
         </div>
 
         {/* Pendiente este mes */}
         <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-rosa-100/30 -translate-y-8 translate-x-8" />
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#F2B8B5]/30 -translate-y-8 translate-x-8" />
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.12em]">Pendiente · {currentMonthName.substring(0, 3)}</p>
             <DeltaBadge pct={stats.pctPending} invert />
           </div>
-          <p className="text-3xl font-[family-name:var(--font-display)] italic text-rosa-400 mt-1.5 leading-none">{stats.thisMonthPending.toFixed(0)}€</p>
+          <p className="text-3xl font-[family-name:var(--font-display)] italic text-[#8C4A47] mt-1.5 leading-none">{stats.thisMonthPending.toFixed(0)}€</p>
           <p className="text-[10px] text-warm-gray-300 mt-3">vs mes anterior</p>
         </div>
 
@@ -209,18 +209,18 @@ export default function DashboardContent({
                   <div
                     className={`w-5 sm:w-6 rounded-full transition-all duration-300 ${
                       isSelected
-                        ? "bg-rosa-400"
+                        ? "bg-[#3D6B4F]"
                         : isCurrentMonth
-                          ? "bg-marron-300"
+                          ? "bg-[#A8D5BA]"
                           : hasData
-                            ? "bg-marron-200/60 group-hover:bg-marron-300"
+                            ? "bg-[#A8D5BA]/40 group-hover:bg-[#A8D5BA]"
                             : "bg-warm-gray-200/40"
                     }`}
                     style={{ height: `${barH}%` }}
                   />
                 </div>
                 <span className={`text-[9px] mt-1.5 ${
-                  isSelected ? "text-rosa-400 font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
+                  isSelected ? "text-[#3D6B4F] font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
                 }`}>
                   {MONTH_NAMES[i].charAt(0)}
                 </span>
@@ -236,13 +236,13 @@ export default function DashboardContent({
               <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Clientes</p>
               <p className="text-lg font-[family-name:var(--font-display)] italic text-warm-dark mt-0.5">{selected.newClients}</p>
             </div>
-            <div className="bg-warm-white rounded-2xl p-3.5">
+            <div className="bg-[#A8D5BA]/15 rounded-2xl p-3.5">
               <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Cobrado</p>
-              <p className="text-lg font-[family-name:var(--font-display)] italic text-marron-500 mt-0.5">{selected.revenue.toFixed(0)}€</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-[#3D6B4F] mt-0.5">{selected.revenue.toFixed(0)}€</p>
             </div>
-            <div className="bg-warm-white rounded-2xl p-3.5">
+            <div className="bg-[#F2B8B5]/15 rounded-2xl p-3.5">
               <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Pendiente</p>
-              <p className="text-lg font-[family-name:var(--font-display)] italic text-rosa-400 mt-0.5">{selected.pending.toFixed(0)}€</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-[#8C4A47] mt-0.5">{selected.pending.toFixed(0)}€</p>
             </div>
             <div className="bg-warm-white rounded-2xl p-3.5">
               <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Facturas</p>
@@ -287,8 +287,8 @@ export default function DashboardContent({
                       {isCurrentMonth && <span className="text-[8px] ml-1 text-rosa-300 uppercase">actual</span>}
                     </td>
                     <td className="py-2.5 px-3 text-sm text-right text-warm-dark tabular-nums">{m.newClients}</td>
-                    <td className="py-2.5 px-3 text-sm text-right text-marron-500 font-medium tabular-nums">{m.revenue > 0 ? `${m.revenue.toFixed(0)}€` : "—"}</td>
-                    <td className="py-2.5 px-3 text-sm text-right text-rosa-400 tabular-nums">{m.pending > 0 ? `${m.pending.toFixed(0)}€` : "—"}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-[#3D6B4F] font-medium tabular-nums">{m.revenue > 0 ? `${m.revenue.toFixed(0)}€` : "—"}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-[#8C4A47] tabular-nums">{m.pending > 0 ? `${m.pending.toFixed(0)}€` : "—"}</td>
                     <td className="py-2.5 px-3 text-sm text-right text-warm-gray-300 rounded-r-xl tabular-nums">{m.invoiceCount || "—"}</td>
                   </tr>
                 );
@@ -298,8 +298,8 @@ export default function DashboardContent({
               <tr className="border-t border-warm-gray-200/40">
                 <td className="py-3 px-3 text-sm font-medium text-warm-dark">Total {year}</td>
                 <td className="py-3 px-3 text-sm text-right font-medium text-warm-dark tabular-nums">{monthlyData.reduce((s, m) => s + m.newClients, 0)}</td>
-                <td className="py-3 px-3 text-sm text-right font-medium text-marron-500 tabular-nums">{stats.yearTotalRevenue > 0 ? `${stats.yearTotalRevenue.toFixed(0)}€` : "—"}</td>
-                <td className="py-3 px-3 text-sm text-right font-medium text-rosa-400 tabular-nums">{stats.yearTotalPending > 0 ? `${stats.yearTotalPending.toFixed(0)}€` : "—"}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-[#3D6B4F] tabular-nums">{stats.yearTotalRevenue > 0 ? `${stats.yearTotalRevenue.toFixed(0)}€` : "—"}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-[#8C4A47] tabular-nums">{stats.yearTotalPending > 0 ? `${stats.yearTotalPending.toFixed(0)}€` : "—"}</td>
                 <td className="py-3 px-3 text-sm text-right font-medium text-warm-gray-400 tabular-nums">{monthlyData.reduce((s, m) => s + m.invoiceCount, 0)}</td>
               </tr>
             </tfoot>
