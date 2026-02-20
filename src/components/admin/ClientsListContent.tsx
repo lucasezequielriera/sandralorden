@@ -132,10 +132,7 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
               <thead>
                 <tr className="border-b border-warm-gray-100 bg-warm-gray-100/30">
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Nombre</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden sm:table-cell">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden md:table-cell">Servicio</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden sm:table-cell">Modalidad</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Estado</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden lg:table-cell">Pagos</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden xl:table-cell">Fecha</th>
                   <th className="px-4 py-3"></th>
@@ -145,21 +142,11 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
                 {filtered.map((client) => (
                   <tr key={client.id} className="border-b border-warm-gray-100/50 hover:bg-warm-gray-100/20 transition-colors">
                     <td className="px-4 py-3">
-                      <div>
-                        <p className="font-medium text-warm-dark">{client.name}</p>
-                        <p className="text-xs text-warm-gray-300 sm:hidden">{client.email}</p>
-                      </div>
+                      <p className="font-medium text-warm-dark">{client.name}</p>
                     </td>
-                    <td className="px-4 py-3 text-warm-gray-400 hidden sm:table-cell">{client.email}</td>
-                    <td className="px-4 py-3 text-warm-gray-400 hidden md:table-cell">{client.service_type || "—"}</td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${modalityColors[client.modality] ?? "bg-warm-gray-100 text-warm-gray-500"}`}>
                         {modalityLabels[client.modality] ?? client.modality ?? "—"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[client.status] ?? ""}`}>
-                        {statusLabels[client.status] ?? client.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell">
