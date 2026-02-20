@@ -37,7 +37,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-warm-gray-100 flex flex-col transform transition-transform duration-200 lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-warm-gray-100 flex flex-col transform transition-transform duration-200 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -87,7 +87,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
         {/* Top bar (mobile) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-warm-gray-100">
           <button
