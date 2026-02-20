@@ -133,7 +133,7 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
                 <tr className="border-b border-warm-gray-100 bg-warm-gray-100/30">
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Nombre</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden sm:table-cell">Modalidad</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden lg:table-cell">Pagos</th>
+                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Pagos</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden xl:table-cell">Fecha</th>
                   <th className="px-4 py-3"></th>
                 </tr>
@@ -149,7 +149,7 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
                         {modalityLabels[client.modality] ?? client.modality ?? "—"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
+                    <td className="px-4 py-3">
                       <PaymentDots payments={paymentMap[client.id] ?? {}} />
                     </td>
                     <td className="px-4 py-3 text-warm-gray-300 text-xs hidden xl:table-cell">
