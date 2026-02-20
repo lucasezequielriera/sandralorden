@@ -6,13 +6,18 @@ import Link from "next/link";
 interface Stats {
   totalClients: number;
   activeClients: number;
-  leads: number;
   pendingInvoices: number;
   presencialClients: number;
   virtualClients: number;
   conversionRate: number;
   yearTotalRevenue: number;
   yearTotalPending: number;
+  thisMonthClients: number;
+  thisMonthRevenue: number;
+  thisMonthPending: number;
+  pctClients: number | null;
+  pctRevenue: number | null;
+  pctPending: number | null;
 }
 
 interface MonthData {
@@ -88,6 +93,7 @@ export default function DashboardContent({
   recentLogs: LogEntry[];
 }) {
   const currentMonth = new Date().getMonth();
+  const currentMonthName = MONTH_NAMES[currentMonth];
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
   const selected = selectedMonth !== null ? monthlyData[selectedMonth] : null;
@@ -103,15 +109,16 @@ export default function DashboardContent({
         <p className="text-sm text-warm-gray-400 mt-1">Resumen de tu negocio</p>
       </div>
 
-      {/* Totales generales */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+      {/* Main stats with month-over-month */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <StatCard label="Clientes totales" value={stats.totalClients} color="rosa" />
         <StatCard label="Clientes activos" value={stats.activeClients} color="green" />
-        <StatCard label="Leads nuevos" value={stats.leads} color="amber" />
+        <StatCardWithDelta label={`Nuevos en ${currentMonthName}`} value={stats.thisMonthClients} pct={stats.pctClients} color="amber" />
+        <StatCardWithDelta label={`Ingresos ${currentMonthName}`} value={stats.thisMonthRevenue} pct={stats.pctRevenue} color="green" isCurrency />
       </div>
 
-      {/* Modality + Pending */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      {/* Modality + Pending + Conversion */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div className="bg-white rounded-2xl p-5 border border-blue-100/80 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
             <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -135,6 +142,7 @@ export default function DashboardContent({
             <p className="text-2xl font-light text-purple-600">{stats.virtualClients}</p>
           </div>
         </div>
+        <StatCardWithDelta label="Pendiente este mes" value={stats.thisMonthPending} pct={stats.pctPending} color="red" isCurrency invertColor />
         <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
           <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pagos pendientes</p>
           <p className="text-3xl font-light mt-2 text-red-500">{stats.pendingInvoices}</p>
@@ -406,6 +414,51 @@ function StatCard({ label, value, color }: { label: string; value: number; color
     <div className={`bg-gradient-to-br ${bgMap[color]} rounded-2xl p-5 border border-warm-gray-100/50`}>
       <p className="text-xs text-warm-gray-400 uppercase tracking-wider">{label}</p>
       <p className={`text-3xl font-light mt-2 ${textMap[color]}`}>{value}</p>
+    </div>
+  );
+}
+
+function StatCardWithDelta({
+  label, value, pct, color, isCurrency, invertColor,
+}: {
+  label: string; value: number; pct: number | null; color: string; isCurrency?: boolean; invertColor?: boolean;
+}) {
+  const bgMap: Record<string, string> = {
+    rosa: "from-rosa-50 to-rosa-100/50",
+    green: "from-green-50 to-green-100/50",
+    amber: "from-amber-50 to-amber-100/50",
+    red: "from-red-50 to-red-100/50",
+  };
+  const textMap: Record<string, string> = {
+    rosa: "text-rosa-500",
+    green: "text-green-600",
+    amber: "text-amber-600",
+    red: "text-red-500",
+  };
+
+  const isUp = pct !== null && pct > 0;
+  const isDown = pct !== null && pct < 0;
+  const deltaPositive = invertColor ? isDown : isUp;
+  const deltaNegative = invertColor ? isUp : isDown;
+
+  return (
+    <div className={`bg-gradient-to-br ${bgMap[color]} rounded-2xl p-5 border border-warm-gray-100/50`}>
+      <p className="text-xs text-warm-gray-400 uppercase tracking-wider">{label}</p>
+      <div className="flex items-end gap-2 mt-2">
+        <p className={`text-3xl font-light ${textMap[color]}`}>
+          {isCurrency ? `${value.toFixed(0)}€` : value}
+        </p>
+        {pct !== null && (
+          <span className={`text-[11px] font-medium mb-1 flex items-center gap-0.5 ${
+            deltaPositive ? "text-green-500" : deltaNegative ? "text-red-400" : "text-warm-gray-300"
+          }`}>
+            {isUp ? "↑" : isDown ? "↓" : "="}{Math.abs(pct)}%
+          </span>
+        )}
+      </div>
+      {pct !== null && (
+        <p className="text-[10px] text-warm-gray-300 mt-1">vs mes anterior</p>
+      )}
     </div>
   );
 }

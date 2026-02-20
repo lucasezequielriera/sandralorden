@@ -14,13 +14,9 @@ export default async function AdminPage() {
     .select("*", { count: "exact", head: true })
     .eq("status", "active");
 
-  const { count: leads } = await supabase
-    .from("clients")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "lead");
-
   const now = new Date();
   const year = now.getFullYear();
+  const currentMonth = now.getMonth();
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
 
@@ -78,6 +74,21 @@ export default async function AdminPage() {
   const yearTotalRevenue = monthlyData.reduce((s, m) => s + m.revenue, 0);
   const yearTotalPending = monthlyData.reduce((s, m) => s + m.pending, 0);
 
+  const cur = monthlyData[currentMonth];
+  const prev = currentMonth > 0 ? monthlyData[currentMonth - 1] : null;
+
+  function pctChange(current: number, previous: number | null | undefined): number | null {
+    if (previous == null || previous === 0) return current > 0 ? 100 : null;
+    return Math.round(((current - previous) / previous) * 100);
+  }
+
+  const thisMonthClients = cur.newClients;
+  const prevMonthClients = prev?.newClients ?? 0;
+  const thisMonthRevenue = cur.revenue;
+  const prevMonthRevenue = prev?.revenue ?? 0;
+  const thisMonthPending = cur.pending;
+  const prevMonthPending = prev?.pending ?? 0;
+
   const { data: recentClients } = await supabase
     .from("clients")
     .select("id, name, email, phone, status, service_type, created_at")
@@ -102,13 +113,18 @@ export default async function AdminPage() {
         stats={{
           totalClients: totalClients ?? 0,
           activeClients: activeClients ?? 0,
-          leads: leads ?? 0,
           pendingInvoices: pendingInvoices ?? 0,
           presencialClients: presencialClients ?? 0,
           virtualClients: virtualClients ?? 0,
           conversionRate,
           yearTotalRevenue,
           yearTotalPending,
+          thisMonthClients,
+          thisMonthRevenue,
+          thisMonthPending,
+          pctClients: pctChange(thisMonthClients, prevMonthClients),
+          pctRevenue: pctChange(thisMonthRevenue, prevMonthRevenue),
+          pctPending: pctChange(thisMonthPending, prevMonthPending),
         }}
         monthlyData={monthlyData}
         year={year}
