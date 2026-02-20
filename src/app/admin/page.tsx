@@ -45,9 +45,9 @@ export default async function AdminPage() {
 
   const { data: allInvoicesYear } = await supabase
     .from("invoices")
-    .select("amount, status, paid_date, created_at")
-    .gte("created_at", `${yearStart}T00:00:00`)
-    .lte("created_at", `${yearEnd}T23:59:59`);
+    .select("amount, status, paid_date, due_date, created_at")
+    .gte("due_date", yearStart)
+    .lte("due_date", yearEnd);
 
   const { data: allClientsYear } = await supabase
     .from("clients")
@@ -57,7 +57,10 @@ export default async function AdminPage() {
 
   const monthlyData = Array.from({ length: 12 }, (_, i) => {
     const monthClients = (allClientsYear ?? []).filter((c) => new Date(c.created_at).getMonth() === i);
-    const monthInvoices = (allInvoicesYear ?? []).filter((inv) => new Date(inv.created_at).getMonth() === i);
+    const monthInvoices = (allInvoicesYear ?? []).filter((inv) => {
+      if (!inv.due_date) return new Date(inv.created_at).getMonth() === i;
+      return new Date(inv.due_date + "T00:00:00").getMonth() === i;
+    });
     const paidInvoices = monthInvoices.filter((inv) => inv.status === "paid");
     const pendingInv = monthInvoices.filter((inv) => inv.status === "pending");
 
