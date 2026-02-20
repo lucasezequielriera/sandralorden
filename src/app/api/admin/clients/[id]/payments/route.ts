@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { month, year, action } = await request.json();
+  const { month, year, action, amount: bodyAmount } = await request.json();
   const monthStart = `${year}-${String(month + 1).padStart(2, "0")}-01`;
   const monthEnd = month === 11
     ? `${year + 1}-01-01`
@@ -51,6 +51,33 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .eq("id", id)
     .single();
 
+  if (action === "create") {
+    if (existing) {
+      await supabase.from("invoices").update({
+        status: "paid",
+        amount: bodyAmount ?? 0,
+        paid_date: new Date().toISOString().split("T")[0],
+      }).eq("id", existing.id);
+      await logActivity("Pago marcado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+      return NextResponse.json({ status: "paid", invoice_id: existing.id });
+    }
+
+    const { data: newInv } = await supabase
+      .from("invoices")
+      .insert({
+        client_id: id,
+        amount: bodyAmount ?? 0,
+        concept: `Pago ${MONTH_NAMES[month]} ${year}`,
+        status: "paid",
+        due_date: monthStart,
+        paid_date: new Date().toISOString().split("T")[0],
+      })
+      .select()
+      .single();
+    await logActivity("Pago marcado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+    return NextResponse.json({ status: "paid", invoice_id: newInv?.id });
+  }
+
   if (action === "toggle") {
     if (existing) {
       if (existing.status === "paid") {
@@ -62,22 +89,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await logActivity("Factura eliminada", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
         return NextResponse.json({ status: "none", invoice_id: null });
       }
-    } else {
-      const { data: newInv } = await supabase
-        .from("invoices")
-        .insert({
-          client_id: id,
-          amount: 0,
-          concept: `Pago ${MONTH_NAMES[month]} ${year}`,
-          status: "paid",
-          due_date: monthStart,
-          paid_date: new Date().toISOString().split("T")[0],
-        })
-        .select()
-        .single();
-      await logActivity("Pago marcado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
-      return NextResponse.json({ status: "paid", invoice_id: newInv?.id });
     }
+    return NextResponse.json({ status: "none" });
   }
 
   return NextResponse.json({ error: "Acción no válida" }, { status: 400 });
