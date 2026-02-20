@@ -4,21 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Client } from "@/lib/supabase/types";
 
-const statusColors: Record<string, string> = {
-  active: "bg-green-100 text-green-700",
-  lead: "bg-amber-100 text-amber-700",
-  inactive: "bg-warm-gray-100 text-warm-gray-500",
-};
-
-const statusLabels: Record<string, string> = {
-  active: "Activo",
-  lead: "Lead",
-  inactive: "Inactivo",
-};
-
 const modalityColors: Record<string, string> = {
-  presencial: "bg-blue-100 text-blue-700",
-  virtual: "bg-purple-100 text-purple-700",
+  presencial: "bg-marron-100 text-marron-500",
+  virtual: "bg-rosa-100 text-rosa-400",
 };
 
 const modalityLabels: Record<string, string> = {
@@ -65,103 +53,102 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
       </div>
 
       {/* Quick counts */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-2 mb-4">
         <button
           onClick={() => setModalityFilter(modalityFilter === "presencial" ? "all" : "presencial")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all cursor-pointer border ${
-            modalityFilter === "presencial" ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-white border-warm-gray-100 text-warm-gray-400 hover:border-blue-200"
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            modalityFilter === "presencial" ? "bg-marron-200 text-marron-500" : "bg-crema text-warm-gray-400 hover:bg-marron-100"
           }`}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-          </svg>
-          Presencial <span className="font-medium">{presencialCount}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-marron-400" />
+          Presencial · {presencialCount}
         </button>
         <button
           onClick={() => setModalityFilter(modalityFilter === "virtual" ? "all" : "virtual")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all cursor-pointer border ${
-            modalityFilter === "virtual" ? "bg-purple-50 border-purple-200 text-purple-700" : "bg-white border-warm-gray-100 text-warm-gray-400 hover:border-purple-200"
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            modalityFilter === "virtual" ? "bg-rosa-200 text-rosa-500" : "bg-crema text-warm-gray-400 hover:bg-rosa-100"
           }`}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
-          </svg>
-          Virtual <span className="font-medium">{virtualCount}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-rosa-400" />
+          Virtual · {virtualCount}
         </button>
+        {(statusFilter !== "all" || modalityFilter !== "all") && (
+          <button
+            onClick={() => { setStatusFilter("all"); setModalityFilter("all"); }}
+            className="px-3 py-2 text-[10px] text-rosa-400 hover:text-rosa-500 transition-colors cursor-pointer uppercase tracking-wider"
+          >
+            Limpiar
+          </button>
+        )}
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2 mb-6">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre, email o teléfono..."
-          className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-warm-gray-100 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 text-sm"
+          className="flex-1 px-4 py-2.5 rounded-2xl bg-crema text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 text-sm"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 rounded-xl bg-white border border-warm-gray-100 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200"
+          className="px-4 py-2.5 rounded-2xl bg-crema text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200"
         >
           <option value="all">Todos los estados</option>
           <option value="lead">Leads</option>
           <option value="active">Activos</option>
           <option value="inactive">Inactivos</option>
         </select>
-        {(statusFilter !== "all" || modalityFilter !== "all") && (
-          <button
-            onClick={() => { setStatusFilter("all"); setModalityFilter("all"); }}
-            className="px-3 py-2.5 text-xs text-rosa-400 hover:text-rosa-500 transition-colors cursor-pointer"
-          >
-            Limpiar filtros
-          </button>
-        )}
       </div>
 
       {/* Client List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-warm-gray-100">
+        <div className="text-center py-16 bg-crema rounded-3xl">
           <p className="text-warm-gray-300 text-sm">No se encontraron clientes</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-warm-gray-100 overflow-hidden">
+        <div className="bg-crema rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full">
               <thead>
-                <tr className="border-b border-warm-gray-100 bg-warm-gray-100/30">
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Nombre</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden sm:table-cell">Modalidad</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Pagos</th>
-                  <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden xl:table-cell">Fecha</th>
-                  <th className="px-4 py-3"></th>
+                <tr>
+                  <th className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] w-[200px]">Nombre</th>
+                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell w-[100px]">Tipo</th>
+                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pagos {new Date().getFullYear()}</th>
+                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden lg:table-cell w-[100px]">Desde</th>
+                  <th className="w-12 py-4"></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((client) => (
-                  <tr key={client.id} className="border-b border-warm-gray-100/50 hover:bg-warm-gray-100/20 transition-colors">
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-warm-dark">{client.name}</p>
+                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" onClick={() => window.location.href = `/admin/clientes/${client.id}`}>
+                    <td className="pl-6 pr-3 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-rosa-100/60 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[11px] font-medium text-rosa-400">{client.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <span className="text-sm text-warm-dark group-hover:text-rosa-500 transition-colors truncate">{client.name}</span>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${modalityColors[client.modality] ?? "bg-warm-gray-100 text-warm-gray-500"}`}>
-                        {modalityLabels[client.modality] ?? client.modality ?? "—"}
+                    <td className="px-3 py-3.5 hidden sm:table-cell">
+                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium ${modalityColors[client.modality] ?? "bg-warm-gray-100 text-warm-gray-400"}`}>
+                        {modalityLabels[client.modality] ?? "—"}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3.5">
                       <PaymentDots payments={paymentMap[client.id] ?? {}} />
                     </td>
-                    <td className="px-4 py-3 text-warm-gray-300 text-xs hidden xl:table-cell">
-                      {new Date(client.created_at).toLocaleDateString("es-ES")}
+                    <td className="px-3 py-3.5 hidden lg:table-cell">
+                      <span className="text-[11px] text-warm-gray-300 tabular-nums">
+                        {new Date(client.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
+                      </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/admin/clientes/${client.id}`}
-                        className="text-rosa-400 hover:text-rosa-500 text-xs font-medium transition-colors"
-                      >
-                        Ver
-                      </Link>
+                    <td className="pr-4 py-3.5 text-right">
+                      <svg className="w-4 h-4 text-warm-gray-200 group-hover:text-rosa-400 transition-colors inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                      </svg>
                     </td>
                   </tr>
                 ))}
@@ -179,22 +166,22 @@ const MONTH_SHORT = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
 function PaymentDots({ payments }: { payments: Record<number, string> }) {
   const currentMonth = new Date().getMonth();
   return (
-    <div className="flex items-center gap-0.5" title="Pagos del año (E-D)">
+    <div className="flex items-center gap-[3px]" title="Pagos del año (E-D)">
       {MONTH_SHORT.map((label, i) => {
         const status = payments[i];
         const isCurrent = i === currentMonth;
         return (
           <div
             key={i}
-            className={`w-4 h-4 rounded-sm flex items-center justify-center text-[7px] font-bold leading-none ${
+            className={`w-[18px] h-[18px] rounded-md flex items-center justify-center text-[7px] font-semibold leading-none transition-colors ${
               status === "paid"
-                ? "bg-green-400 text-white"
+                ? "bg-marron-300 text-white"
                 : status === "pending"
-                  ? "bg-amber-400 text-white"
+                  ? "bg-rosa-300 text-white"
                   : i > currentMonth
-                    ? "bg-warm-gray-50 text-warm-gray-200"
-                    : "bg-warm-gray-100 text-warm-gray-300"
-            } ${isCurrent ? "ring-1 ring-rosa-300" : ""}`}
+                    ? "bg-warm-gray-100/40 text-warm-gray-200"
+                    : "bg-warm-gray-200/50 text-warm-gray-300"
+            } ${isCurrent ? "ring-1 ring-rosa-400 ring-offset-1" : ""}`}
             title={`${["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][i]}: ${status === "paid" ? "Pagado" : status === "pending" ? "Pendiente" : "Sin factura"}`}
           >
             {label}
