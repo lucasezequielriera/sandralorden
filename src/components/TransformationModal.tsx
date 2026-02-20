@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { track } from "@vercel/analytics";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import ThankYouScreen from "./ThankYouScreen";
 
 interface TransformationModalProps {
@@ -44,6 +46,7 @@ function getSteps(service: string): StepId[] {
 }
 
 export default function TransformationModal({ isOpen, onClose }: TransformationModalProps) {
+  const t = useTranslations("TransformationModal");
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isSending, setIsSending] = useState(false);
@@ -93,7 +96,7 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
       if (!res.ok) throw new Error(data.error);
       setIsSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Hubo un error. Por favor, intentalo de nuevo.");
+      setError(err instanceof Error ? err.message : t("errorDefault"));
     } finally {
       setIsSending(false);
     }
@@ -118,7 +121,7 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
                 <m.div className="h-full bg-gradient-to-r from-rosa-300 to-rosa-400" animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeOut" }} />
               </div>
             </div>
-            <button onClick={handleClose} className="absolute top-5 right-5 z-20 w-8 h-8 rounded-full bg-warm-gray-100 flex items-center justify-center text-warm-gray-400 hover:bg-warm-gray-200 hover:text-warm-dark transition-all cursor-pointer" aria-label="Cerrar">
+            <button onClick={handleClose} className="absolute top-5 right-5 z-20 w-8 h-8 rounded-full bg-warm-gray-100 flex items-center justify-center text-warm-gray-400 hover:bg-warm-gray-200 hover:text-warm-dark transition-all cursor-pointer" aria-label={t("close")}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
 
@@ -153,7 +156,7 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
               {!isSent && !isSending && !error && stepIndex > 0 && (
                 <button onClick={prevStep} className="mt-6 text-sm text-warm-gray-400 hover:text-warm-dark transition-colors flex items-center gap-1 cursor-pointer">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
-                  Atrás
+                  {t("back")}
                 </button>
               )}
             </div>
@@ -192,39 +195,41 @@ function StepContact({ name, email, phone, onChangeName, onChangeEmail, onChange
   onChangeName: (v: string) => void; onChangeEmail: (v: string) => void; onChangePhone: (v: string) => void;
   onNext: () => void;
 }) {
+  const t = useTranslations("TransformationModal");
   const isValid = name.trim().length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && phone.replace(/\D/g, "").length >= 9;
   return (
     <div>
-      <StepHeader emoji="✨" title="¡Hola! Vamos a por tu plan" subtitle="Te lo preparo personalmente" />
+      <StepHeader emoji="✨" title={t("contactTitle")} subtitle={t("contactSubtitle")} />
       <div className="space-y-3.5">
         <div>
-          <label htmlFor="modal-name" className="block text-sm font-medium text-warm-dark mb-1.5">Tu nombre</label>
-          <input id="modal-name" type="text" value={name} onChange={(e) => onChangeName(e.target.value)} placeholder="¿Cómo te llamas?" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-name" className="block text-sm font-medium text-warm-dark mb-1.5">{t("labelName")}</label>
+          <input id="modal-name" type="text" value={name} onChange={(e) => onChangeName(e.target.value)} placeholder={t("placeholderName")} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
         <div>
-          <label htmlFor="modal-email" className="block text-sm font-medium text-warm-dark mb-1.5">Tu email</label>
-          <input id="modal-email" type="email" value={email} onChange={(e) => onChangeEmail(e.target.value)} placeholder="Para enviarte tu plan personalizado" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-email" className="block text-sm font-medium text-warm-dark mb-1.5">{t("labelEmail")}</label>
+          <input id="modal-email" type="email" value={email} onChange={(e) => onChangeEmail(e.target.value)} placeholder={t("placeholderEmail")} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
         <div>
-          <label htmlFor="modal-phone" className="block text-sm font-medium text-warm-dark mb-1.5">Tu WhatsApp</label>
-          <input id="modal-phone" type="tel" value={phone} onChange={(e) => onChangePhone(e.target.value)} onKeyDown={(e) => e.key === "Enter" && isValid && onNext()} placeholder="+34 600 000 000" className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
+          <label htmlFor="modal-phone" className="block text-sm font-medium text-warm-dark mb-1.5">{t("labelPhone")}</label>
+          <input id="modal-phone" type="tel" value={phone} onChange={(e) => onChangePhone(e.target.value)} onKeyDown={(e) => e.key === "Enter" && isValid && onNext()} placeholder={t("placeholderPhone")} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all" />
         </div>
       </div>
-      <button onClick={onNext} disabled={!isValid} className="mt-5 w-full px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all hover:bg-warm-gray-500 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">Continuar</button>
-      <p className="mt-2 text-center text-[11px] text-warm-gray-300">Te contactaré por WhatsApp con tu plan</p>
+      <button onClick={onNext} disabled={!isValid} className="mt-5 w-full px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all hover:bg-warm-gray-500 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">{t("continue")}</button>
+      <p className="mt-2 text-center text-[11px] text-warm-gray-300">{t("contactNote")}</p>
     </div>
   );
 }
 
 function StepService({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "Solo nutrición", desc: "Quiero aprender a comer bien y tener un plan de alimentación profesional" },
-    { value: "Solo entrenamiento", desc: "Quiero una rutina profesional para sentirme fuerte y segura" },
-    { value: "Entrenamiento + nutrición", desc: "El pack completo: entrenar y comer bien para resultados de verdad" },
+    { value: t("serviceNutricion"), desc: t("serviceNutricionDesc") },
+    { value: t("serviceEntreno"), desc: t("serviceEntrenoDesc") },
+    { value: t("servicePack"), desc: t("servicePackDesc") },
   ];
   return (
     <div>
-      <StepHeader emoji="🪄" title="¿Qué te gustaría trabajar conmigo?" subtitle="Elige la opción que mejor encaje contigo" />
+      <StepHeader emoji="🪄" title={t("serviceTitle")} subtitle={t("serviceSubtitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -235,15 +240,16 @@ function StepService({ onSelect, selected }: { onSelect: (v: string) => void; se
 }
 
 function StepGoal({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "Perder grasa sin dietas imposibles", desc: "Un cambio real y sostenible, sin pasar hambre" },
-    { value: "Tonificar y sentirme segura con mi cuerpo", desc: "Verme fuerte, definida y con confianza" },
-    { value: "Recuperar mi energía y sentirme bien", desc: "Dejar de estar agotada y empezar a disfrutar" },
-    { value: "Romper mi estancamiento de una vez", desc: "Ya lo he intentado todo, necesito algo que funcione" },
+    { value: t("goal1"), desc: t("goal1Desc") },
+    { value: t("goal2"), desc: t("goal2Desc") },
+    { value: t("goal3"), desc: t("goal3Desc") },
+    { value: t("goal4"), desc: t("goal4Desc") },
   ];
   return (
     <div>
-      <StepHeader emoji="🎯" title="¿Cuál es tu objetivo?" subtitle="Elige el que más te represente" />
+      <StepHeader emoji="🎯" title={t("goalTitle")} subtitle={t("goalSubtitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -254,14 +260,15 @@ function StepGoal({ onSelect, selected }: { onSelect: (v: string) => void; selec
 }
 
 function StepLevelDays({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "Principiante, 2-3 días por semana", desc: "Empezando o retomando después de mucho tiempo" },
-    { value: "Intermedio, 3-4 días por semana", desc: "Ya entreno algo pero quiero mejorar y ser constante" },
-    { value: "Avanzado, 5-6 días por semana", desc: "Entreno bastante y busco optimizar resultados" },
+    { value: t("level1"), desc: t("level1Desc") },
+    { value: t("level2"), desc: t("level2Desc") },
+    { value: t("level3"), desc: t("level3Desc") },
   ];
   return (
     <div>
-      <StepHeader emoji="💪" title="¿Dónde estás ahora?" subtitle="Tu nivel actual y tiempo disponible" />
+      <StepHeader emoji="💪" title={t("levelTitle")} subtitle={t("levelSubtitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -272,13 +279,14 @@ function StepLevelDays({ onSelect, selected }: { onSelect: (v: string) => void; 
 }
 
 function StepLocation({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "En un gimnasio", desc: "Entrenamiento para que trabajes desde el gym" },
-    { value: "Desde casa", desc: "Entrenamiento para que trabajes desde tu casa" },
+    { value: t("locationGym"), desc: t("locationGymDesc") },
+    { value: t("locationHome"), desc: t("locationHomeDesc") },
   ];
   return (
     <div>
-      <StepHeader emoji="📍" title="¿Dónde prefieres entrenar?" subtitle="Ambas opciones incluyen seguimiento conmigo" />
+      <StepHeader emoji="📍" title={t("locationTitle")} subtitle={t("locationSubtitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -289,15 +297,16 @@ function StepLocation({ onSelect, selected }: { onSelect: (v: string) => void; s
 }
 
 function StepDuration({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "1 mes", desc: "Probar y ver cómo me va" },
-    { value: "3 meses", desc: "El tiempo justo para ver resultados reales" },
-    { value: "6 meses", desc: "Comprometerme de verdad con mi cambio" },
-    { value: "1 año", desc: "Mi transformación completa, paso a paso" },
+    { value: t("duration1"), desc: t("duration1Desc") },
+    { value: t("duration2"), desc: t("duration2Desc") },
+    { value: t("duration3"), desc: t("duration3Desc") },
+    { value: t("duration4"), desc: t("duration4Desc") },
   ];
   return (
     <div>
-      <StepHeader emoji="⏳" title="¿Cuánto tiempo te gustaría dedicarle a este proceso?" />
+      <StepHeader emoji="⏳" title={t("durationTitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -308,15 +317,16 @@ function StepDuration({ onSelect, selected }: { onSelect: (v: string) => void; s
 }
 
 function StepObstacle({ onSelect, selected }: { onSelect: (v: string) => void; selected: string }) {
+  const t = useTranslations("TransformationModal");
   const options = [
-    { value: "Falta de constancia", desc: "Empiezo con ganas pero no consigo mantenerlo" },
-    { value: "No sé qué comer ni cómo entrenar bien", desc: "Me falta un plan claro y profesional" },
-    { value: "Llevo tiempo estancada sin ver cambios", desc: "Entreno y como bien pero no avanzo" },
-    { value: "No tengo tiempo ni organización", desc: "Mi día a día no me deja priorizar mi salud" },
+    { value: t("obstacle1"), desc: t("obstacle1Desc") },
+    { value: t("obstacle2"), desc: t("obstacle2Desc") },
+    { value: t("obstacle3"), desc: t("obstacle3Desc") },
+    { value: t("obstacle4"), desc: t("obstacle4Desc") },
   ];
   return (
     <div>
-      <StepHeader emoji="💭" title="¿Qué es lo que más te ha frenado hasta ahora?" />
+      <StepHeader emoji="💭" title={t("obstacleTitle")} />
       <div className="space-y-3">
         {options.map((o) => (
           <OptionCard key={o.value} label={o.value} description={o.desc} selected={selected === o.value} onClick={() => onSelect(o.value)} />
@@ -327,20 +337,21 @@ function StepObstacle({ onSelect, selected }: { onSelect: (v: string) => void; s
 }
 
 function StepExtra({ value, onChange, onSubmit }: { value: string; onChange: (v: string) => void; onSubmit: () => void }) {
+  const t = useTranslations("TransformationModal");
   const [accepted, setAccepted] = useState(false);
   return (
     <div>
-      <StepHeader emoji="📋" title="¿Algo más que deba saber?" subtitle="Lesiones, alergias, lo que sea" />
-      <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all resize-none text-sm" placeholder="Ej: Tengo una lesión de rodilla / Soy intolerante a la lactosa / Nada en especial" />
+      <StepHeader emoji="📋" title={t("extraTitle")} subtitle={t("extraSubtitle")} />
+      <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all resize-none text-sm" placeholder={t("extraPlaceholder")} />
       <label className="flex items-start gap-2.5 mt-4 cursor-pointer">
         <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 w-4 h-4 rounded border-warm-gray-200 text-rosa-400 focus:ring-rosa-200 accent-rosa-400 cursor-pointer" />
         <span className="text-xs text-warm-gray-400 leading-relaxed">
-          He leído y acepto la{" "}
-          <a href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">Política de Privacidad</a>
+          {t("privacyCheck")}{" "}
+          <Link href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">{t("privacyLink")}</Link>
         </span>
       </label>
-      <button onClick={onSubmit} disabled={!accepted} className="mt-4 w-full px-6 py-4 text-sm font-medium text-white bg-gradient-to-r from-rosa-400 to-rosa-300 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none">Enviar a Sandra</button>
-      <p className="mt-3 text-center text-xs text-warm-gray-300">Si no tienes nada, déjalo en blanco y dale al botón</p>
+      <button onClick={onSubmit} disabled={!accepted} className="mt-4 w-full px-6 py-4 text-sm font-medium text-white bg-gradient-to-r from-rosa-400 to-rosa-300 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none">{t("submit")}</button>
+      <p className="mt-3 text-center text-xs text-warm-gray-300">{t("submitNote")}</p>
     </div>
   );
 }
@@ -348,11 +359,12 @@ function StepExtra({ value, onChange, onSubmit }: { value: string; onChange: (v:
 /* ──────────── STATES ──────────── */
 
 function SendingState({ name }: { name: string }) {
+  const t = useTranslations("TransformationModal");
   return (
     <div className="py-12 text-center">
       <m.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="w-12 h-12 mx-auto mb-6 rounded-full border-2 border-warm-gray-100 border-t-rosa-400" />
-      <h3 className="font-[family-name:var(--font-display)] italic text-xl font-light text-warm-dark mb-2">Enviando tus datos a Sandra...</h3>
-      <p className="text-sm text-warm-gray-400">{name}, en unos minutos recibirás mi análisis por email</p>
+      <h3 className="font-[family-name:var(--font-display)] italic text-xl font-light text-warm-dark mb-2">{t("sendingTitle")}</h3>
+      <p className="text-sm text-warm-gray-400">{t("sendingDesc", { name })}</p>
       <div className="mt-6 flex justify-center gap-1">
         {["dot-1", "dot-2", "dot-3"].map((id, i) => (
           <m.div key={id} animate={{ y: [0, -8, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }} className="w-2 h-2 rounded-full bg-rosa-300" />
@@ -363,14 +375,15 @@ function SendingState({ name }: { name: string }) {
 }
 
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
+  const t = useTranslations("TransformationModal");
   return (
     <div className="py-12 text-center">
       <div className="w-12 h-12 mx-auto mb-6 rounded-full bg-rosa-50 flex items-center justify-center">
         <svg className="w-6 h-6 text-rosa-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
       </div>
-      <h3 className="font-[family-name:var(--font-display)] italic text-xl font-light text-warm-dark mb-2">Ups, algo ha salido mal</h3>
+      <h3 className="font-[family-name:var(--font-display)] italic text-xl font-light text-warm-dark mb-2">{t("errorTitle")}</h3>
       <p className="text-sm text-warm-gray-400 mb-6">{error}</p>
-      <button onClick={onRetry} className="px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all hover:bg-warm-gray-500 cursor-pointer">Intentar de nuevo</button>
+      <button onClick={onRetry} className="px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all hover:bg-warm-gray-500 cursor-pointer">{t("retry")}</button>
     </div>
   );
 }

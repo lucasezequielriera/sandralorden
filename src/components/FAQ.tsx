@@ -2,47 +2,25 @@
 
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
-const faqs = [
-  {
-    question: "¿Ofreces entrenamiento online?",
-    answer:
-      "Sí, ofrezco asesorías online de entrenamiento y nutrición con seguimiento continuo por WhatsApp, email o videollamada. Los planes se entregan en formato PDF con fotos, anotaciones y toda la info que necesitas.",
-  },
-  {
-    question: "¿Qué servicios ofreces?",
-    answer:
-      "Ofrezco entrenamiento personal presencial (a domicilio o al aire libre) y asesorías online de nutrición, entrenamiento (gym o casa) y pack completo. Todos los planes son 100% personalizados y adaptados a ti.",
-  },
-  {
-    question: "¿Eres nutricionista certificada?",
-    answer:
-      "Sí, soy graduada en Ciencias del Deporte y la Actividad Física (CAFYD) con doble Máster en Nutrición Deportiva y Alto Rendimiento. Llevo 10 años ayudando a más de 1000 personas a alcanzar sus objetivos.",
-  },
-  {
-    question: "¿Cómo empiezo contigo?",
-    answer:
-      "Rellena el cuestionario de transformación aquí en la web. Analizaré tus datos, te enviaré un análisis personalizado por email y te contactaré por WhatsApp para definir tu plan a medida.",
-  },
-  {
-    question: "¿Necesito tener experiencia previa para entrenar contigo?",
-    answer:
-      "Para nada. Trabajo con todos los niveles, desde principiantes hasta avanzados. Adapto cada plan a tu nivel, tus objetivos y tu disponibilidad. Lo importante es dar el primer paso.",
-  },
-  {
-    question: "¿Cuánto tiempo tardaré en ver resultados?",
-    answer:
-      "Depende de tu objetivo y tu punto de partida, pero la mayoría de mis clientas notan cambios en las primeras 3-4 semanas. Los resultados sólidos y sostenibles se ven a partir de los 3 meses con constancia.",
-  },
-];
-
 export default function FAQ() {
+  const t = useTranslations("FAQ");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (i: number) => {
     setOpenIndex(openIndex === i ? null : i);
   };
+
+  const faqs = [
+    { question: t("q1"), answer: t("a1") },
+    { question: t("q2"), answer: t("a2") },
+    { question: t("q3"), answer: t("a3") },
+    { question: t("q4"), answer: t("a4") },
+    { question: t("q5"), answer: t("a5") },
+    { question: t("q6"), answer: t("a6") },
+  ];
 
   return (
     <section className="py-20 sm:py-28 md:py-36 bg-crema" aria-labelledby="faq-heading">
@@ -50,20 +28,20 @@ export default function FAQ() {
         <div className="text-center mb-12 sm:mb-16">
           <AnimatedSection>
             <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-4">
-              FAQ
+              {t("sectionLabel")}
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <h2 id="faq-heading" className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-              Preguntas{" "}
-              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">frecuentes</span>
+              {t("titleStart")}
+              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">{t("titleHighlight")}</span>
             </h2>
           </AnimatedSection>
         </div>
 
         <div className="space-y-3">
           {faqs.map((faq, i) => (
-            <AnimatedSection key={faq.question} delay={i * 0.05}>
+            <AnimatedSection key={i} delay={i * 0.05}>
               <div className="bg-white rounded-xl sm:rounded-2xl border border-warm-gray-100/50 overflow-hidden">
                 <button
                   onClick={() => toggle(i)}

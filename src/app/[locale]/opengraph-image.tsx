@@ -1,16 +1,25 @@
 import { ImageResponse } from "next/og";
+import { getTranslations } from "next-intl/server";
 
 export const runtime = "edge";
-export const alt = "Sandra Lorden — Entrenadora Personal y Nutricionista";
+export const alt = "Sandra Lorden — Personal Trainer & Nutritionist";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function Image() {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "OgImage" });
+
   return new ImageResponse(
     (
       <div
         style={{
-          background: "linear-gradient(135deg, #FFFAF7 0%, #FFF5F5 30%, #F5EAE1 70%, #FFFAF7 100%)",
+          background:
+            "linear-gradient(135deg, #FFFAF7 0%, #FFF5F5 30%, #F5EAE1 70%, #FFFAF7 100%)",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -21,7 +30,6 @@ export default async function Image() {
           position: "relative",
         }}
       >
-        {/* Decorative circles */}
         <div
           style={{
             position: "absolute",
@@ -47,7 +55,6 @@ export default async function Image() {
           }}
         />
 
-        {/* Top tag */}
         <div
           style={{
             fontSize: 16,
@@ -57,10 +64,9 @@ export default async function Image() {
             marginBottom: 24,
           }}
         >
-          Entrenadora Personal & Nutricionista
+          {t("subtitle")}
         </div>
 
-        {/* Name */}
         <div
           style={{
             fontSize: 80,
@@ -77,7 +83,6 @@ export default async function Image() {
           <span style={{ color: "#D4908F" }}>Lorden</span>
         </div>
 
-        {/* Description */}
         <div
           style={{
             fontSize: 22,
@@ -88,11 +93,9 @@ export default async function Image() {
             lineHeight: 1.5,
           }}
         >
-          Planes personalizados de entrenamiento y nutrición.
-          Tu mejor versión empieza hoy.
+          {t("tagline")}
         </div>
 
-        {/* Stats bar */}
         <div
           style={{
             display: "flex",
@@ -102,9 +105,9 @@ export default async function Image() {
           }}
         >
           {[
-            { n: "+1000", l: "Clientes" },
-            { n: "10", l: "Años de experiencia" },
-            { n: "+15", l: "Medios de prensa" },
+            { n: "+1000", l: t("statClients") },
+            { n: "10", l: t("statExperience") },
+            { n: "+15", l: t("statPress") },
           ].map((s) => (
             <div
               key={s.l}
@@ -114,7 +117,13 @@ export default async function Image() {
                 alignItems: "center",
               }}
             >
-              <span style={{ fontSize: 36, fontWeight: 300, fontStyle: "italic" }}>
+              <span
+                style={{
+                  fontSize: 36,
+                  fontWeight: 300,
+                  fontStyle: "italic",
+                }}
+              >
                 {s.n}
               </span>
               <span style={{ fontSize: 14, color: "#8B7E7E", marginTop: 4 }}>
@@ -124,7 +133,6 @@ export default async function Image() {
           ))}
         </div>
 
-        {/* Domain at bottom */}
         <div
           style={{
             position: "absolute",

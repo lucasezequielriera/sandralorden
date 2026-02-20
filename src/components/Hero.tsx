@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { m } from "framer-motion";
+import { useTranslations } from "next-intl";
 import TransformationModal from "./TransformationModal";
 
 const videoStyle: React.CSSProperties = {
@@ -13,6 +14,7 @@ const videoStyle: React.CSSProperties = {
 };
 
 export default function Hero() {
+  const t = useTranslations("Hero");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const desktopRef = useRef<HTMLVideoElement>(null);
   const mobileRef = useRef<HTMLVideoElement>(null);
@@ -89,7 +91,7 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-marron-400 font-medium mb-6 sm:mb-8"
           >
-            Entrenadora Personal & Nutricionista
+            {t("subtitle")}
           </m.p>
 
           <m.h1
@@ -98,9 +100,9 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="font-[family-name:var(--font-script)] text-[3.2rem] sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-warm-dark leading-[1.15]"
           >
-            Sandra
+            {t("firstName")}
             <br />
-            <span className="text-rosa-400">Lorden</span>
+            <span className="text-rosa-400">{t("lastName")}</span>
           </m.h1>
 
           <m.p
@@ -109,8 +111,7 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.7 }}
             className="mt-6 sm:mt-8 max-w-xl mx-auto text-base sm:text-lg text-warm-gray-400 leading-relaxed px-2"
           >
-            Transformo vidas a través del entrenamiento personalizado y la nutrición
-            consciente. Tu mejor versión empieza hoy.
+            {t("description")}
           </m.p>
 
           <m.div
@@ -123,13 +124,13 @@ export default function Hero() {
               onClick={() => setIsModalOpen(true)}
               className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
             >
-              Empieza Tu Transformación
+              {t("ctaPrimary")}
             </button>
             <a
               href="#sobre-mi"
               className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-warm-dark bg-white/60 backdrop-blur-sm border border-warm-gray-200 rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-0.5"
             >
-              Conóceme
+              {t("ctaSecondary")}
             </a>
           </m.div>
 
@@ -141,9 +142,9 @@ export default function Hero() {
             className="mt-14 sm:mt-20 flex flex-wrap justify-center gap-8 sm:gap-12 md:gap-20"
           >
             {[
-              { number: "+1000", label: "Clientes" },
-              { number: "10", label: "Años de experiencia" },
-              { number: "+100", label: "Apariciones en prensa" },
+              { number: "+1000", label: t("statClients") },
+              { number: "10", label: t("statExperience") },
+              { number: "+100", label: t("statPress") },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="font-[family-name:var(--font-display)] italic text-2xl sm:text-3xl md:text-4xl font-light text-warm-dark">

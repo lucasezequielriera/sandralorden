@@ -3,8 +3,11 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 function FormularioContent() {
+  const t = useTranslations("Formulario");
   const searchParams = useSearchParams();
   const prefillName = searchParams.get("name") || "";
   const prefillEmail = searchParams.get("email") || "";
@@ -92,11 +95,20 @@ function FormularioContent() {
       setIsSent(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Hubo un error. Inténtalo de nuevo.");
+      setError(err instanceof Error ? err.message : t("errorDefault"));
     } finally {
       setIsSending(false);
     }
   };
+
+  // Define food categories inside component to access t()
+  const FOOD_CATEGORIES: { name: string; emoji: string; items: string[] }[] = [
+    { name: t("foodCatCarnes"), emoji: "🥩", items: ["Pollo", "Pavo", "Ternera", "Cerdo", "Cordero", "Conejo", "Jamón", "Lomo", "Solomillo", "Hígado"] },
+    { name: t("foodCatPescados"), emoji: "🐟", items: ["Salmón", "Atún", "Merluza", "Bacalao", "Lubina", "Dorada", "Sardinas", "Gambas", "Langostinos", "Mejillones", "Pulpo", "Calamares"] },
+    { name: t("foodCatVerduras"), emoji: "🥦", items: ["Brócoli", "Espinacas", "Calabacín", "Pimiento", "Tomate", "Lechuga", "Cebolla", "Zanahoria", "Judías verdes", "Berenjena", "Coliflor", "Espárragos", "Champiñones", "Alcachofa", "Pepino"] },
+    { name: t("foodCatFrutas"), emoji: "🍎", items: ["Plátano", "Manzana", "Fresas", "Naranja", "Mandarina", "Uvas", "Sandía", "Melón", "Piña", "Kiwi", "Pera", "Melocotón", "Mango", "Arándanos"] },
+    { name: t("foodCatOtros"), emoji: "🍳", items: ["Arroz", "Pasta", "Pan", "Huevos", "Avena", "Patata", "Boniato", "Legumbres", "Quinoa", "Frutos secos", "Yogur", "Queso", "Leche", "Aceite de oliva", "Aguacate", "Tofu"] },
+  ];
 
   if (isSent) {
     return (
@@ -108,21 +120,21 @@ function FormularioContent() {
             </svg>
           </m.div>
           <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-3xl font-light italic text-[#3D2C2C] mb-4">
-            ¡Recibido, {form.name}!
+            {t("successTitle", { name: form.name })}
           </h1>
           <p className="text-[#8B7E7E] leading-relaxed mb-2">
-            Ya tengo toda tu info. Me pongo manos a la obra con tu plan.
+            {t("successDesc1")}
           </p>
           <p className="text-[#8B7E7E] leading-relaxed mb-8">
-            Te escribo por <strong className="text-[#3D2C2C]">WhatsApp</strong> en cuanto lo tenga listo y empezamos.
+            {t("successDesc2WhatsApp")}
           </p>
           <div className="inline-flex items-center gap-2 px-5 py-3 bg-[#25D366]/10 text-[#25D366] rounded-full text-sm font-medium">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
             </svg>
-            Te escribiré pronto
+            {t("successBadge")}
           </div>
-          <p className="mt-6 text-xs text-[#C4B8AD]">Sandra Lorden · Entrenadora Personal & Nutricionista</p>
+          <p className="mt-6 text-xs text-[#C4B8AD]">{t("successFooter")}</p>
         </div>
       </m.div>
     );
@@ -133,104 +145,104 @@ function FormularioContent() {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <p style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-2xl sm:text-3xl font-light italic text-[#3D2C2C] mb-2">Sandra Lorden</p>
-          <p className="text-[10px] sm:text-xs text-[#C9A88E] uppercase tracking-[2px] sm:tracking-[3px] mb-6 sm:mb-8">Entrenadora Personal & Nutricionista</p>
-          <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-xl sm:text-2xl md:text-3xl font-light italic text-[#3D2C2C] mb-3">Tu formulario de transformación</h1>
-          <p className="text-[#8B7E7E] text-sm max-w-md mx-auto leading-relaxed px-2">Necesito conocerte bien para prepararte un plan hecho a tu medida. Cuantos más detalles me des, mejor te voy a poder ayudar.</p>
+          <p className="text-[10px] sm:text-xs text-[#C9A88E] uppercase tracking-[2px] sm:tracking-[3px] mb-6 sm:mb-8">{t("brandSubtitle")}</p>
+          <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-xl sm:text-2xl md:text-3xl font-light italic text-[#3D2C2C] mb-3">{t("pageTitle")}</h1>
+          <p className="text-[#8B7E7E] text-sm max-w-md mx-auto leading-relaxed px-2">{t("pageSubtitle")}</p>
         </div>
 
         <m.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="space-y-6">
 
           {/* ── DATOS PERSONALES ── */}
-          <FormSection title="Cuéntame sobre ti">
+          <FormSection title={t("sectionAbout")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField label="¿Cómo te llamas?" value={form.name} onChange={(v) => update("name", v)} required />
-              <InputField label="Tu email" type="email" value={form.email} onChange={(v) => update("email", v)} required />
-              <InputField label="Tu WhatsApp" type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder="+34 600 000 000" required />
-              <InputField label="¿Cuántos años tienes?" value={form.age} onChange={(v) => update("age", v)} placeholder="Ej: 28" required />
+              <InputField label={t("labelName")} value={form.name} onChange={(v) => update("name", v)} required />
+              <InputField label={t("labelEmail")} type="email" value={form.email} onChange={(v) => update("email", v)} required />
+              <InputField label={t("labelPhone")} type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder={t("placeholderPhone")} required />
+              <InputField label={t("labelAge")} value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <InputField label="¿Cuánto mides? (cm)" value={form.height} onChange={(v) => update("height", v)} placeholder="Ej: 165" required />
-              <InputField label="¿Cuánto pesas ahora? (kg)" value={form.weight} onChange={(v) => update("weight", v)} placeholder="Ej: 68" required />
-              <InputField label="¿Cuál es tu peso objetivo? (kg)" value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder="Ej: 60" />
+              <InputField label={t("labelHeight")} value={form.height} onChange={(v) => update("height", v)} placeholder={t("placeholderHeight")} required />
+              <InputField label={t("labelWeight")} value={form.weight} onChange={(v) => update("weight", v)} placeholder={t("placeholderWeight")} required />
+              <InputField label={t("labelGoalWeight")} value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder={t("placeholderGoalWeight")} />
             </div>
           </FormSection>
 
           {/* ── SALUD ── */}
-          <FormSection title="Tu salud">
+          <FormSection title={t("sectionHealth")}>
             <div className="space-y-4">
-              <TextareaField label="¿Has tenido alguna enfermedad desde pequeña/o? ¿Cuáles?" value={form.enfermedadesInfancia} onChange={(v) => update("enfermedadesInfancia", v)} placeholder="Si no has tenido ninguna, escribe 'Ninguna'" />
-              <TextareaField label="¿Tienes alguna lesión? ¿Cuáles?" value={form.lesiones} onChange={(v) => update("lesiones", v)} placeholder="Ej: Esguince de tobillo, tendinitis... o Ninguna" />
-              <TextareaField label="¿Te has operado de algo? ¿De qué?" value={form.cirugias} onChange={(v) => update("cirugias", v)} placeholder="Ej: Apendicitis, rodilla... o Ninguna" />
+              <TextareaField label={t("labelEnfermedades")} value={form.enfermedadesInfancia} onChange={(v) => update("enfermedadesInfancia", v)} placeholder={t("placeholderEnfermedades")} />
+              <TextareaField label={t("labelLesiones")} value={form.lesiones} onChange={(v) => update("lesiones", v)} placeholder={t("placeholderLesiones")} />
+              <TextareaField label={t("labelCirugias")} value={form.cirugias} onChange={(v) => update("cirugias", v)} placeholder={t("placeholderCirugias")} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label="¿Tienes Diabetes I o II?" value={form.diabetes} onChange={(v) => update("diabetes", v)} options={["No", "Diabetes tipo I", "Diabetes tipo II"]} />
-                <SelectField label="¿Tienes Hipertensión Arterial?" value={form.hipertension} onChange={(v) => update("hipertension", v)} options={["No", "Sí"]} />
+                <SelectField label={t("labelDiabetes")} value={form.diabetes} onChange={(v) => update("diabetes", v)} options={[t("optNo"), t("optDiabetes1"), t("optDiabetes2")]} t={t} />
+                <SelectField label={t("labelHipertension")} value={form.hipertension} onChange={(v) => update("hipertension", v)} options={[t("optNo"), t("optSi")]} t={t} />
               </div>
-              <TextareaField label="¿Tienes alguna enfermedad del corazón? ¿Cuál?" value={form.corazon} onChange={(v) => update("corazon", v)} placeholder="Ej: Arritmia, soplo... o No" rows={2} />
+              <TextareaField label={t("labelCorazon")} value={form.corazon} onChange={(v) => update("corazon", v)} placeholder={t("placeholderCorazon")} rows={2} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label="¿Tienes Hipotiroidismo?" value={form.hipotiroidismo} onChange={(v) => update("hipotiroidismo", v)} options={["No", "Sí"]} />
-                <SelectField label="¿Colesterol alto y/o Triglicéridos?" value={form.colesterolTrigliceridos} onChange={(v) => update("colesterolTrigliceridos", v)} options={["No", "Colesterol alto", "Triglicéridos altos", "Ambos"]} />
+                <SelectField label={t("labelHipotiroidismo")} value={form.hipotiroidismo} onChange={(v) => update("hipotiroidismo", v)} options={[t("optNo"), t("optSi")]} t={t} />
+                <SelectField label={t("labelColesterol")} value={form.colesterolTrigliceridos} onChange={(v) => update("colesterolTrigliceridos", v)} options={[t("optNo"), t("optColesterol"), t("optTrigliceridos"), t("optAmbos")]} t={t} />
               </div>
-              <SelectField label="¿Tienes estreñimiento, colon irritable o dolores digestivos?" value={form.digestivo} onChange={(v) => update("digestivo", v)} options={["No", "Estreñimiento", "Colon irritable", "Dolores digestivos", "Varios de estos"]} />
-              <TextareaField label="¿Tomas algún medicamento o suplemento médico? ¿Cuáles?" value={form.medicamentos} onChange={(v) => update("medicamentos", v)} placeholder="Ej: Eutirox 50mg, Omeprazol... o Ninguno" rows={2} />
-              <TextareaField label="¿Fumas o bebes?" value={form.fumaOBebe} onChange={(v) => update("fumaOBebe", v)} placeholder="Ej: No fumo, bebo socialmente los fines de semana" rows={2} />
-              <InputField label="¿Descansas bien? ¿Cuántas horas duermes de media?" value={form.descanso} onChange={(v) => update("descanso", v)} placeholder="Ej: Regular, unas 6 horas" />
+              <SelectField label={t("labelDigestivo")} value={form.digestivo} onChange={(v) => update("digestivo", v)} options={[t("optNo"), t("optEstrenimiento"), t("optColon"), t("optDoloresDigestivos"), t("optVarios")]} t={t} />
+              <TextareaField label={t("labelMedicamentos")} value={form.medicamentos} onChange={(v) => update("medicamentos", v)} placeholder={t("placeholderMedicamentos")} rows={2} />
+              <TextareaField label={t("labelFumaOBebe")} value={form.fumaOBebe} onChange={(v) => update("fumaOBebe", v)} placeholder={t("placeholderFumaOBebe")} rows={2} />
+              <InputField label={t("labelDescanso")} value={form.descanso} onChange={(v) => update("descanso", v)} placeholder={t("placeholderDescanso")} />
             </div>
           </FormSection>
 
           {/* ── ALIMENTACIÓN ── */}
-          <FormSection title="Tu alimentación">
+          <FormSection title={t("sectionNutricion")}>
             <div className="space-y-4">
-              <TextareaField label="¿Cuántas comidas haces al día y en qué horarios?" value={form.comidasYHorarios} onChange={(v) => update("comidasYHorarios", v)} placeholder="Ej: 3 comidas — Desayuno 8:00, Comida 14:00, Cena 21:00" required />
+              <TextareaField label={t("labelComidas")} value={form.comidasYHorarios} onChange={(v) => update("comidasYHorarios", v)} placeholder={t("placeholderComidas")} required />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label="¿Cómo describirías tu apetito?" value={form.apetito} onChange={(v) => update("apetito", v)} options={["Bueno", "Regular", "Malo"]} />
-                <InputField label="¿En qué momento del día tienes más hambre?" value={form.momentoApetito} onChange={(v) => update("momentoApetito", v)} placeholder="Ej: Por la noche, media mañana..." />
+                <SelectField label={t("labelApetito")} value={form.apetito} onChange={(v) => update("apetito", v)} options={[t("optBueno"), t("optRegular"), t("optMalo")]} t={t} />
+                <InputField label={t("labelMomentoApetito")} value={form.momentoApetito} onChange={(v) => update("momentoApetito", v)} placeholder={t("placeholderMomentoApetito")} />
               </div>
 
-              <FoodSelector selections={foodSelections} onToggle={toggleFood} />
+              <FoodSelector selections={foodSelections} onToggle={toggleFood} foodCategories={FOOD_CATEGORIES} t={t} />
 
-              <TextareaField label="Cuéntame un día tipo: ¿qué comes desde que te levantas hasta que te acuestas?" value={form.diaTipo} onChange={(v) => update("diaTipo", v)} placeholder="Ej: Me levanto a las 7, desayuno café con tostadas. A las 10 un yogur. A las 14 como arroz con pollo..." rows={4} required />
-              <TextareaField label="¿Eres alérgica/o a algún alimento o te sienta mal algo? ¿Qué?" value={form.alergiasAlimentarias} onChange={(v) => update("alergiasAlimentarias", v)} placeholder="Ej: Intolerante a la lactosa, alergia a frutos secos... o Ninguna" rows={2} />
-              <TextareaField label="¿Tomas algún suplemento? ¿Cuáles? (si puedes, dime la marca y mándame foto por WhatsApp)" value={form.suplementacion} onChange={(v) => update("suplementacion", v)} placeholder="Ej: Proteína whey de Gold Standard, creatina... o No tomo nada" rows={2} />
-              <TextareaField label="Si no tomas suplementos, ¿te gustaría empezar con alguno para cumplir tus objetivos?" value={form.suplementacionInteres} onChange={(v) => update("suplementacionInteres", v)} placeholder="Ej: Sí, me interesa saber qué podría tomar / No me interesa" rows={2} />
+              <TextareaField label={t("labelDiaTipo")} value={form.diaTipo} onChange={(v) => update("diaTipo", v)} placeholder={t("placeholderDiaTipo")} rows={4} required />
+              <TextareaField label={t("labelAlergias")} value={form.alergiasAlimentarias} onChange={(v) => update("alergiasAlimentarias", v)} placeholder={t("placeholderAlergias")} rows={2} />
+              <TextareaField label={t("labelSuplementos")} value={form.suplementacion} onChange={(v) => update("suplementacion", v)} placeholder={t("placeholderSuplementos")} rows={2} />
+              <TextareaField label={t("labelSuplementosInteres")} value={form.suplementacionInteres} onChange={(v) => update("suplementacionInteres", v)} placeholder={t("placeholderSuplementosInteres")} rows={2} />
 
               <div className="bg-[#FFFAF7] rounded-xl p-4 border border-[#F0EBE6]">
-                <p className="text-sm font-medium text-[#3D2C2C] mb-1">¿Has hecho alguna dieta antes?</p>
-                <p className="text-xs text-[#C4B8AD] mb-3">Rellénalo solo si has hecho alguna dieta antes. Me ayuda a saber qué te ha funcionado y qué no.</p>
+                <p className="text-sm font-medium text-[#3D2C2C] mb-1">{t("dietaTitle")}</p>
+                <p className="text-xs text-[#C4B8AD] mb-3">{t("dietaNote")}</p>
                 <div className="space-y-3">
-                  <TextareaField label="¿En qué se basaba?" value={form.dietaAnteriorBase} onChange={(v) => update("dietaAnteriorBase", v)} placeholder="Ej: Dieta keto, déficit calórico, ayuno intermitente..." rows={2} />
-                  <InputField label="¿Hace cuánto tiempo la hiciste?" value={form.dietaAnteriorTiempo} onChange={(v) => update("dietaAnteriorTiempo", v)} placeholder="Ej: Hace 6 meses, hace 2 años..." />
-                  <InputField label="¿Durante cuánto tiempo?" value={form.dietaAnteriorDuracion} onChange={(v) => update("dietaAnteriorDuracion", v)} placeholder="Ej: 3 meses, 1 año..." />
-                  <TextareaField label="¿Qué tal te fue?" value={form.dietaAnteriorObservaciones} onChange={(v) => update("dietaAnteriorObservaciones", v)} placeholder="Ej: Perdí 5kg pero los volví a coger, me sentía bien pero no era sostenible..." rows={2} />
+                  <TextareaField label={t("labelDietaBase")} value={form.dietaAnteriorBase} onChange={(v) => update("dietaAnteriorBase", v)} placeholder={t("placeholderDietaBase")} rows={2} />
+                  <InputField label={t("labelDietaTiempo")} value={form.dietaAnteriorTiempo} onChange={(v) => update("dietaAnteriorTiempo", v)} placeholder={t("placeholderDietaTiempo")} />
+                  <InputField label={t("labelDietaDuracion")} value={form.dietaAnteriorDuracion} onChange={(v) => update("dietaAnteriorDuracion", v)} placeholder={t("placeholderDietaDuracion")} />
+                  <TextareaField label={t("labelDietaResultado")} value={form.dietaAnteriorObservaciones} onChange={(v) => update("dietaAnteriorObservaciones", v)} placeholder={t("placeholderDietaResultado")} rows={2} />
                 </div>
               </div>
             </div>
           </FormSection>
 
           {/* ── ENTRENAMIENTO ── */}
-          <FormSection title="Tu entrenamiento">
+          <FormSection title={t("sectionEntrenamiento")}>
             <div className="space-y-4">
-              <TextareaField label="¿Cuántos días entrenas a la semana actualmente? Dime los días concretos si puedes" value={form.diasEntrenoActual} onChange={(v) => update("diasEntrenoActual", v)} placeholder="Ej: 3 días — Lunes, Miércoles y Viernes / Actualmente no entreno" required />
-              <TextareaField label="¿Cuántos días te comprometes a entrenar con este plan? Dime los días concretos si puedes" value={form.diasEntrenoCompromiso} onChange={(v) => update("diasEntrenoCompromiso", v)} placeholder="Ej: 4 días — Lunes, Martes, Jueves y Viernes" required />
+              <TextareaField label={t("labelDiasActual")} value={form.diasEntrenoActual} onChange={(v) => update("diasEntrenoActual", v)} placeholder={t("placeholderDiasActual")} required />
+              <TextareaField label={t("labelDiasCompromiso")} value={form.diasEntrenoCompromiso} onChange={(v) => update("diasEntrenoCompromiso", v)} placeholder={t("placeholderDiasCompromiso")} required />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField label="¿Sobre qué hora vas a entrenar?" value={form.horaEntreno} onChange={(v) => update("horaEntreno", v)} placeholder="Ej: Sobre las 18:00" />
-                <InputField label="¿Cuánto suele durarte cada sesión?" value={form.duracionSesion} onChange={(v) => update("duracionSesion", v)} placeholder="Ej: 1 hora, 45 minutos..." />
+                <InputField label={t("labelHoraEntreno")} value={form.horaEntreno} onChange={(v) => update("horaEntreno", v)} placeholder={t("placeholderHoraEntreno")} />
+                <InputField label={t("labelDuracionSesion")} value={form.duracionSesion} onChange={(v) => update("duracionSesion", v)} placeholder={t("placeholderDuracionSesion")} />
               </div>
-              <SelectField label="¿Quieres el plan para casa o para el gimnasio?" value={form.casaOGimnasio} onChange={(v) => update("casaOGimnasio", v)} options={["Gimnasio", "Casa", "Ambos"]} />
-              <TextareaField label="Si entrenas en casa, ¿qué material tienes?" value={form.materialCasa} onChange={(v) => update("materialCasa", v)} placeholder="Ej: Mancuernas, bandas elásticas, esterilla, barra de dominadas... o Nada" rows={2} />
+              <SelectField label={t("labelCasaGimnasio")} value={form.casaOGimnasio} onChange={(v) => update("casaOGimnasio", v)} options={[t("optGimnasio"), t("optCasa"), t("optAmbos")]} t={t} />
+              <TextareaField label={t("labelMaterialCasa")} value={form.materialCasa} onChange={(v) => update("materialCasa", v)} placeholder={t("placeholderMaterialCasa")} rows={2} />
             </div>
           </FormSection>
 
           {/* ── OBJETIVOS DE MEJORA ── */}
-          <FormSection title="Tus objetivos">
+          <FormSection title={t("sectionObjetivos")}>
             <div className="space-y-4">
-              <TextareaField label="A nivel de rendimiento físico, ¿qué te gustaría mejorar?" value={form.mejoraRendimiento} onChange={(v) => update("mejoraRendimiento", v)} placeholder="Cuéntame también si notas dolores, pesadez, falta de energía, calambres... y en qué momentos te ocurre." rows={3} required />
-              <TextareaField label="A nivel estético, ¿qué te gustaría cambiar?" value={form.mejoraEstetica} onChange={(v) => update("mejoraEstetica", v)} placeholder="Ej: Tonificar piernas y glúteos, perder grasa abdominal, definir brazos..." rows={3} required />
+              <TextareaField label={t("labelRendimiento")} value={form.mejoraRendimiento} onChange={(v) => update("mejoraRendimiento", v)} placeholder={t("placeholderRendimiento")} rows={3} required />
+              <TextareaField label={t("labelEstetica")} value={form.mejoraEstetica} onChange={(v) => update("mejoraEstetica", v)} placeholder={t("placeholderEstetica")} rows={3} required />
             </div>
           </FormSection>
 
           {/* ── ALGO MÁS ── */}
-          <FormSection title="¿Algo más que quieras contarme?">
-            <TextareaField label="Aquí tienes espacio libre para lo que quieras (opcional)" value={form.extra} onChange={(v) => update("extra", v)} placeholder="Dudas, motivación, situación personal... lo que creas que me puede servir para conocerte mejor." rows={4} />
+          <FormSection title={t("sectionExtra")}>
+            <TextareaField label={t("labelExtra")} value={form.extra} onChange={(v) => update("extra", v)} placeholder={t("placeholderExtra")} rows={4} />
           </FormSection>
 
           {/* Error */}
@@ -247,19 +259,19 @@ function FormularioContent() {
             <label className="flex items-start gap-2.5 mb-4 cursor-pointer text-left">
               <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-[#E6DDD6] accent-[#C9A88E] cursor-pointer" />
               <span className="text-xs text-[#8B7E7E] leading-relaxed">
-                He leído y acepto la{" "}
-                <a href="/privacidad" target="_blank" className="text-[#C9A88E] underline underline-offset-2 hover:text-[#A68B70]">Política de Privacidad</a>
+                {t("privacyCheck")}
+                <Link href="/privacidad" target="_blank" className="text-[#C9A88E] underline underline-offset-2 hover:text-[#A68B70]">{t("privacyLink")}</Link>
               </span>
             </label>
             <button type="submit" disabled={isSending} className="w-full py-3.5 sm:py-4 px-6 bg-[#3D2C2C] text-white rounded-xl sm:rounded-2xl font-medium transition-all hover:bg-[#5A4545] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm">
               {isSending ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  Enviando...
+                  {t("submitSending")}
                 </span>
-              ) : "Enviar formulario a Sandra"}
+              ) : t("submitButton")}
             </button>
-            <p className="mt-3 text-xs text-[#C4B8AD]">En cuanto lo reciba, te escribo por WhatsApp y empezamos</p>
+            <p className="mt-3 text-xs text-[#C4B8AD]">{t("submitNote")}</p>
           </div>
         </m.form>
       </div>
@@ -268,8 +280,9 @@ function FormularioContent() {
 }
 
 export default function FormularioPage() {
+  const t = useTranslations("Formulario");
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FFFAF7]"><p className="text-[#C9A88E]">Cargando formulario...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FFFAF7]"><p className="text-[#C9A88E]">{t("loadingText")}</p></div>}>
       <FormularioContent />
     </Suspense>
   );
@@ -314,14 +327,14 @@ function TextareaField({ label, value, onChange, placeholder, required, rows = 3
   );
 }
 
-function SelectField({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
+function SelectField({ label, value, onChange, options, t }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[]; t: (key: string) => string;
 }) {
   return (
     <div>
       <label className="block text-sm font-medium text-[#3D2C2C] mb-1.5">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm appearance-none cursor-pointer">
-        <option value="">Seleccionar...</option>
+        <option value="">{t("selectDefault")}</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
     </div>
@@ -330,22 +343,25 @@ function SelectField({ label, value, onChange, options }: {
 
 /* ──────── Food Selector ──────── */
 
-const FOOD_CATEGORIES: { name: string; emoji: string; items: string[] }[] = [
-  { name: "Carnes", emoji: "🥩", items: ["Pollo", "Pavo", "Ternera", "Cerdo", "Cordero", "Conejo", "Jamón", "Lomo", "Solomillo", "Hígado"] },
-  { name: "Pescados y mariscos", emoji: "🐟", items: ["Salmón", "Atún", "Merluza", "Bacalao", "Lubina", "Dorada", "Sardinas", "Gambas", "Langostinos", "Mejillones", "Pulpo", "Calamares"] },
-  { name: "Verduras y hortalizas", emoji: "🥦", items: ["Brócoli", "Espinacas", "Calabacín", "Pimiento", "Tomate", "Lechuga", "Cebolla", "Zanahoria", "Judías verdes", "Berenjena", "Coliflor", "Espárragos", "Champiñones", "Alcachofa", "Pepino"] },
-  { name: "Frutas", emoji: "🍎", items: ["Plátano", "Manzana", "Fresas", "Naranja", "Mandarina", "Uvas", "Sandía", "Melón", "Piña", "Kiwi", "Pera", "Melocotón", "Mango", "Arándanos"] },
-  { name: "Otros alimentos", emoji: "🍳", items: ["Arroz", "Pasta", "Pan", "Huevos", "Avena", "Patata", "Boniato", "Legumbres", "Quinoa", "Frutos secos", "Yogur", "Queso", "Leche", "Aceite de oliva", "Aguacate", "Tofu"] },
-];
-
-function FoodSelector({ selections, onToggle }: { selections: Record<string, "liked" | "disliked">; onToggle: (food: string) => void }) {
+function FoodSelector({ selections, onToggle, foodCategories, t }: { 
+  selections: Record<string, "liked" | "disliked">; 
+  onToggle: (food: string) => void;
+  foodCategories: { name: string; emoji: string; items: string[] }[];
+  t: (key: string) => string;
+}) {
   return (
     <div className="bg-[#FFFAF7] rounded-xl p-3 sm:p-4 border border-[#F0EBE6]">
-      <p className="text-sm font-medium text-[#3D2C2C] mb-1">Tus preferencias de alimentos</p>
-      <p className="text-xs text-[#C4B8AD] mb-1">Pulsa una vez = <span className="text-emerald-500 font-semibold">me gusta</span> · Pulsa otra vez = <span className="text-red-400 font-semibold">no me gusta</span> · Pulsa otra vez = sin marcar</p>
-      <p className="text-xs text-[#C4B8AD] mb-3 sm:mb-4">Los que no marques los tomaré como neutros.</p>
+      <p className="text-sm font-medium text-[#3D2C2C] mb-1">{t("foodTitle")}</p>
+      <p className="text-xs text-[#C4B8AD] mb-1">
+        {t("foodInstruction1")}
+        <span className="text-emerald-500 font-semibold">{t("foodLiked")}</span>
+        {t("foodInstruction2")}
+        <span className="text-red-400 font-semibold">{t("foodDisliked")}</span>
+        {t("foodInstruction3")}
+      </p>
+      <p className="text-xs text-[#C4B8AD] mb-3 sm:mb-4">{t("foodNeutral")}</p>
       <div className="space-y-4">
-        {FOOD_CATEGORIES.map((cat) => (
+        {foodCategories.map((cat) => (
           <div key={cat.name}>
             <p className="text-xs font-semibold text-[#3D2C2C] mb-2">{cat.emoji} {cat.name}</p>
             <div className="flex flex-wrap gap-2">

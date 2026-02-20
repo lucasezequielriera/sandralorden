@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
 export default function About() {
+  const t = useTranslations("About");
   return (
     <section id="sobre-mi" className="py-20 sm:py-28 md:py-36 bg-white" aria-labelledby="about-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
@@ -13,7 +15,7 @@ export default function About() {
               <div className="aspect-[3/4] rounded-3xl overflow-hidden relative">
                 <Image
                   src="/images/IMG_1902.jpg"
-                  alt="Sandra Lordén Álvarez, entrenadora personal y nutricionista en Madrid"
+                  alt={t("imageAlt")}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 384px, (max-width: 1024px) 448px, 512px"
@@ -28,33 +30,27 @@ export default function About() {
           <div>
             <AnimatedSection direction="right">
               <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-4">
-                Sobre Mí
+                {t("sectionLabel")}
               </p>
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.1}>
               <h2 id="about-heading" className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-                Hazlo con pasión
+                {t("titleLine1")}
                 <br />
-                <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">o cambia de profesión</span>
+                <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">{t("titleLine2")}</span>
               </h2>
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.2}>
               <p className="mt-6 sm:mt-8 text-base sm:text-lg text-warm-gray-400 leading-relaxed">
-                De siempre fui una niña muy hiperactiva a la que le encantaba el deporte.
-                Cuando terminé el colegio decidí enfocar mi carrera profesional a profundizar
-                en la ciencia de la actividad física y la nutrición, de la que me enamoré
-                profundamente y pude hacer de mi pasión mi profesión.
+                {t("paragraph1")}
               </p>
             </AnimatedSection>
 
             <AnimatedSection direction="right" delay={0.3}>
               <p className="mt-4 text-base sm:text-lg text-warm-gray-400 leading-relaxed">
-                Me fui especializando en <strong className="text-warm-dark">entrenamiento de fuerza en mujeres</strong> y
-                en <strong className="text-warm-dark">nutrición deportiva</strong>, con el objetivo de ayudar a las personas
-                a sacar su mejor versión. Quiero que quien trabaje conmigo no solo me vea como su
-                entrenadora, sino como una amiga que quiere impulsarla y acompañarla en el proceso.
+                {t("paragraph2Start")}<strong className="text-warm-dark">{t("paragraph2Strong1")}</strong>{t("paragraph2Mid")}<strong className="text-warm-dark">{t("paragraph2Strong2")}</strong>{t("paragraph2End")}
               </p>
             </AnimatedSection>
 

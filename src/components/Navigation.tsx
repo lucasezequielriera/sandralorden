@@ -1,19 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
-
-const navLinks = [
-  { href: "#inicio", label: "Inicio" },
-  { href: "#sobre-mi", label: "Sobre Mí" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#prensa", label: "Prensa" },
-  { href: "#contacto", label: "Contacto" },
-];
+import { useTranslations, useLocale } from "next-intl";
+import { Link, useRouter, usePathname } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
 export default function Navigation() {
+  const t = useTranslations("Navigation");
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const otherLocale = locale === "es" ? "en" : "es";
+  const otherLabel = locale === "es" ? "EN" : "ES";
+
+  function switchLocale() {
+    startTransition(() => {
+      router.replace(pathname, { locale: otherLocale });
+    });
+  }
+
+  const navLinks = [
+    { href: "#inicio", label: t("home") },
+    { href: "#sobre-mi", label: t("about") },
+    { href: "#servicios", label: t("services") },
+    { href: "#prensa", label: t("press") },
+    { href: "#contacto", label: t("contact") },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,7 +42,7 @@ export default function Navigation() {
 
   return (
     <m.nav
-      aria-label="Navegación principal"
+      aria-label={t("ariaNav")}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -59,40 +76,56 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* CTA + Admin */}
+          {/* CTA + Lang + Admin */}
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-transformation-modal"))}
               className="inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
             >
-              Empieza Ya
+              {t("cta")}
             </button>
-            <a
+            <button
+              onClick={switchLocale}
+              disabled={isPending}
+              className="w-9 h-9 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-xs font-semibold text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all cursor-pointer disabled:opacity-50"
+              aria-label={t("ariaLangSwitch")}
+            >
+              {otherLabel}
+            </button>
+            <Link
               href="/admin"
               className="w-9 h-9 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
-              aria-label="Panel de administración"
+              aria-label={t("ariaAdmin")}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
               </svg>
-            </a>
+            </Link>
           </div>
 
-          {/* Mobile: Admin + Menu */}
+          {/* Mobile: Lang + Admin + Menu */}
           <div className="md:hidden flex items-center gap-2">
-            <a
+            <button
+              onClick={switchLocale}
+              disabled={isPending}
+              className="w-8 h-8 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-[11px] font-semibold text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all cursor-pointer disabled:opacity-50"
+              aria-label={t("ariaLangSwitch")}
+            >
+              {otherLabel}
+            </button>
+            <Link
               href="/admin"
               className="w-8 h-8 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
-              aria-label="Panel de administración"
+              aria-label={t("ariaAdmin")}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
               </svg>
-            </a>
+            </Link>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="flex flex-col gap-1.5 p-2"
-              aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-label={isMobileMenuOpen ? t("ariaCloseMenu") : t("ariaOpenMenu")}
               aria-expanded={isMobileMenuOpen}
             >
             <m.span
@@ -143,7 +176,7 @@ export default function Navigation() {
                 }}
                 className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full cursor-pointer"
               >
-                Empieza Ya
+                {t("cta")}
               </button>
             </div>
           </m.div>

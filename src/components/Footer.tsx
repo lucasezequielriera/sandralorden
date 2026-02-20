@@ -1,6 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+
 export default function Footer() {
+  const t = useTranslations("Footer");
   const currentYear = new Date().getFullYear();
 
   return (
@@ -16,17 +20,17 @@ export default function Footer() {
               Sandra Lorden
             </a>
             <p className="mt-1 text-sm text-white/40">
-              Entrenadora Personal & Nutricionista
+              {t("subtitle")}
             </p>
           </div>
 
           {/* Legal Links */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-            <a href="/privacidad" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Política de Privacidad</a>
+            <Link href="/privacidad" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("privacyPolicy")}</Link>
             <span className="text-white/20">·</span>
-            <a href="/aviso-legal" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Aviso Legal</a>
+            <Link href="/aviso-legal" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("legalNotice")}</Link>
             <span className="text-white/20">·</span>
-            <a href="/cookies" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Cookies</a>
+            <Link href="/cookies" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("cookiePolicy")}</Link>
           </div>
 
           {/* Social */}
@@ -61,10 +65,10 @@ export default function Footer() {
         <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <p className="text-xs text-white/30">
-              &copy; {currentYear} Sandra Lorden. Todos los derechos reservados.
+              &copy; {currentYear} Sandra Lorden. {t("rights")}
             </p>
             <p className="text-xs text-white/30">
-              Sitio web por{" "}
+              {t("madeBy")}{" "}
               <a
                 href="https://www.lucasriera.com"
                 target="_blank"
@@ -73,7 +77,7 @@ export default function Footer() {
               >
                 Lucas Riera
               </a>
-              {" "}· Desarrollo & Diseño Web
+              {" "}· {t("devCredit")}
             </p>
           </div>
         </div>

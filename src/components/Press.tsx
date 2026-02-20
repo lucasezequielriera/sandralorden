@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
 const mediaLogos = [
@@ -101,6 +102,7 @@ const pressItems = [
 ];
 
 export default function Press() {
+  const t = useTranslations("Press");
   return (
     <section id="prensa" className="py-20 sm:py-28 md:py-36 bg-white" aria-labelledby="press-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
@@ -108,19 +110,18 @@ export default function Press() {
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-20">
           <AnimatedSection>
             <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-4">
-              Prensa
+              {t("sectionLabel")}
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <h2 id="press-heading" className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-              Apariciones en{" "}
-              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">medios</span>
+              {t("titleStart")}{" "}
+              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">{t("titleHighlight")}</span>
             </h2>
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-warm-gray-400 leading-relaxed">
-              Colaboro habitualmente con las principales revistas y medios de fitness
-              y bienestar de España como experta en entrenamiento y nutrición deportiva.
+              {t("description")}
             </p>
           </AnimatedSection>
         </div>
@@ -176,7 +177,7 @@ export default function Press() {
 
                 {/* Read link */}
                 <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-rosa-400 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  Leer artículo
+                  {t("readArticle")}
                   <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                   </svg>

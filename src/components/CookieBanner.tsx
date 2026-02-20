@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function CookieBanner() {
+  const t = useTranslations("CookieBanner");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -38,23 +41,23 @@ export default function CookieBanner() {
         >
           <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-warm-gray-100/50 p-5 sm:p-6">
             <p className="text-sm text-warm-gray-500 leading-relaxed mb-4">
-              Usamos cookies para mejorar tu experiencia.{" "}
-              <a href="/cookies" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500 transition-colors">
-                Más info
-              </a>
+              {t("message")}{" "}
+              <Link href="/cookies" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500 transition-colors">
+                {t("moreInfo")}
+              </Link>
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={accept}
                 className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-xl hover:bg-warm-gray-500 transition-colors cursor-pointer"
               >
-                Aceptar
+                {t("accept")}
               </button>
               <button
                 onClick={reject}
                 className="flex-1 px-4 py-2.5 text-sm font-medium text-warm-gray-400 bg-warm-gray-100/50 rounded-xl hover:bg-warm-gray-100 transition-colors cursor-pointer"
               >
-                Solo esenciales
+                {t("essentialOnly")}
               </button>
             </div>
           </div>

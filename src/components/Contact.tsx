@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import AnimatedSection from "./AnimatedSection";
 
 export default function Contact() {
+  const t = useTranslations("Contact");
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -39,19 +42,18 @@ export default function Contact() {
           <div>
             <AnimatedSection>
               <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-4">
-                Contacto
+                {t("sectionLabel")}
               </p>
             </AnimatedSection>
             <AnimatedSection delay={0.1}>
               <h2 id="contact-heading" className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-                Empieza tu{" "}
-                <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">transformación</span>
+                {t("titleStart")}{" "}
+                <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">{t("titleHighlight")}</span>
               </h2>
             </AnimatedSection>
             <AnimatedSection delay={0.2}>
               <p className="mt-4 sm:mt-6 text-base sm:text-lg text-warm-gray-400 leading-relaxed">
-                Rellena el formulario o contáctame directamente. Estaré encantada
-                de ayudarte a encontrar el plan perfecto para ti.
+                {t("description")}
               </p>
             </AnimatedSection>
 
@@ -221,15 +223,15 @@ export default function Contact() {
 
                     {status === "error" && (
                       <p className="text-sm text-red-400 text-center">
-                        Hubo un error al enviar. Inténtalo de nuevo.
+                        {t("errorSend")}
                       </p>
                     )}
 
                     <label className="flex items-start gap-2.5 cursor-pointer">
                       <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-warm-gray-200 text-rosa-400 focus:ring-rosa-200 accent-rosa-400 cursor-pointer" />
                       <span className="text-xs text-warm-gray-400 leading-relaxed">
-                        He leído y acepto la{" "}
-                        <a href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">Política de Privacidad</a>
+                        {t("privacyCheck")}{" "}
+                        <Link href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">{t("privacyLink")}</Link>
                       </span>
                     </label>
 
@@ -240,7 +242,7 @@ export default function Contact() {
                       whileTap={{ scale: 0.99 }}
                       className="w-full px-8 py-3.5 sm:py-4 text-sm font-medium text-white bg-warm-dark rounded-xl transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {status === "sending" ? "Enviando..." : "Enviar Mensaje"}
+                      {status === "sending" ? t("sending") : t("sendMessage")}
                     </m.button>
                   </div>
                 </m.form>

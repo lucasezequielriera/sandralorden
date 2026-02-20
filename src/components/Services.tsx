@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
 type ServiceTab = "presencial" | "online";
 
 export default function Services() {
+  const t = useTranslations("Services");
   const [activeTab, setActiveTab] = useState<ServiceTab>("presencial");
 
   return (
@@ -16,19 +18,18 @@ export default function Services() {
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <AnimatedSection>
             <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-4">
-              Servicios
+              {t("sectionLabel")}
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <h2 id="services-heading" className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl md:text-5xl font-light text-warm-dark leading-tight">
-              Tu camino hacia el{" "}
-              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">bienestar</span>
+              {t("titleStart")}
+              <span className="font-[family-name:var(--font-script)] not-italic text-rosa-400">{t("titleHighlight")}</span>
             </h2>
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-warm-gray-400 leading-relaxed">
-              Diferentes modalidades para adaptarme a tus necesidades,
-              horarios y objetivos. Siempre con un enfoque profesional y personalizado.
+              {t("description")}
             </p>
           </AnimatedSection>
         </div>
@@ -124,19 +125,19 @@ export default function Services() {
                 {/* Pricing card */}
                 <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-warm-gray-100/50 h-full">
                   <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-marron-400 font-medium mb-6">
-                    Tarifas
+                    {t("tarifas")}
                   </p>
                   <div className="space-y-6">
                     {/* Individual */}
                     <div>
-                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">Individual</h4>
+                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">{t("individual")}</h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between bg-rosa-50/50 rounded-xl px-4 py-3">
-                          <span className="text-sm text-warm-gray-500">Sesión de 1 hora</span>
+                          <span className="text-sm text-warm-gray-500">{t("sesion1h")}</span>
                           <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">50 €</span>
                         </div>
                         <div className="flex items-center justify-between bg-rosa-50/50 rounded-xl px-4 py-3">
-                          <span className="text-sm text-warm-gray-500">Bono 10 sesiones</span>
+                          <span className="text-sm text-warm-gray-500">{t("bono10")}</span>
                           <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">450 €</span>
                         </div>
                       </div>
@@ -144,14 +145,14 @@ export default function Services() {
 
                     {/* Pareja */}
                     <div>
-                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">Pareja</h4>
+                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">{t("pareja")}</h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between bg-marron-50/50 rounded-xl px-4 py-3">
-                          <span className="text-sm text-warm-gray-500">Sesión de 1 hora</span>
+                          <span className="text-sm text-warm-gray-500">{t("sesion1h")}</span>
                           <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">60 €</span>
                         </div>
                         <div className="flex items-center justify-between bg-marron-50/50 rounded-xl px-4 py-3">
-                          <span className="text-sm text-warm-gray-500">Bono 10 sesiones</span>
+                          <span className="text-sm text-warm-gray-500">{t("bono10")}</span>
                           <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">550 €</span>
                         </div>
                       </div>
@@ -159,10 +160,10 @@ export default function Services() {
 
                     {/* Grupos */}
                     <div>
-                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">Grupos reducidos</h4>
+                      <h4 className="font-medium text-warm-dark text-base sm:text-lg mb-3">{t("gruposReducidos")}</h4>
                       <div className="flex items-center justify-between bg-rosa-50/30 rounded-xl px-4 py-3">
-                        <span className="text-sm text-warm-gray-500">Por persona / hora</span>
-                        <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">desde 10 €</span>
+                        <span className="text-sm text-warm-gray-500">{t("porPersonaHora")}</span>
+                        <span className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-warm-dark">{t("desde10")}</span>
                       </div>
                     </div>
                   </div>
