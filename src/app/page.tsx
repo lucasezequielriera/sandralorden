@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import FloatingButtons from "@/components/FloatingButtons";
+import CookieBanner from "@/components/CookieBanner";
 
 const Services = dynamic(() => import("@/components/Services"));
 const Press = dynamic(() => import("@/components/Press"));
@@ -29,6 +30,7 @@ export default function Home() {
       </main>
       <Footer />
       <FloatingButtons />
+      <CookieBanner />
     </>
   );
 }

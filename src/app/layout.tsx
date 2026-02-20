@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, Dancing_Script } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
 
@@ -78,8 +80,11 @@ export const metadata: Metadata = {
     "nutricionista España",
   ],
 
-  authors: [{ name: "Sandra Lorden", url: SITE_URL }],
-  creator: "Sandra Lorden",
+  authors: [
+    { name: "Sandra Lorden", url: SITE_URL },
+    { name: "Lucas Riera", url: "https://www.lucasriera.com" },
+  ],
+  creator: "Lucas Riera",
   publisher: "Sandra Lorden",
 
   alternates: {
@@ -280,6 +285,12 @@ function JsonLd() {
     url: SITE_URL,
     description: DESCRIPTION,
     publisher: { "@id": `${SITE_URL}/#person` },
+    creator: {
+      "@type": "Person",
+      name: "Lucas Riera",
+      url: "https://www.lucasriera.com",
+      jobTitle: "Desarrollador & Diseñador Web",
+    },
     inLanguage: "es-ES",
     potentialAction: {
       "@type": "SearchAction",
@@ -394,9 +405,13 @@ export default function RootLayout({
     <html lang="es" className="scroll-smooth">
       <head>
         <JsonLd />
+        <link rel="author" href="https://www.lucasriera.com" />
+        <link rel="humans" type="text/plain" href="/humans.txt" />
       </head>
       <body className={`${cormorant.variable} ${dancingScript.variable} ${dmSans.variable} antialiased`}>
         <MotionProvider>{children}</MotionProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

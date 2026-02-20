@@ -20,17 +20,13 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:gap-x-8">
-            {["Inicio", "Sobre Mí", "Servicios", "Prensa", "Contacto"].map((link) => (
-              <a
-                key={link}
-                href={`#${link.toLowerCase().replace(" ", "-").replace("í", "i")}`}
-                className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300"
-              >
-                {link}
-              </a>
-            ))}
+          {/* Legal Links */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <a href="/privacidad" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Política de Privacidad</a>
+            <span className="text-white/20">·</span>
+            <a href="/aviso-legal" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Aviso Legal</a>
+            <span className="text-white/20">·</span>
+            <a href="/cookies" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">Cookies</a>
           </div>
 
           {/* Social */}
@@ -62,14 +58,22 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <p className="text-xs text-white/30">
               &copy; {currentYear} Sandra Lorden. Todos los derechos reservados.
             </p>
             <p className="text-xs text-white/30">
-              Diseñado con cuidado
+              Sitio web por{" "}
+              <a
+                href="https://www.lucasriera.com"
+                target="_blank"
+                rel="author noopener noreferrer"
+                className="text-white/50 hover:text-white/80 transition-colors"
+              >
+                Lucas Riera
+              </a>
+              {" "}· Desarrollo & Diseño Web
             </p>
           </div>
         </div>

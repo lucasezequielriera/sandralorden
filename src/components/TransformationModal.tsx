@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { track } from "@vercel/analytics";
 import ThankYouScreen from "./ThankYouScreen";
 
 interface TransformationModalProps {
@@ -63,6 +64,10 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
     setAnswers(emptyAnswers);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) track("funnel_opened");
+  }, [isOpen]);
+
   const handleClose = () => { onClose(); setTimeout(resetModal, 300); };
 
   const nextStep = () => { setDirection(1); setStepIndex((s) => s + 1); };
@@ -70,10 +75,12 @@ export default function TransformationModal({ isOpen, onClose }: TransformationM
 
   const selectOption = (field: keyof Answers, value: string) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
+    if (field === "service") track("funnel_service_selected", { service: value });
     setTimeout(nextStep, 200);
   };
 
   const submitAndGenerate = async () => {
+    track("funnel_submitted", { service: answers.service, goal: answers.goal });
     setIsSending(true);
     setError(null);
     try {
@@ -320,11 +327,19 @@ function StepObstacle({ onSelect, selected }: { onSelect: (v: string) => void; s
 }
 
 function StepExtra({ value, onChange, onSubmit }: { value: string; onChange: (v: string) => void; onSubmit: () => void }) {
+  const [accepted, setAccepted] = useState(false);
   return (
     <div>
       <StepHeader emoji="📋" title="¿Algo más que deba saber?" subtitle="Lesiones, alergias, lo que sea" />
       <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all resize-none text-sm" placeholder="Ej: Tengo una lesión de rodilla / Soy intolerante a la lactosa / Nada en especial" />
-      <button onClick={onSubmit} className="mt-4 w-full px-6 py-4 text-sm font-medium text-white bg-gradient-to-r from-rosa-400 to-rosa-300 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">Enviar a Sandra</button>
+      <label className="flex items-start gap-2.5 mt-4 cursor-pointer">
+        <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 w-4 h-4 rounded border-warm-gray-200 text-rosa-400 focus:ring-rosa-200 accent-rosa-400 cursor-pointer" />
+        <span className="text-xs text-warm-gray-400 leading-relaxed">
+          He leído y acepto la{" "}
+          <a href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">Política de Privacidad</a>
+        </span>
+      </label>
+      <button onClick={onSubmit} disabled={!accepted} className="mt-4 w-full px-6 py-4 text-sm font-medium text-white bg-gradient-to-r from-rosa-400 to-rosa-300 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none">Enviar a Sandra</button>
       <p className="mt-3 text-center text-xs text-warm-gray-300">Si no tienes nada, déjalo en blanco y dale al botón</p>
     </div>
   );

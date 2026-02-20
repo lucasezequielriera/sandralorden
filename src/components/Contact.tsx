@@ -225,6 +225,14 @@ export default function Contact() {
                       </p>
                     )}
 
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-warm-gray-200 text-rosa-400 focus:ring-rosa-200 accent-rosa-400 cursor-pointer" />
+                      <span className="text-xs text-warm-gray-400 leading-relaxed">
+                        He leído y acepto la{" "}
+                        <a href="/privacidad" target="_blank" className="text-rosa-400 underline underline-offset-2 hover:text-rosa-500">Política de Privacidad</a>
+                      </span>
+                    </label>
+
                     <m.button
                       type="submit"
                       disabled={status === "sending"}

@@ -244,6 +244,13 @@ function FormularioContent() {
 
           {/* Submit */}
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-[#F7F3F0] p-4 sm:p-6 text-center">
+            <label className="flex items-start gap-2.5 mb-4 cursor-pointer text-left">
+              <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-[#E6DDD6] accent-[#C9A88E] cursor-pointer" />
+              <span className="text-xs text-[#8B7E7E] leading-relaxed">
+                He leído y acepto la{" "}
+                <a href="/privacidad" target="_blank" className="text-[#C9A88E] underline underline-offset-2 hover:text-[#A68B70]">Política de Privacidad</a>
+              </span>
+            </label>
             <button type="submit" disabled={isSending} className="w-full py-3.5 sm:py-4 px-6 bg-[#3D2C2C] text-white rounded-xl sm:rounded-2xl font-medium transition-all hover:bg-[#5A4545] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm">
               {isSending ? (
                 <span className="flex items-center justify-center gap-2">

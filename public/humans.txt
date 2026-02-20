@@ -1,0 +1,18 @@
+/* TEAM */
+Developer & Designer: Lucas Riera
+Site: https://www.lucasriera.com
+Location: Madrid, Spain
+
+/* CLIENT */
+Name: Sandra Lorden
+Role: Entrenadora Personal & Nutricionista Deportiva
+Site: https://www.sandralorden.com
+Location: Madrid, Spain
+
+/* TECH */
+Framework: Next.js 16 (App Router)
+Language: TypeScript
+Styling: Tailwind CSS v4
+Animations: Framer Motion
+Database: Supabase (PostgreSQL)
+Hosting: Vercel
