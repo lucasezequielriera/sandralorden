@@ -5,7 +5,6 @@ import Link from "next/link";
 
 interface Stats {
   totalClients: number;
-  activeClients: number;
   presencialClients: number;
   virtualClients: number;
   yearTotalRevenue: number;
@@ -126,19 +125,6 @@ export default function DashboardContent({
           </div>
         </div>
 
-        {/* Activos */}
-        <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-marron-100/40 -translate-y-8 translate-x-8" />
-          <p className="text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.12em]">Activos</p>
-          <p className="text-3xl font-[family-name:var(--font-display)] italic text-warm-dark mt-1.5 leading-none">{stats.activeClients}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <div className="flex-1 h-1 bg-warm-gray-200/60 rounded-full overflow-hidden">
-              <div className="h-full bg-marron-300 rounded-full transition-all duration-500" style={{ width: `${stats.totalClients > 0 ? (stats.activeClients / stats.totalClients) * 100 : 0}%` }} />
-            </div>
-            <span className="text-[10px] text-marron-400 font-medium tabular-nums">{stats.totalClients > 0 ? Math.round((stats.activeClients / stats.totalClients) * 100) : 0}%</span>
-          </div>
-        </div>
-
         {/* Nuevos este mes */}
         <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
           <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-rosa-200/30 -translate-y-8 translate-x-8" />
@@ -170,6 +156,14 @@ export default function DashboardContent({
           </div>
           <p className="text-3xl font-[family-name:var(--font-display)] italic text-rosa-400 mt-1.5 leading-none">{stats.thisMonthPending.toFixed(0)}€</p>
           <p className="text-[10px] text-warm-gray-300 mt-3">vs mes anterior</p>
+        </div>
+
+        {/* Ingresos anuales */}
+        <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#A8D5BA]/30 -translate-y-8 translate-x-8" />
+          <p className="text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.12em]">Total {year}</p>
+          <p className="text-3xl font-[family-name:var(--font-display)] italic text-[#3D6B4F] mt-1.5 leading-none">{stats.yearTotalRevenue.toFixed(0)}€</p>
+          <p className="text-[10px] text-warm-gray-300 mt-3">ingresos cobrados</p>
         </div>
       </div>
 

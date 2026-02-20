@@ -9,11 +9,6 @@ export default async function AdminPage() {
     .from("clients")
     .select("*", { count: "exact", head: true });
 
-  const { count: activeClients } = await supabase
-    .from("clients")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "active");
-
   const now = new Date();
   const year = now.getFullYear();
   const currentMonth = now.getMonth();
@@ -101,7 +96,6 @@ export default async function AdminPage() {
       <DashboardContent
         stats={{
           totalClients: totalClients ?? 0,
-          activeClients: activeClients ?? 0,
           presencialClients: presencialClients ?? 0,
           virtualClients: virtualClients ?? 0,
           yearTotalRevenue,
