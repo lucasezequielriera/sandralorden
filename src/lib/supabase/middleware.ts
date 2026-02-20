@@ -38,10 +38,34 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (isAdminRoute && !isLoginRoute && user) {
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    if (roleRow?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.searchParams.set("error", "unauthorized");
+      await supabase.auth.signOut();
+      return NextResponse.redirect(url);
+    }
+  }
+
   if (isLoginRoute && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin";
-    return NextResponse.redirect(url);
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    if (roleRow?.role === "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/supabase/log-activity";
+import { requireAdmin } from "@/lib/supabase/check-role";
 
 const MONTH_NAMES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { authorized } = await requireAdmin();
+  if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   const { id } = await params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const year = new Date().getFullYear();
   const { data } = await supabase
@@ -23,10 +25,11 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 }
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { authorized } = await requireAdmin();
+  if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   const { id } = await params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { month, year, action, amount: bodyAmount } = await request.json();
   const monthStart = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -58,7 +61,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         status: "pending",
         amount: bodyAmount ?? 0,
       }).eq("id", existing.id);
-      await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+      await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`, id);
       return NextResponse.json({ status: "pending", invoice_id: existing.id });
     }
 
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
       .select()
       .single();
-    await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+    await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`, id);
     return NextResponse.json({ status: "pending", invoice_id: newInv?.id });
   }
 
@@ -85,11 +88,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           status: "paid",
           paid_date: new Date().toISOString().split("T")[0],
         }).eq("id", existing.id);
-        await logActivity("Pago confirmado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        await logActivity("Pago confirmado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`, id);
         return NextResponse.json({ status: "paid", invoice_id: existing.id });
       } else if (existing.status === "paid") {
         await supabase.from("invoices").delete().eq("id", existing.id);
-        await logActivity("Pago eliminado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        await logActivity("Pago eliminado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`, id);
         return NextResponse.json({ status: "none", invoice_id: null });
       }
     }

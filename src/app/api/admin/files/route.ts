@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/supabase/check-role";
 
 export async function GET() {
+  const { authorized } = await requireAdmin();
+  if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { data, error } = await supabase
     .from("files")
@@ -16,9 +18,10 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const { authorized } = await requireAdmin();
+  if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const formData = await request.formData();
   const file = formData.get("file") as File | null;

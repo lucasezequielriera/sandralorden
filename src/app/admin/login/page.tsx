@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -10,6 +10,13 @@ export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("error") === "unauthorized") {
+      setError("No tienes permisos de administrador");
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,15 +24,35 @@ export default function AdminLogin() {
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
+    if (authError) {
       setError("Email o contraseña incorrectos");
       setLoading(false);
       return;
     }
 
-    supabase.from("activity_logs").insert({
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Error al obtener usuario");
+      setLoading(false);
+      return;
+    }
+
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    if (roleRow?.role !== "admin") {
+      await supabase.auth.signOut();
+      setError("No tienes permisos de administrador");
+      setLoading(false);
+      return;
+    }
+
+    await supabase.from("activity_logs").insert({
       action: "Inicio de sesión",
       details: email,
     });

@@ -70,10 +70,31 @@ create table if not exists invoices (
 create table if not exists activity_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid,
+  client_id uuid references clients(id) on delete cascade,
   action text not null,
   details text default '',
   created_at timestamptz default now()
 );
+
+-- ══════════════════════════════════════
+-- USER ROLES
+-- ══════════════════════════════════════
+create table if not exists user_roles (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'client' check (role in ('admin', 'client')),
+  created_at timestamptz default now(),
+  constraint unique_user_role unique (user_id)
+);
+
+create or replace function public.get_user_role()
+returns text
+language sql
+security definer
+stable
+as $$
+  select role from public.user_roles where user_id = auth.uid();
+$$;
 
 -- ══════════════════════════════════════
 -- INDEXES
@@ -86,6 +107,8 @@ create index if not exists idx_files_client on files(client_id);
 create index if not exists idx_invoices_client on invoices(client_id);
 create index if not exists idx_invoices_status on invoices(status);
 create index if not exists idx_logs_created on activity_logs(created_at desc);
+create index if not exists idx_logs_client on activity_logs(client_id);
+create index if not exists idx_user_roles_user on user_roles(user_id);
 
 -- ══════════════════════════════════════
 -- AUTO-UPDATE updated_at TRIGGER
@@ -104,60 +127,77 @@ create trigger clients_updated_at
 
 -- ══════════════════════════════════════
 -- ROW LEVEL SECURITY
--- Only authenticated users (Sandra) can access
+-- Admins have full access; future client role gets restricted access
 -- ══════════════════════════════════════
 alter table clients enable row level security;
 alter table sessions enable row level security;
 alter table files enable row level security;
 alter table invoices enable row level security;
-
-create policy "Authenticated users can read clients"
-  on clients for select to authenticated using (true);
-create policy "Authenticated users can insert clients"
-  on clients for insert to authenticated with check (true);
-create policy "Authenticated users can update clients"
-  on clients for update to authenticated using (true) with check (true);
-create policy "Authenticated users can delete clients"
-  on clients for delete to authenticated using (true);
-
-create policy "Authenticated users can read sessions"
-  on sessions for select to authenticated using (true);
-create policy "Authenticated users can insert sessions"
-  on sessions for insert to authenticated with check (true);
-create policy "Authenticated users can update sessions"
-  on sessions for update to authenticated using (true) with check (true);
-create policy "Authenticated users can delete sessions"
-  on sessions for delete to authenticated using (true);
-
-create policy "Authenticated users can read files"
-  on files for select to authenticated using (true);
-create policy "Authenticated users can insert files"
-  on files for insert to authenticated with check (true);
-create policy "Authenticated users can update files"
-  on files for update to authenticated using (true) with check (true);
-create policy "Authenticated users can delete files"
-  on files for delete to authenticated using (true);
-
-create policy "Authenticated users can read invoices"
-  on invoices for select to authenticated using (true);
-create policy "Authenticated users can insert invoices"
-  on invoices for insert to authenticated with check (true);
-create policy "Authenticated users can update invoices"
-  on invoices for update to authenticated using (true) with check (true);
-create policy "Authenticated users can delete invoices"
-  on invoices for delete to authenticated using (true);
-
 alter table activity_logs enable row level security;
-create policy "Authenticated users can read logs"
-  on activity_logs for select to authenticated using (true);
-create policy "Authenticated users can insert logs"
-  on activity_logs for insert to authenticated with check (true);
-create policy "Service role can insert logs"
-  on activity_logs for insert to service_role with check (true);
+alter table user_roles enable row level security;
 
--- Service role can insert (for public form submissions)
+-- USER ROLES: admins can read all, users can read their own
+create policy "Admins can manage roles"
+  on user_roles for all to authenticated
+  using (public.get_user_role() = 'admin')
+  with check (public.get_user_role() = 'admin');
+create policy "Users can read own role"
+  on user_roles for select to authenticated
+  using (user_id = auth.uid());
+
+-- CLIENTS: admin full access
+create policy "Admins can read clients"
+  on clients for select to authenticated using (public.get_user_role() = 'admin');
+create policy "Admins can insert clients"
+  on clients for insert to authenticated with check (public.get_user_role() = 'admin');
+create policy "Admins can update clients"
+  on clients for update to authenticated using (public.get_user_role() = 'admin') with check (public.get_user_role() = 'admin');
+create policy "Admins can delete clients"
+  on clients for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- SESSIONS: admin full access
+create policy "Admins can read sessions"
+  on sessions for select to authenticated using (public.get_user_role() = 'admin');
+create policy "Admins can insert sessions"
+  on sessions for insert to authenticated with check (public.get_user_role() = 'admin');
+create policy "Admins can update sessions"
+  on sessions for update to authenticated using (public.get_user_role() = 'admin') with check (public.get_user_role() = 'admin');
+create policy "Admins can delete sessions"
+  on sessions for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- FILES: admin full access
+create policy "Admins can read files"
+  on files for select to authenticated using (public.get_user_role() = 'admin');
+create policy "Admins can insert files"
+  on files for insert to authenticated with check (public.get_user_role() = 'admin');
+create policy "Admins can update files"
+  on files for update to authenticated using (public.get_user_role() = 'admin') with check (public.get_user_role() = 'admin');
+create policy "Admins can delete files"
+  on files for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- INVOICES: admin full access
+create policy "Admins can read invoices"
+  on invoices for select to authenticated using (public.get_user_role() = 'admin');
+create policy "Admins can insert invoices"
+  on invoices for insert to authenticated with check (public.get_user_role() = 'admin');
+create policy "Admins can update invoices"
+  on invoices for update to authenticated using (public.get_user_role() = 'admin') with check (public.get_user_role() = 'admin');
+create policy "Admins can delete invoices"
+  on invoices for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- ACTIVITY LOGS: admin full access
+create policy "Admins can read logs"
+  on activity_logs for select to authenticated using (public.get_user_role() = 'admin');
+create policy "Admins can insert logs"
+  on activity_logs for insert to authenticated with check (public.get_user_role() = 'admin');
+create policy "Admins can delete logs"
+  on activity_logs for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- SERVICE ROLE: bypass RLS for server-side operations (public form submissions)
 create policy "Service role can insert clients"
   on clients for insert to service_role with check (true);
+create policy "Service role can insert logs"
+  on activity_logs for insert to service_role with check (true);
 
 -- ══════════════════════════════════════
 -- STORAGE BUCKET for client files
