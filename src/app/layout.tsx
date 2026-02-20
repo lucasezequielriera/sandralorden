@@ -137,7 +137,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/icon",
-    apple: "/icon",
+    apple: "/apple-icon",
   },
 
   manifest: "/manifest.json",

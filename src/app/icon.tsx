@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-export const size = { width: 32, height: 32 };
+export const size = { width: 48, height: 48 };
 export const contentType = "image/png";
 
 export default async function Icon() {
@@ -12,9 +12,9 @@ export default async function Icon() {
     (
       <div
         style={{
-          width: 32,
-          height: 32,
-          borderRadius: 8,
+          width: 48,
+          height: 48,
+          borderRadius: 10,
           background: "#F5E6DC",
           display: "flex",
           alignItems: "center",
@@ -23,10 +23,10 @@ export default async function Icon() {
       >
         <span
           style={{
-            fontSize: 17,
+            fontSize: 26,
             color: "#3D2C2C",
             fontFamily: "Dancing Script",
-            marginTop: -1,
+            marginTop: -2,
           }}
         >
           SL

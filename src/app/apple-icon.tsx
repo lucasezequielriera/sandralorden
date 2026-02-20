@@ -1,29 +1,48 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function AppleIcon() {
+export default async function AppleIcon() {
+  const fontData = await readFile(join(process.cwd(), "src/app/DancingScript.ttf"));
+
   return new ImageResponse(
     (
       <div
         style={{
-          fontSize: 100,
-          background: "linear-gradient(135deg, #FFF5F5, #F2D1D1, #D4908F)",
-          width: "100%",
-          height: "100%",
+          width: 180,
+          height: 180,
+          borderRadius: 36,
+          background: "#F5E6DC",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#3D2C2C",
-          fontFamily: "Georgia, serif",
-          fontWeight: 300,
-          fontStyle: "italic",
         }}
       >
-        SL
+        <span
+          style={{
+            fontSize: 96,
+            color: "#3D2C2C",
+            fontFamily: "Dancing Script",
+            marginTop: -4,
+          }}
+        >
+          SL
+        </span>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      fonts: [
+        {
+          name: "Dancing Script",
+          data: fontData,
+          style: "normal",
+          weight: 400,
+        },
+      ],
+    }
   );
 }
