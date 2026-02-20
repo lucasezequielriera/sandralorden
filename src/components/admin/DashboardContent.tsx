@@ -422,7 +422,7 @@ function DeltaBadge({ pct, invert }: { pct: number | null; invert?: boolean }) {
 
   return (
     <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full ${
-      positive ? "bg-marron-100 text-marron-500" : negative ? "bg-rosa-100 text-rosa-500" : "bg-warm-gray-100 text-warm-gray-400"
+      positive ? "bg-[#A8D5BA] text-[#3D6B4F]" : negative ? "bg-[#F2B8B5] text-[#8C4A47]" : "bg-warm-gray-100 text-warm-gray-400"
     }`}>
       {isUp ? "+" : isDown ? "" : ""}{pct}%
     </span>
