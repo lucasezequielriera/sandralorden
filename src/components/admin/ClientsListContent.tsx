@@ -5,8 +5,8 @@ import Link from "next/link";
 import type { Client } from "@/lib/supabase/types";
 
 const modalityColors: Record<string, string> = {
-  presencial: "bg-marron-100 text-marron-500",
-  virtual: "bg-rosa-100 text-rosa-400",
+  presencial: "bg-[#D4E8F0] text-[#3A6B7E]",
+  virtual: "bg-[#E8D5F0] text-[#6B3A7E]",
 };
 
 const modalityLabels: Record<string, string> = {
