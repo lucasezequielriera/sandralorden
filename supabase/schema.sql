@@ -13,12 +13,16 @@ create table if not exists clients (
   email text not null,
   phone text not null,
   service_type text default '',
+  modality text default 'virtual' check (modality in ('presencial', 'virtual')),
   goal text default '',
   status text default 'lead' check (status in ('lead', 'active', 'inactive')),
   notes text default '',
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+-- To add modality to an existing table, run:
+-- alter table clients add column if not exists modality text default 'virtual' check (modality in ('presencial', 'virtual'));
 
 -- ══════════════════════════════════════
 -- SESSIONS (training/nutrition sessions)

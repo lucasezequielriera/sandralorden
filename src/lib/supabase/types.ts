@@ -4,6 +4,7 @@ export interface Client {
   email: string;
   phone: string;
   service_type: string;
+  modality: "presencial" | "virtual";
   goal: string;
   status: "lead" | "active" | "inactive";
   notes: string;

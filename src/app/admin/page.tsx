@@ -24,6 +24,16 @@ export default async function AdminPage() {
     .select("*", { count: "exact", head: true })
     .eq("status", "pending");
 
+  const { count: presencialClients } = await supabase
+    .from("clients")
+    .select("*", { count: "exact", head: true })
+    .eq("modality", "presencial");
+
+  const { count: virtualClients } = await supabase
+    .from("clients")
+    .select("*", { count: "exact", head: true })
+    .eq("modality", "virtual");
+
   const conversionRate = (totalClients ?? 0) > 0
     ? Math.round(((activeClients ?? 0) / (totalClients ?? 1)) * 100)
     : 0;
@@ -89,6 +99,8 @@ export default async function AdminPage() {
           activeClients: activeClients ?? 0,
           leads: leads ?? 0,
           pendingInvoices: pendingInvoices ?? 0,
+          presencialClients: presencialClients ?? 0,
+          virtualClients: virtualClients ?? 0,
           conversionRate,
           yearTotalRevenue,
           yearTotalPending,

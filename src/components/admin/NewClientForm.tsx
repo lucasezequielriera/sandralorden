@@ -13,6 +13,7 @@ export default function NewClientForm() {
     email: "",
     phone: "",
     service_type: "",
+    modality: "virtual" as "presencial" | "virtual",
     goal: "",
     status: "lead" as const,
     notes: "",
@@ -79,8 +80,32 @@ export default function NewClientForm() {
               <option value="Solo nutrición">Solo nutrición</option>
               <option value="Solo entrenamiento">Solo entrenamiento</option>
               <option value="Entrenamiento + nutrición">Entrenamiento + nutrición</option>
-              <option value="Entrenamiento presencial">Entrenamiento presencial</option>
             </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-warm-dark mb-2">Modalidad</label>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => update("modality", "virtual")}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer border ${
+                form.modality === "virtual" ? "bg-purple-50 border-purple-200 text-purple-700" : "bg-warm-gray-100/50 border-warm-gray-200/50 text-warm-gray-400 hover:border-purple-200"
+              }`}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              Virtual
+            </button>
+            <button type="button" onClick={() => update("modality", "presencial")}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer border ${
+                form.modality === "presencial" ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-warm-gray-100/50 border-warm-gray-200/50 text-warm-gray-400 hover:border-blue-200"
+              }`}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+              Presencial
+            </button>
           </div>
         </div>
 

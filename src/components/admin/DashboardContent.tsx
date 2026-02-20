@@ -8,6 +8,8 @@ interface Stats {
   activeClients: number;
   leads: number;
   pendingInvoices: number;
+  presencialClients: number;
+  virtualClients: number;
   conversionRate: number;
   yearTotalRevenue: number;
   yearTotalPending: number;
@@ -102,11 +104,41 @@ export default function DashboardContent({
       </div>
 
       {/* Totales generales */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <StatCard label="Clientes totales" value={stats.totalClients} color="rosa" />
         <StatCard label="Clientes activos" value={stats.activeClients} color="green" />
         <StatCard label="Leads nuevos" value={stats.leads} color="amber" />
-        <StatCard label="Pagos pendientes" value={stats.pendingInvoices} color="red" />
+      </div>
+
+      {/* Modality + Pending */}
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="bg-white rounded-2xl p-5 border border-blue-100/80 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Presencial</p>
+            <p className="text-2xl font-light text-blue-600">{stats.presencialClients}</p>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-purple-100/80 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Virtual</p>
+            <p className="text-2xl font-light text-purple-600">{stats.virtualClients}</p>
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pagos pendientes</p>
+          <p className="text-3xl font-light mt-2 text-red-500">{stats.pendingInvoices}</p>
+        </div>
       </div>
 
       {/* Year totals + Conversion */}
