@@ -175,9 +175,9 @@ function PaymentDots({ payments }: { payments: Record<number, string> }) {
             key={i}
             className={`w-[18px] h-[18px] rounded-md flex items-center justify-center text-[7px] font-semibold leading-none transition-colors ${
               status === "paid"
-                ? "bg-marron-300 text-white"
+                ? "bg-[#A8D5BA] text-[#3D6B4F]"
                 : status === "pending"
-                  ? "bg-rosa-300 text-white"
+                  ? "bg-[#F2B8B5] text-[#8C4A47]"
                   : i > currentMonth
                     ? "bg-warm-gray-100/40 text-warm-gray-200"
                     : "bg-warm-gray-200/50 text-warm-gray-300"
