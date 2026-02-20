@@ -60,6 +60,10 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
       return;
     }
 
+    if (status === "paid") {
+      if (!confirm(`¿Estás segura de eliminar el pago de ${MONTHS[month]} ${year}?`)) return;
+    }
+
     setToggling(month);
     try {
       const res = await fetch(`/api/admin/clients/${clientId}/payments`, {
@@ -271,9 +275,9 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
             <button
               type="submit"
               disabled={saving || !amount}
-              className="w-full px-6 py-3 text-sm font-medium text-white bg-green-500 rounded-xl hover:bg-green-600 transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full px-6 py-3 text-sm font-medium text-white bg-amber-500 rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {saving ? "Guardando..." : `Marcar como pagado — ${amount ? `${amount}€` : "..."}`}
+              {saving ? "Guardando..." : `Crear pendiente — ${amount ? `${amount}€` : "..."}`}
             </button>
           </form>
         </div>

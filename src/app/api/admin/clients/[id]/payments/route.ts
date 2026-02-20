@@ -51,15 +51,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .eq("id", id)
     .single();
 
+  // sin factura → pendiente (con monto, desde modal)
   if (action === "create") {
     if (existing) {
       await supabase.from("invoices").update({
-        status: "paid",
+        status: "pending",
         amount: bodyAmount ?? 0,
-        paid_date: new Date().toISOString().split("T")[0],
       }).eq("id", existing.id);
-      await logActivity("Pago marcado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
-      return NextResponse.json({ status: "paid", invoice_id: existing.id });
+      await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+      return NextResponse.json({ status: "pending", invoice_id: existing.id });
     }
 
     const { data: newInv } = await supabase
@@ -68,25 +68,28 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         client_id: id,
         amount: bodyAmount ?? 0,
         concept: `Pago ${MONTH_NAMES[month]} ${year}`,
-        status: "paid",
+        status: "pending",
         due_date: monthStart,
-        paid_date: new Date().toISOString().split("T")[0],
       })
       .select()
       .single();
-    await logActivity("Pago marcado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
-    return NextResponse.json({ status: "paid", invoice_id: newInv?.id });
+    await logActivity("Factura creada (pendiente)", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year} (${bodyAmount ?? 0}€)`);
+    return NextResponse.json({ status: "pending", invoice_id: newInv?.id });
   }
 
+  // pendiente → pagado, pagado → eliminar
   if (action === "toggle") {
     if (existing) {
-      if (existing.status === "paid") {
-        await supabase.from("invoices").update({ status: "pending", paid_date: null }).eq("id", existing.id);
-        await logActivity("Pago → pendiente", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
-        return NextResponse.json({ status: "pending", invoice_id: existing.id });
-      } else {
+      if (existing.status === "pending") {
+        await supabase.from("invoices").update({
+          status: "paid",
+          paid_date: new Date().toISOString().split("T")[0],
+        }).eq("id", existing.id);
+        await logActivity("Pago confirmado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        return NextResponse.json({ status: "paid", invoice_id: existing.id });
+      } else if (existing.status === "paid") {
         await supabase.from("invoices").delete().eq("id", existing.id);
-        await logActivity("Factura eliminada", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        await logActivity("Pago eliminado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
         return NextResponse.json({ status: "none", invoice_id: null });
       }
     }
