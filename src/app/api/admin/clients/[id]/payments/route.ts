@@ -34,14 +34,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     ? `${year + 1}-01-01`
     : `${year}-${String(month + 2).padStart(2, "0")}-01`;
 
-  const { data: existing } = await supabase
+  const { data: existingList } = await supabase
     .from("invoices")
     .select("id, status")
     .eq("client_id", id)
     .gte("due_date", monthStart)
     .lt("due_date", monthEnd)
-    .limit(1)
-    .single();
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  const existing = existingList?.[0] ?? null;
 
   const { data: client } = await supabase
     .from("clients")

@@ -19,10 +19,17 @@ export default async function AdminPage() {
     .select("*", { count: "exact", head: true })
     .eq("status", "lead");
 
+  const now = new Date();
+  const year = now.getFullYear();
+  const yearStart = `${year}-01-01`;
+  const yearEnd = `${year}-12-31`;
+
   const { count: pendingInvoices } = await supabase
     .from("invoices")
     .select("*", { count: "exact", head: true })
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .gte("due_date", yearStart)
+    .lte("due_date", yearEnd);
 
   const { count: presencialClients } = await supabase
     .from("clients")
@@ -37,11 +44,6 @@ export default async function AdminPage() {
   const conversionRate = (totalClients ?? 0) > 0
     ? Math.round(((activeClients ?? 0) / (totalClients ?? 1)) * 100)
     : 0;
-
-  const now = new Date();
-  const year = now.getFullYear();
-  const yearStart = `${year}-01-01`;
-  const yearEnd = `${year}-12-31`;
 
   const { data: allInvoicesYear } = await supabase
     .from("invoices")
