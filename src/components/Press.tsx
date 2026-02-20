@@ -7,10 +7,10 @@ const mediaLogos = [
   { name: "ELLE", src: "/images/logos/elle.svg" },
   { name: "¡Hola!", src: "/images/logos/hola.svg" },
   { name: "Semana", src: "/images/logos/logo-semana_header.png" },
-  { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg" },
+  { name: "Cuerpomente", src: "/images/logos/cuerpomente.png" },
   { name: "Mediaset", src: "/images/logos/mediaset.svg" },
   { name: "MSN", src: "/images/logos/msn.svg" },
-  { name: "JeFemme", src: "/images/logos/jefemme.svg" },
+  { name: "JeFemme", src: "/images/logos/jefemme.png" },
 ];
 
 const pressItems = [
@@ -137,7 +137,7 @@ export default function Press() {
                 <img
                   src={logo.src}
                   alt={logo.name}
-                  className="w-24 sm:w-28 md:w-32 h-auto object-contain"
+                  className="h-8 sm:h-10 md:h-12 w-auto max-w-[8rem] object-contain"
                 />
               </div>
             ))}
