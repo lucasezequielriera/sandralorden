@@ -43,14 +43,29 @@ export default function ContabilidadContent({
   const [invoices, setInvoices] = useState(initialInvoices);
   const [showNew, setShowNew] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [monthFilter, setMonthFilter] = useState("all");
   const [newInvoice, setNewInvoice] = useState({ client_id: "", amount: "", concept: "", due_date: "" });
   const [saving, setSaving] = useState(false);
 
-  const filtered = invoices.filter((i) => statusFilter === "all" || i.status === statusFilter);
+  const MONTH_NAMES = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  ];
 
-  const totalPaid = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
-  const totalPending = invoices.filter((i) => i.status === "pending").reduce((s, i) => s + i.amount, 0);
-  const totalAll = invoices.reduce((s, i) => s + i.amount, 0);
+  const filtered = invoices.filter((i) => {
+    if (statusFilter !== "all" && i.status !== statusFilter) return false;
+    if (monthFilter !== "all") {
+      const m = new Date(i.created_at).getMonth();
+      if (m !== Number(monthFilter)) return false;
+    }
+    return true;
+  });
+
+  const scopeLabel = monthFilter !== "all" ? MONTH_NAMES[Number(monthFilter)] : "Total";
+
+  const totalPaid = filtered.filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
+  const totalPending = filtered.filter((i) => i.status === "pending").reduce((s, i) => s + i.amount, 0);
+  const totalAll = filtered.reduce((s, i) => s + i.amount, 0);
 
   const currentMonth = new Date().toLocaleString("es-ES", { month: "long" });
   const thisMonth = new Date().getMonth();
@@ -117,11 +132,11 @@ export default function ContabilidadContent({
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Cobrado total</p>
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Cobrado — {scopeLabel}</p>
           <p className="text-2xl font-light text-green-600 mt-2">{totalPaid.toFixed(2)}€</p>
         </div>
         <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pendiente</p>
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pendiente — {scopeLabel}</p>
           <p className="text-2xl font-light text-amber-600 mt-2">{totalPending.toFixed(2)}€</p>
         </div>
         <div className="bg-gradient-to-br from-rosa-50 to-rosa-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
@@ -129,7 +144,7 @@ export default function ContabilidadContent({
           <p className="text-2xl font-light text-rosa-500 mt-2">{monthlyPaid.toFixed(2)}€</p>
         </div>
         <div className="bg-gradient-to-br from-warm-gray-50 to-warm-gray-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Facturado total</p>
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Facturado — {scopeLabel}</p>
           <p className="text-2xl font-light text-warm-dark mt-2">{totalAll.toFixed(2)}€</p>
         </div>
       </div>
@@ -170,15 +185,30 @@ export default function ContabilidadContent({
         </form>
       )}
 
-      {/* Filter */}
-      <div className="mb-4">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-4">
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2.5 rounded-xl bg-white border border-warm-gray-100 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200">
-          <option value="all">Todos</option>
+          <option value="all">Todos los estados</option>
           <option value="pending">Pendientes</option>
           <option value="paid">Pagadas</option>
           <option value="cancelled">Canceladas</option>
         </select>
+        <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}
+          className="px-4 py-2.5 rounded-xl bg-white border border-warm-gray-100 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200">
+          <option value="all">Todos los meses</option>
+          {MONTH_NAMES.map((name, i) => (
+            <option key={i} value={i}>{name}</option>
+          ))}
+        </select>
+        {(statusFilter !== "all" || monthFilter !== "all") && (
+          <button
+            onClick={() => { setStatusFilter("all"); setMonthFilter("all"); }}
+            className="px-3 py-2.5 text-xs text-rosa-400 hover:text-rosa-500 transition-colors cursor-pointer"
+          >
+            Limpiar filtros
+          </button>
+        )}
       </div>
 
       {/* Invoice List */}

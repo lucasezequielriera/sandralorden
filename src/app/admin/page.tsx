@@ -24,21 +24,44 @@ export default async function AdminPage() {
     .select("*", { count: "exact", head: true })
     .eq("status", "pending");
 
+  const conversionRate = (totalClients ?? 0) > 0
+    ? Math.round(((activeClients ?? 0) / (totalClients ?? 1)) * 100)
+    : 0;
+
   const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const year = now.getFullYear();
+  const yearStart = `${year}-01-01`;
+  const yearEnd = `${year}-12-31`;
 
-  const { count: newClientsThisMonth } = await supabase
-    .from("clients")
-    .select("*", { count: "exact", head: true })
-    .gte("created_at", monthStart);
-
-  const { data: paidThisMonth } = await supabase
+  const { data: allInvoicesYear } = await supabase
     .from("invoices")
-    .select("amount")
-    .eq("status", "paid")
-    .gte("paid_date", monthStart.split("T")[0]);
+    .select("amount, status, paid_date, created_at")
+    .gte("created_at", `${yearStart}T00:00:00`)
+    .lte("created_at", `${yearEnd}T23:59:59`);
 
-  const monthlyRevenue = paidThisMonth?.reduce((s, i) => s + (i.amount || 0), 0) ?? 0;
+  const { data: allClientsYear } = await supabase
+    .from("clients")
+    .select("created_at, status")
+    .gte("created_at", `${yearStart}T00:00:00`)
+    .lte("created_at", `${yearEnd}T23:59:59`);
+
+  const monthlyData = Array.from({ length: 12 }, (_, i) => {
+    const monthClients = (allClientsYear ?? []).filter((c) => new Date(c.created_at).getMonth() === i);
+    const monthInvoices = (allInvoicesYear ?? []).filter((inv) => new Date(inv.created_at).getMonth() === i);
+    const paidInvoices = monthInvoices.filter((inv) => inv.status === "paid");
+    const pendingInv = monthInvoices.filter((inv) => inv.status === "pending");
+
+    return {
+      month: i,
+      newClients: monthClients.length,
+      revenue: paidInvoices.reduce((s, inv) => s + (inv.amount || 0), 0),
+      pending: pendingInv.reduce((s, inv) => s + (inv.amount || 0), 0),
+      invoiceCount: monthInvoices.length,
+    };
+  });
+
+  const yearTotalRevenue = monthlyData.reduce((s, m) => s + m.revenue, 0);
+  const yearTotalPending = monthlyData.reduce((s, m) => s + m.pending, 0);
 
   const { data: recentClients } = await supabase
     .from("clients")
@@ -58,10 +81,6 @@ export default async function AdminPage() {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  const conversionRate = (totalClients ?? 0) > 0
-    ? Math.round(((activeClients ?? 0) / (totalClients ?? 1)) * 100)
-    : 0;
-
   return (
     <AdminShell>
       <DashboardContent
@@ -70,10 +89,12 @@ export default async function AdminPage() {
           activeClients: activeClients ?? 0,
           leads: leads ?? 0,
           pendingInvoices: pendingInvoices ?? 0,
-          newClientsThisMonth: newClientsThisMonth ?? 0,
-          monthlyRevenue,
           conversionRate,
+          yearTotalRevenue,
+          yearTotalPending,
         }}
+        monthlyData={monthlyData}
+        year={year}
         recentClients={recentClients ?? []}
         recentInvoices={recentInvoices ?? []}
         recentLogs={recentLogs ?? []}
