@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 interface InvoiceMonth {
   id: string;
@@ -14,6 +15,7 @@ interface InvoiceMonth {
 const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
 export default function PaymentGrid({ clientId }: { clientId: string }) {
+  const router = useRouter();
   const year = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
   const [invoices, setInvoices] = useState<InvoiceMonth[]>([]);
@@ -43,7 +45,10 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ month, year, action: "toggle" }),
       });
-      if (res.ok) await fetchPayments();
+      if (res.ok) {
+        await fetchPayments();
+        router.refresh();
+      }
     } finally {
       setToggling(null);
     }
