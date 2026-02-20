@@ -20,14 +20,27 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-red-100 text-red-700",
 };
 
+const statusLabels: Record<string, string> = {
+  pending: "Pendiente",
+  paid: "Pagado",
+  cancelled: "Cancelado",
+};
+
+const nextStatus: Record<string, string> = {
+  pending: "paid",
+  paid: "cancelled",
+  cancelled: "pending",
+};
+
 export default function ContabilidadContent({
-  invoices,
+  invoices: initialInvoices,
   clients,
 }: {
   invoices: InvoiceRow[];
   clients: { id: string; name: string }[];
 }) {
   const router = useRouter();
+  const [invoices, setInvoices] = useState(initialInvoices);
   const [showNew, setShowNew] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [newInvoice, setNewInvoice] = useState({ client_id: "", amount: "", concept: "", due_date: "" });
@@ -37,6 +50,18 @@ export default function ContabilidadContent({
 
   const totalPaid = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
   const totalPending = invoices.filter((i) => i.status === "pending").reduce((s, i) => s + i.amount, 0);
+  const totalAll = invoices.reduce((s, i) => s + i.amount, 0);
+
+  const currentMonth = new Date().toLocaleString("es-ES", { month: "long" });
+  const thisMonth = new Date().getMonth();
+  const thisYear = new Date().getFullYear();
+  const monthlyPaid = invoices
+    .filter((i) => {
+      if (i.status !== "paid" || !i.paid_date) return false;
+      const d = new Date(i.paid_date);
+      return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+    })
+    .reduce((s, i) => s + i.amount, 0);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +82,24 @@ export default function ContabilidadContent({
     }
   };
 
+  const handleStatusChange = async (id: string, currentStatus: string) => {
+    const newStatus = nextStatus[currentStatus] || "pending";
+    setInvoices((prev) =>
+      prev.map((inv) => inv.id === id ? { ...inv, status: newStatus, paid_date: newStatus === "paid" ? new Date().toISOString().split("T")[0] : inv.paid_date } : inv)
+    );
+    await fetch(`/api/admin/invoices/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar esta factura?")) return;
+    setInvoices((prev) => prev.filter((inv) => inv.id !== id));
+    await fetch(`/api/admin/invoices/${id}`, { method: "DELETE" });
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -72,14 +115,22 @@ export default function ContabilidadContent({
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
-          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Cobrado</p>
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Cobrado total</p>
           <p className="text-2xl font-light text-green-600 mt-2">{totalPaid.toFixed(2)}€</p>
         </div>
         <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
           <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Pendiente</p>
           <p className="text-2xl font-light text-amber-600 mt-2">{totalPending.toFixed(2)}€</p>
+        </div>
+        <div className="bg-gradient-to-br from-rosa-50 to-rosa-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Cobrado en {currentMonth}</p>
+          <p className="text-2xl font-light text-rosa-500 mt-2">{monthlyPaid.toFixed(2)}€</p>
+        </div>
+        <div className="bg-gradient-to-br from-warm-gray-50 to-warm-gray-100/50 rounded-2xl p-5 border border-warm-gray-100/50">
+          <p className="text-xs text-warm-gray-400 uppercase tracking-wider">Facturado total</p>
+          <p className="text-2xl font-light text-warm-dark mt-2">{totalAll.toFixed(2)}€</p>
         </div>
       </div>
 
@@ -146,6 +197,7 @@ export default function ContabilidadContent({
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Importe</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider">Estado</th>
                   <th className="text-left px-4 py-3 font-medium text-warm-gray-400 text-xs uppercase tracking-wider hidden md:table-cell">Vencimiento</th>
+                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -155,12 +207,24 @@ export default function ContabilidadContent({
                     <td className="px-4 py-3 text-warm-gray-400 hidden sm:table-cell">{inv.clients?.name ?? "—"}</td>
                     <td className="px-4 py-3 font-medium text-warm-dark">{inv.amount}€</td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[inv.status] ?? ""}`}>
-                        {inv.status === "paid" ? "Pagado" : inv.status === "pending" ? "Pendiente" : "Cancelado"}
-                      </span>
+                      <button
+                        onClick={() => handleStatusChange(inv.id, inv.status)}
+                        title="Clic para cambiar estado"
+                        className={`text-[10px] px-2.5 py-1 rounded-full font-medium cursor-pointer hover:opacity-80 transition-opacity ${statusColors[inv.status] ?? ""}`}
+                      >
+                        {statusLabels[inv.status] ?? inv.status}
+                      </button>
                     </td>
                     <td className="px-4 py-3 text-warm-gray-300 text-xs hidden md:table-cell">
                       {inv.due_date ? new Date(inv.due_date).toLocaleDateString("es-ES") : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button onClick={() => handleDelete(inv.id)}
+                        className="text-warm-gray-300 hover:text-red-400 transition-colors cursor-pointer" title="Eliminar">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
                     </td>
                   </tr>
                 ))}

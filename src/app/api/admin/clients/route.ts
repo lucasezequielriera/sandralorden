@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logActivity } from "@/lib/supabase/log-activity";
 
 export async function GET() {
   const supabase = await createClient();
@@ -34,5 +35,6 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await logActivity("Nuevo cliente creado", `${name} (${email})`);
   return NextResponse.json(data, { status: 201 });
 }

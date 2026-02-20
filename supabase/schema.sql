@@ -61,6 +61,17 @@ create table if not exists invoices (
 );
 
 -- ══════════════════════════════════════
+-- ACTIVITY LOGS
+-- ══════════════════════════════════════
+create table if not exists activity_logs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid,
+  action text not null,
+  details text default '',
+  created_at timestamptz default now()
+);
+
+-- ══════════════════════════════════════
 -- INDEXES
 -- ══════════════════════════════════════
 create unique index if not exists idx_clients_email on clients(email);
@@ -70,6 +81,7 @@ create index if not exists idx_sessions_date on sessions(date);
 create index if not exists idx_files_client on files(client_id);
 create index if not exists idx_invoices_client on invoices(client_id);
 create index if not exists idx_invoices_status on invoices(status);
+create index if not exists idx_logs_created on activity_logs(created_at desc);
 
 -- ══════════════════════════════════════
 -- AUTO-UPDATE updated_at TRIGGER
@@ -130,6 +142,14 @@ create policy "Authenticated users can update invoices"
   on invoices for update to authenticated using (true) with check (true);
 create policy "Authenticated users can delete invoices"
   on invoices for delete to authenticated using (true);
+
+alter table activity_logs enable row level security;
+create policy "Authenticated users can read logs"
+  on activity_logs for select to authenticated using (true);
+create policy "Authenticated users can insert logs"
+  on activity_logs for insert to authenticated with check (true);
+create policy "Service role can insert logs"
+  on activity_logs for insert to service_role with check (true);
 
 -- Service role can insert (for public form submissions)
 create policy "Service role can insert clients"

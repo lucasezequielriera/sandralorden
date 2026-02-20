@@ -25,6 +25,10 @@ export default function AdminLogin() {
       return;
     }
 
+    supabase.from("activity_logs").insert({
+      action: "Inicio de sesión",
+      details: email,
+    });
     router.push("/admin");
     router.refresh();
   };
@@ -86,6 +90,12 @@ export default function AdminLogin() {
             </button>
           </div>
         </form>
+
+        <div className="text-center mt-6">
+          <a href="/" className="text-sm text-warm-gray-400 hover:text-warm-dark transition-colors">
+            ← Volver a la web
+          </a>
+        </div>
       </div>
     </div>
   );

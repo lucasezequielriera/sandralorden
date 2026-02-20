@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import GlobalSearch from "./GlobalSearch";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: DashboardIcon },
@@ -47,6 +48,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             </h1>
             <p className="text-[11px] text-warm-gray-300 uppercase tracking-widest mt-1">Admin Panel</p>
           </Link>
+        </div>
+
+        <div className="px-4 pt-4 pb-2">
+          <GlobalSearch />
         </div>
 
         <nav className="flex-1 p-4 space-y-1">

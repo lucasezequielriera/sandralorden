@@ -78,13 +78,23 @@ export default function Navigation() {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2"
-            aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-            aria-expanded={isMobileMenuOpen}
-          >
+          {/* Mobile: Admin + Menu */}
+          <div className="md:hidden flex items-center gap-2">
+            <a
+              href="/admin"
+              className="w-8 h-8 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
+              aria-label="Panel de administración"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            </a>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex flex-col gap-1.5 p-2"
+              aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={isMobileMenuOpen}
+            >
             <m.span
               animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
               className="block w-6 h-[1.5px] bg-warm-dark origin-center"
@@ -97,7 +107,8 @@ export default function Navigation() {
               animate={isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
               className="block w-6 h-[1.5px] bg-warm-dark origin-center"
             />
-          </button>
+            </button>
+          </div>
         </div>
       </div>
 

@@ -7,6 +7,9 @@ interface Stats {
   activeClients: number;
   leads: number;
   pendingInvoices: number;
+  newClientsThisMonth: number;
+  monthlyRevenue: number;
+  conversionRate: number;
 }
 
 interface RecentClient {
@@ -28,6 +31,13 @@ interface RecentInvoice {
   clients: { name: string }[] | { name: string } | null;
 }
 
+interface LogEntry {
+  id: string;
+  action: string;
+  details: string;
+  created_at: string;
+}
+
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
   lead: "bg-amber-100 text-amber-700",
@@ -46,14 +56,18 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelado",
 };
 
+const currentMonth = new Date().toLocaleString("es-ES", { month: "long" });
+
 export default function DashboardContent({
   stats,
   recentClients,
   recentInvoices,
+  recentLogs,
 }: {
   stats: Stats;
   recentClients: RecentClient[];
   recentInvoices: RecentInvoice[];
+  recentLogs: LogEntry[];
 }) {
   return (
     <div>
@@ -64,15 +78,36 @@ export default function DashboardContent({
         <p className="text-sm text-warm-gray-400 mt-1">Resumen de tu negocio</p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Main Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <StatCard label="Clientes totales" value={stats.totalClients} color="rosa" />
         <StatCard label="Clientes activos" value={stats.activeClients} color="green" />
         <StatCard label="Leads nuevos" value={stats.leads} color="amber" />
         <StatCard label="Pagos pendientes" value={stats.pendingInvoices} color="red" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Monthly Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
+          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Nuevos en {currentMonth}</p>
+          <p className="text-2xl font-light text-warm-dark mt-2">{stats.newClientsThisMonth}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
+          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Ingresos {currentMonth}</p>
+          <p className="text-2xl font-light text-green-600 mt-2">{stats.monthlyRevenue.toFixed(0)}€</p>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-warm-gray-100">
+          <p className="text-[10px] text-warm-gray-400 uppercase tracking-wider">Conversión lead→activo</p>
+          <div className="flex items-end gap-2 mt-2">
+            <p className="text-2xl font-light text-rosa-500">{stats.conversionRate}%</p>
+            <div className="flex-1 h-2 bg-warm-gray-100 rounded-full overflow-hidden mb-1.5">
+              <div className="h-full bg-rosa-400 rounded-full transition-all" style={{ width: `${stats.conversionRate}%` }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Recent Clients */}
         <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
           <div className="flex items-center justify-between mb-4">
@@ -124,7 +159,7 @@ export default function DashboardContent({
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-warm-dark truncate">{inv.concept}</p>
                     <p className="text-xs text-warm-gray-300 truncate">
-                      {Array.isArray(inv.clients) ? inv.clients[0]?.name ?? "—" : inv.clients?.name ?? "—"} · {new Date(inv.due_date).toLocaleDateString("es-ES")}
+                      {Array.isArray(inv.clients) ? inv.clients[0]?.name ?? "—" : inv.clients?.name ?? "—"} · {inv.due_date ? new Date(inv.due_date).toLocaleDateString("es-ES") : "—"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 ml-3">
@@ -138,6 +173,29 @@ export default function DashboardContent({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Activity Logs */}
+      <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
+        <h3 className="font-medium text-warm-dark mb-4">Actividad reciente</h3>
+        {recentLogs.length === 0 ? (
+          <p className="text-sm text-warm-gray-300 text-center py-6">Sin actividad registrada</p>
+        ) : (
+          <div className="space-y-2">
+            {recentLogs.map((log) => (
+              <div key={log.id} className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-warm-gray-100/20 transition-colors">
+                <div className="w-2 h-2 rounded-full bg-rosa-300 mt-1.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-warm-dark">{log.action}</p>
+                  {log.details && <p className="text-xs text-warm-gray-300 truncate">{log.details}</p>}
+                </div>
+                <p className="text-[10px] text-warm-gray-300 flex-shrink-0">
+                  {new Date(log.created_at).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

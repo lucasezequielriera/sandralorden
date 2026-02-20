@@ -69,6 +69,10 @@ export async function POST(request: NextRequest) {
         },
         { onConflict: "email" }
       );
+      await supabase.from("activity_logs").insert({
+        action: "Nuevo formulario completado",
+        details: `${name} (${email}) — ${sanitizedBody.service || "Sin servicio"}`,
+      });
     } catch (dbErr) {
       console.error("Supabase insert error (non-blocking):", dbErr);
     }
