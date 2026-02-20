@@ -20,13 +20,6 @@ export default async function AdminPage() {
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
 
-  const { count: pendingInvoices } = await supabase
-    .from("invoices")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "pending")
-    .gte("due_date", yearStart)
-    .lte("due_date", yearEnd);
-
   const { count: presencialClients } = await supabase
     .from("clients")
     .select("*", { count: "exact", head: true })
@@ -109,7 +102,6 @@ export default async function AdminPage() {
         stats={{
           totalClients: totalClients ?? 0,
           activeClients: activeClients ?? 0,
-          pendingInvoices: pendingInvoices ?? 0,
           presencialClients: presencialClients ?? 0,
           virtualClients: virtualClients ?? 0,
           yearTotalRevenue,
