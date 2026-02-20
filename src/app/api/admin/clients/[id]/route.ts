@@ -44,9 +44,24 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
+  const { data: client } = await supabase.from("clients").select("name, email").eq("id", id).single();
+
+  const { data: fileRows } = await supabase.from("files").select("file_url").eq("client_id", id);
+  if (fileRows && fileRows.length > 0) {
+    const paths = fileRows
+      .map((f) => {
+        const match = f.file_url.match(/client-files\/(.+)/);
+        return match ? match[1] : null;
+      })
+      .filter(Boolean) as string[];
+    if (paths.length > 0) {
+      await supabase.storage.from("client-files").remove(paths);
+    }
+  }
+
   const { error } = await supabase.from("clients").delete().eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  await logActivity("Cliente eliminado", `ID: ${id}`);
+  await logActivity("Cliente eliminado", `${client?.name ?? "—"} (${client?.email ?? id})`);
   return NextResponse.json({ success: true });
 }
