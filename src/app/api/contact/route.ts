@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit } from "@/lib/rate-limit";
+import { sanitizeField, sanitizeEmail, isHoneypotFilled } from "@/lib/sanitize";
 
 function getResendClient() {
   const key = process.env.RESEND_API_KEY;
@@ -9,9 +11,24 @@ function getResendClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, service, message } = await request.json();
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { success } = rateLimit(`contact:${ip}`, { maxRequests: 5, windowMs: 60_000 });
+    if (!success) {
+      return NextResponse.json({ error: "Demasiados intentos. Espera un momento." }, { status: 429 });
+    }
 
-    if (!name?.trim() || !email?.trim()) {
+    const body = await request.json();
+
+    if (isHoneypotFilled(body)) {
+      return NextResponse.json({ success: true });
+    }
+
+    const name = sanitizeField(body.name, 100);
+    const email = sanitizeEmail(body.email);
+    const service = sanitizeField(body.service, 200);
+    const message = sanitizeField(body.message, 2000);
+
+    if (!name || !email) {
       return NextResponse.json({ error: "Nombre y email son obligatorios" }, { status: 400 });
     }
 

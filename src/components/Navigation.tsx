@@ -59,13 +59,24 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* CTA Button Desktop */}
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent("open-transformation-modal"))}
-            className="hidden md:inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
-          >
-            Empieza Ya
-          </button>
+          {/* CTA + Admin */}
+          <div className="hidden md:flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-transformation-modal"))}
+              className="inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
+            >
+              Empieza Ya
+            </button>
+            <a
+              href="/admin"
+              className="w-9 h-9 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
+              aria-label="Panel de administración"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            </a>
+          </div>
 
           {/* Mobile Menu Button */}
           <button

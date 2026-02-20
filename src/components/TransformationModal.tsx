@@ -20,11 +20,12 @@ export interface Answers {
   duration: string;
   obstacle: string;
   extra: string;
+  _hp: string;
 }
 
 const emptyAnswers: Answers = {
   name: "", email: "", phone: "", service: "", goal: "",
-  levelAndDays: "", trainingLocation: "", duration: "", obstacle: "", extra: "",
+  levelAndDays: "", trainingLocation: "", duration: "", obstacle: "", extra: "", _hp: "",
 };
 
 const slideVariants = {

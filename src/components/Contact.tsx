@@ -10,6 +10,7 @@ export default function Contact() {
     email: "",
     service: "",
     message: "",
+    _hp: "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
@@ -24,7 +25,7 @@ export default function Contact() {
       });
       if (!res.ok) throw new Error();
       setStatus("sent");
-      setFormState({ name: "", email: "", service: "", message: "" });
+      setFormState({ name: "", email: "", service: "", message: "", _hp: "" });
     } catch {
       setStatus("error");
     }
@@ -206,6 +207,17 @@ export default function Contact() {
                         placeholder="Cuéntame tus objetivos..."
                       />
                     </div>
+
+                    <input
+                      type="text"
+                      name="_hp"
+                      value={formState._hp}
+                      onChange={(e) => setFormState({ ...formState, _hp: e.target.value })}
+                      className="absolute opacity-0 h-0 w-0 overflow-hidden"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                    />
 
                     {status === "error" && (
                       <p className="text-sm text-red-400 text-center">

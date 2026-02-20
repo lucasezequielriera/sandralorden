@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { Resend } from "resend";
 import { buildAnalysisEmailHtml, buildLeadNotificationEmailHtml } from "@/lib/email-template";
+import { rateLimit } from "@/lib/rate-limit";
+import { sanitizeField, sanitizeEmail, sanitizePhone, isHoneypotFilled } from "@/lib/sanitize";
 
 function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -17,8 +19,27 @@ function getResendClient() {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { success } = rateLimit(`generate:${ip}`, { maxRequests: 3, windowMs: 120_000 });
+    if (!success) {
+      return NextResponse.json({ error: "Demasiados intentos. Espera un par de minutos." }, { status: 429 });
+    }
+
     const body = await request.json();
-    const { name, email, phone, service, goal, levelAndDays, duration, obstacle, extra } = body;
+
+    if (isHoneypotFilled(body)) {
+      return NextResponse.json({ success: true });
+    }
+
+    const name = sanitizeField(body.name, 100);
+    const email = sanitizeEmail(body.email);
+    const phone = sanitizePhone(body.phone);
+    const service = sanitizeField(body.service, 200);
+    const goal = sanitizeField(body.goal, 500);
+    const levelAndDays = sanitizeField(body.levelAndDays, 200);
+    const duration = sanitizeField(body.duration, 100);
+    const obstacle = sanitizeField(body.obstacle, 500);
+    const extra = sanitizeField(body.extra, 1000);
 
     if (!name || !email || !phone) {
       return NextResponse.json({ error: "Nombre, email y telefono son obligatorios." }, { status: 400 });
