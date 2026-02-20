@@ -107,7 +107,7 @@ export default function DashboardContent({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-10">
         {/* Clientes totales */}
         <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
           <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-rosa-100/40 -translate-y-8 translate-x-8" />
@@ -159,7 +159,7 @@ export default function DashboardContent({
         </div>
 
         {/* Ingresos anuales */}
-        <div className="relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
+        <div className="col-span-2 lg:col-span-1 relative overflow-hidden bg-crema rounded-3xl p-5 group hover:shadow-[0_4px_24px_rgba(192,113,112,0.08)] transition-all duration-300">
           <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#A8D5BA]/30 -translate-y-8 translate-x-8" />
           <p className="text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.12em]">Total {year}</p>
           <p className="text-3xl font-[family-name:var(--font-display)] italic text-[#3D6B4F] mt-1.5 leading-none">{stats.yearTotalRevenue.toFixed(0)}€</p>
