@@ -53,15 +53,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   if (action === "toggle") {
     if (existing) {
-      const newStatus = existing.status === "paid" ? "pending" : "paid";
-      const updateData: Record<string, unknown> = { status: newStatus };
-      if (newStatus === "paid") updateData.paid_date = new Date().toISOString().split("T")[0];
-      await supabase.from("invoices").update(updateData).eq("id", existing.id);
-      await logActivity(
-        `Pago ${newStatus === "paid" ? "marcado" : "desmarcado"}`,
-        `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`
-      );
-      return NextResponse.json({ status: newStatus, invoice_id: existing.id });
+      if (existing.status === "paid") {
+        await supabase.from("invoices").update({ status: "pending", paid_date: null }).eq("id", existing.id);
+        await logActivity("Pago → pendiente", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        return NextResponse.json({ status: "pending", invoice_id: existing.id });
+      } else {
+        await supabase.from("invoices").delete().eq("id", existing.id);
+        await logActivity("Factura eliminada", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`);
+        return NextResponse.json({ status: "none", invoice_id: null });
+      }
     } else {
       const { data: newInv } = await supabase
         .from("invoices")
