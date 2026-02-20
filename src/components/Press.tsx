@@ -4,13 +4,23 @@ import AnimatedSection from "./AnimatedSection";
 
 const mediaLogos = [
   { name: "Vogue", src: "/images/logos/vogue.svg" },
+  { name: "ELLE", src: "/images/logos/elle.svg" },
   { name: "¡Hola!", src: "/images/logos/hola.svg" },
   { name: "Semana", src: "/images/logos/logo-semana_header.png" },
   { name: "Cuerpomente", src: "/images/logos/cuerpomente.svg" },
+  { name: "Mediaset", src: "/images/logos/mediaset.svg" },
+  { name: "MSN", src: "/images/logos/msn.svg" },
   { name: "JeFemme", src: "/images/logos/jefemme.svg" },
 ];
 
 const pressItems = [
+  {
+    name: "MSN",
+    title: "Sandra Lorden, entrenadora: hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
+    type: "Digital",
+    date: "Oct 2025",
+    url: "https://www.msn.com/es-mx/salud/other/sandra-lorden-entrenadora-hay-sesiones-de-ejercicio-de-6-minutos-con-las-que-quemas-calor%C3%ADas-incluso-en-reposo/ar-AA1NSpe7",
+  },
   {
     name: "¡Hola!",
     title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
@@ -40,11 +50,25 @@ const pressItems = [
     url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
   },
   {
+    name: "ELLE",
+    title: "Los 5 ejercicios que de verdad tonifican y reafirman el cuerpo para ponerse en forma de aquí al verano",
+    type: "Revista",
+    date: "Abr 2025",
+    url: "https://www.elle.com/es/belleza/a64483685/los-5-ejercicios-que-de-verdad-tonifican-y-reafirman-el-cuerpo-para-ponerse-en-forma-de-aqui-al-verano-segun-una-entrenadora/",
+  },
+  {
     name: "¡Hola!",
     title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
     type: "Digital",
     date: "Sep 2024",
     url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
+  },
+  {
+    name: "Mediaset — Solos",
+    title: "La entrenadora personal Sandra Lorden visita el pisito para poner en forma a los inquilinos",
+    type: "TV",
+    date: "Jun 2023",
+    url: "https://www.mediasetinfinity.es/programas-tv/solos/keyla-y-napoli/episodios/programa-480-40_09934104/player/",
   },
   {
     name: "JeFemme",
