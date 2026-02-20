@@ -53,12 +53,12 @@ interface LogEntry {
 }
 
 const statusColors: Record<string, string> = {
-  active: "bg-green-100 text-green-700",
-  lead: "bg-amber-100 text-amber-700",
-  inactive: "bg-warm-gray-100 text-warm-gray-500",
-  pending: "bg-amber-100 text-amber-700",
-  paid: "bg-green-100 text-green-700",
-  cancelled: "bg-red-100 text-red-700",
+  active: "bg-marron-100 text-marron-500",
+  lead: "bg-rosa-100 text-rosa-500",
+  inactive: "bg-warm-gray-100 text-warm-gray-400",
+  pending: "bg-rosa-100 text-rosa-400",
+  paid: "bg-marron-100 text-marron-500",
+  cancelled: "bg-warm-gray-200 text-warm-gray-500",
 };
 
 const statusLabels: Record<string, string> = {
@@ -174,13 +174,16 @@ export default function DashboardContent({
       </div>
 
       {/* Monthly Breakdown */}
-      <div className="bg-white rounded-2xl border border-warm-gray-100 p-6 mb-6">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-medium text-warm-dark">Ingresos por mes — {year}</h3>
+      <div className="bg-crema rounded-3xl p-6 sm:p-8 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="font-[family-name:var(--font-display)] italic text-xl text-warm-dark">Resumen {year}</h3>
+            <p className="text-[10px] text-warm-gray-300 mt-0.5 uppercase tracking-[0.12em]">Ingresos mensuales</p>
+          </div>
           {selectedMonth !== null && (
             <button
               onClick={() => setSelectedMonth(null)}
-              className="text-xs text-rosa-400 hover:text-rosa-500 transition-colors cursor-pointer"
+              className="text-[10px] text-rosa-400 hover:text-rosa-500 transition-colors cursor-pointer uppercase tracking-wider"
             >
               Ver todos
             </button>
@@ -188,7 +191,7 @@ export default function DashboardContent({
         </div>
 
         {/* Bar chart */}
-        <div className="flex items-end gap-1.5 sm:gap-2 h-36 mb-4">
+        <div className="flex items-end gap-1 sm:gap-1.5 h-32 mb-2">
           {monthlyData.map((m, i) => {
             const height = maxRevenue > 0 ? (m.revenue / maxRevenue) * 100 : 0;
             const isCurrentMonth = i === currentMonth;
@@ -199,32 +202,30 @@ export default function DashboardContent({
               <button
                 key={i}
                 onClick={() => setSelectedMonth(isSelected ? null : i)}
-                className={`flex-1 flex flex-col items-center justify-end gap-1 cursor-pointer group transition-all rounded-lg py-1 ${
-                  isSelected ? "bg-rosa-50" : "hover:bg-warm-gray-100/30"
-                }`}
+                className="flex-1 flex flex-col items-center justify-end gap-1 cursor-pointer group transition-all py-1"
                 title={`${MONTH_NAMES[i]}: ${m.revenue.toFixed(0)}€`}
               >
                 {m.revenue > 0 && (
-                  <span className="text-[9px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[8px] text-warm-gray-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity tabular-nums">
                     {m.revenue.toFixed(0)}€
                   </span>
                 )}
                 <div
-                  className={`w-full rounded-t-md transition-all ${
+                  className={`w-full max-w-[28px] mx-auto rounded-full transition-all duration-300 ${
                     isSelected
                       ? "bg-rosa-400"
                       : isCurrentMonth
-                        ? "bg-rosa-300"
+                        ? "bg-marron-300"
                         : hasData
-                          ? "bg-rosa-200 group-hover:bg-rosa-300"
-                          : "bg-warm-gray-100"
+                          ? "bg-marron-200/60 group-hover:bg-marron-300"
+                          : "bg-warm-gray-200/40"
                   }`}
-                  style={{ height: `${Math.max(height, 4)}%` }}
+                  style={{ height: `${Math.max(height, 6)}%` }}
                 />
-                <span className={`text-[9px] ${
-                  isSelected ? "text-rosa-500 font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
+                <span className={`text-[9px] mt-0.5 ${
+                  isSelected ? "text-rosa-400 font-medium" : isCurrentMonth ? "text-warm-dark font-medium" : "text-warm-gray-300"
                 }`}>
-                  {MONTH_NAMES[i].substring(0, 3)}
+                  {MONTH_NAMES[i].charAt(0)}
                 </span>
               </button>
             );
@@ -233,36 +234,36 @@ export default function DashboardContent({
 
         {/* Selected month detail */}
         {selected && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-warm-gray-100">
-            <div className="bg-warm-gray-100/30 rounded-xl p-3">
-              <p className="text-[9px] text-warm-gray-400 uppercase tracking-wider">Clientes nuevos</p>
-              <p className="text-xl font-light text-warm-dark mt-1">{selected.newClients}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-5 border-t border-warm-gray-200/40">
+            <div className="bg-warm-white rounded-2xl p-3.5">
+              <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Clientes</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-warm-dark mt-0.5">{selected.newClients}</p>
             </div>
-            <div className="bg-green-50 rounded-xl p-3">
-              <p className="text-[9px] text-warm-gray-400 uppercase tracking-wider">Cobrado</p>
-              <p className="text-xl font-light text-green-600 mt-1">{selected.revenue.toFixed(0)}€</p>
+            <div className="bg-warm-white rounded-2xl p-3.5">
+              <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Cobrado</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-marron-500 mt-0.5">{selected.revenue.toFixed(0)}€</p>
             </div>
-            <div className="bg-amber-50 rounded-xl p-3">
-              <p className="text-[9px] text-warm-gray-400 uppercase tracking-wider">Pendiente</p>
-              <p className="text-xl font-light text-amber-600 mt-1">{selected.pending.toFixed(0)}€</p>
+            <div className="bg-warm-white rounded-2xl p-3.5">
+              <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Pendiente</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-rosa-400 mt-0.5">{selected.pending.toFixed(0)}€</p>
             </div>
-            <div className="bg-rosa-50 rounded-xl p-3">
-              <p className="text-[9px] text-warm-gray-400 uppercase tracking-wider">Facturas</p>
-              <p className="text-xl font-light text-rosa-500 mt-1">{selected.invoiceCount}</p>
+            <div className="bg-warm-white rounded-2xl p-3.5">
+              <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">Facturas</p>
+              <p className="text-lg font-[family-name:var(--font-display)] italic text-warm-dark mt-0.5">{selected.invoiceCount}</p>
             </div>
           </div>
         )}
 
         {/* Monthly table */}
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full">
             <thead>
-              <tr className="border-b border-warm-gray-100">
-                <th className="text-left py-2 px-2 font-medium text-warm-gray-400 text-[10px] uppercase tracking-wider">Mes</th>
-                <th className="text-right py-2 px-2 font-medium text-warm-gray-400 text-[10px] uppercase tracking-wider">Clientes</th>
-                <th className="text-right py-2 px-2 font-medium text-warm-gray-400 text-[10px] uppercase tracking-wider">Cobrado</th>
-                <th className="text-right py-2 px-2 font-medium text-warm-gray-400 text-[10px] uppercase tracking-wider">Pendiente</th>
-                <th className="text-right py-2 px-2 font-medium text-warm-gray-400 text-[10px] uppercase tracking-wider">Facturas</th>
+              <tr>
+                <th className="text-left py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Mes</th>
+                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Clientes</th>
+                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Cobrado</th>
+                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pendiente</th>
+                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Facturas</th>
               </tr>
             </thead>
             <tbody>
@@ -276,59 +277,69 @@ export default function DashboardContent({
                   <tr
                     key={i}
                     onClick={() => setSelectedMonth(isSelected ? null : i)}
-                    className={`border-b border-warm-gray-100/50 cursor-pointer transition-colors ${
-                      isSelected ? "bg-rosa-50" : isCurrentMonth ? "bg-warm-gray-100/20" : "hover:bg-warm-gray-100/20"
+                    className={`cursor-pointer transition-all duration-200 ${
+                      isSelected
+                        ? "bg-warm-white rounded-xl"
+                        : isCurrentMonth
+                          ? "bg-warm-white/50"
+                          : "hover:bg-warm-white/40"
                     }`}
                   >
-                    <td className={`py-2.5 px-2 ${isCurrentMonth ? "font-medium text-warm-dark" : "text-warm-gray-400"}`}>
+                    <td className={`py-2.5 px-3 text-sm rounded-l-xl ${isCurrentMonth ? "font-medium text-warm-dark" : "text-warm-gray-400"}`}>
                       {MONTH_NAMES[i]}
-                      {isCurrentMonth && <span className="text-[9px] ml-1 text-rosa-400">(actual)</span>}
+                      {isCurrentMonth && <span className="text-[8px] ml-1 text-rosa-300 uppercase">actual</span>}
                     </td>
-                    <td className="py-2.5 px-2 text-right text-warm-dark">{m.newClients}</td>
-                    <td className="py-2.5 px-2 text-right text-green-600 font-medium">{m.revenue > 0 ? `${m.revenue.toFixed(0)}€` : "—"}</td>
-                    <td className="py-2.5 px-2 text-right text-amber-600">{m.pending > 0 ? `${m.pending.toFixed(0)}€` : "—"}</td>
-                    <td className="py-2.5 px-2 text-right text-warm-gray-400">{m.invoiceCount || "—"}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-warm-dark tabular-nums">{m.newClients}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-marron-500 font-medium tabular-nums">{m.revenue > 0 ? `${m.revenue.toFixed(0)}€` : "—"}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-rosa-400 tabular-nums">{m.pending > 0 ? `${m.pending.toFixed(0)}€` : "—"}</td>
+                    <td className="py-2.5 px-3 text-sm text-right text-warm-gray-300 rounded-r-xl tabular-nums">{m.invoiceCount || "—"}</td>
                   </tr>
                 );
               })}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-warm-gray-200">
-                <td className="py-2.5 px-2 font-medium text-warm-dark">Total {year}</td>
-                <td className="py-2.5 px-2 text-right font-medium text-warm-dark">{monthlyData.reduce((s, m) => s + m.newClients, 0)}</td>
-                <td className="py-2.5 px-2 text-right font-medium text-green-600">{stats.yearTotalRevenue > 0 ? `${stats.yearTotalRevenue.toFixed(0)}€` : "—"}</td>
-                <td className="py-2.5 px-2 text-right font-medium text-amber-600">{stats.yearTotalPending > 0 ? `${stats.yearTotalPending.toFixed(0)}€` : "—"}</td>
-                <td className="py-2.5 px-2 text-right font-medium text-warm-gray-400">{monthlyData.reduce((s, m) => s + m.invoiceCount, 0)}</td>
+              <tr className="border-t border-warm-gray-200/40">
+                <td className="py-3 px-3 text-sm font-medium text-warm-dark">Total {year}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-warm-dark tabular-nums">{monthlyData.reduce((s, m) => s + m.newClients, 0)}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-marron-500 tabular-nums">{stats.yearTotalRevenue > 0 ? `${stats.yearTotalRevenue.toFixed(0)}€` : "—"}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-rosa-400 tabular-nums">{stats.yearTotalPending > 0 ? `${stats.yearTotalPending.toFixed(0)}€` : "—"}</td>
+                <td className="py-3 px-3 text-sm text-right font-medium text-warm-gray-400 tabular-nums">{monthlyData.reduce((s, m) => s + m.invoiceCount, 0)}</td>
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Recent Clients + Invoices */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         {/* Recent Clients */}
-        <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-medium text-warm-dark">Últimos clientes</h3>
-            <Link href="/admin/clientes" className="text-xs text-rosa-400 hover:text-rosa-500 transition-colors">
+        <div className="bg-crema rounded-3xl p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-[family-name:var(--font-display)] italic text-lg text-warm-dark">Últimos clientes</h3>
+            <Link href="/admin/clientes" className="text-[10px] text-rosa-400 hover:text-rosa-500 transition-colors uppercase tracking-wider">
               Ver todos
             </Link>
           </div>
           {recentClients.length === 0 ? (
-            <p className="text-sm text-warm-gray-300 text-center py-8">Sin clientes aún</p>
+            <p className="text-sm text-warm-gray-300 text-center py-10">Sin clientes aún</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-1">
               {recentClients.map((client) => (
                 <Link
                   key={client.id}
                   href={`/admin/clientes/${client.id}`}
-                  className="flex items-center justify-between p-3 rounded-xl hover:bg-warm-gray-100/30 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-2xl hover:bg-warm-white transition-all duration-200 group"
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-warm-dark truncate">{client.name}</p>
-                    <p className="text-xs text-warm-gray-300 truncate">{client.service_type || "Sin servicio"}</p>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-9 h-9 rounded-full bg-rosa-100/60 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-medium text-rosa-400">{client.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-warm-dark truncate group-hover:text-rosa-500 transition-colors">{client.name}</p>
+                      <p className="text-[11px] text-warm-gray-300 truncate">{client.service_type || "Sin servicio"}</p>
+                    </div>
                   </div>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ml-3 ${statusColors[client.status] ?? "bg-warm-gray-100 text-warm-gray-500"}`}>
+                  <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium ml-3 ${statusColors[client.status] ?? "bg-warm-gray-100 text-warm-gray-400"}`}>
                     {statusLabels[client.status] ?? client.status}
                   </span>
                 </Link>
@@ -338,31 +349,31 @@ export default function DashboardContent({
         </div>
 
         {/* Recent Invoices */}
-        <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-medium text-warm-dark">Últimas facturas</h3>
-            <Link href="/admin/contabilidad" className="text-xs text-rosa-400 hover:text-rosa-500 transition-colors">
+        <div className="bg-crema rounded-3xl p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-[family-name:var(--font-display)] italic text-lg text-warm-dark">Últimas facturas</h3>
+            <Link href="/admin/contabilidad" className="text-[10px] text-rosa-400 hover:text-rosa-500 transition-colors uppercase tracking-wider">
               Ver todas
             </Link>
           </div>
           {recentInvoices.length === 0 ? (
-            <p className="text-sm text-warm-gray-300 text-center py-8">Sin facturas aún</p>
+            <p className="text-sm text-warm-gray-300 text-center py-10">Sin facturas aún</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-1">
               {recentInvoices.map((inv) => (
                 <div
                   key={inv.id}
-                  className="flex items-center justify-between p-3 rounded-xl hover:bg-warm-gray-100/30 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-2xl hover:bg-warm-white transition-all duration-200"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-warm-dark truncate">{inv.concept}</p>
-                    <p className="text-xs text-warm-gray-300 truncate">
-                      {Array.isArray(inv.clients) ? inv.clients[0]?.name ?? "—" : inv.clients?.name ?? "—"} · {inv.due_date ? new Date(inv.due_date).toLocaleDateString("es-ES") : "—"}
+                    <p className="text-sm text-warm-dark truncate">{inv.concept}</p>
+                    <p className="text-[11px] text-warm-gray-300 truncate">
+                      {Array.isArray(inv.clients) ? inv.clients[0]?.name ?? "—" : inv.clients?.name ?? "—"} · {inv.due_date ? new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" }) : "—"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 ml-3">
-                    <span className="text-sm font-medium text-warm-dark">{inv.amount}€</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[inv.status] ?? "bg-warm-gray-100 text-warm-gray-500"}`}>
+                    <span className="text-sm font-[family-name:var(--font-display)] italic text-warm-dark">{inv.amount}€</span>
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium ${statusColors[inv.status] ?? "bg-warm-gray-100 text-warm-gray-400"}`}>
                       {statusLabels[inv.status] ?? inv.status}
                     </span>
                   </div>
@@ -374,20 +385,20 @@ export default function DashboardContent({
       </div>
 
       {/* Activity Logs */}
-      <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
-        <h3 className="font-medium text-warm-dark mb-4">Actividad reciente</h3>
+      <div className="bg-crema rounded-3xl p-6">
+        <h3 className="font-[family-name:var(--font-display)] italic text-lg text-warm-dark mb-5">Actividad reciente</h3>
         {recentLogs.length === 0 ? (
-          <p className="text-sm text-warm-gray-300 text-center py-6">Sin actividad registrada</p>
+          <p className="text-sm text-warm-gray-300 text-center py-8">Sin actividad registrada</p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-0.5">
             {recentLogs.map((log) => (
-              <div key={log.id} className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-warm-gray-100/20 transition-colors">
-                <div className="w-2 h-2 rounded-full bg-rosa-300 mt-1.5 flex-shrink-0" />
+              <div key={log.id} className="flex items-start gap-3 p-3 rounded-2xl hover:bg-warm-white transition-all duration-200">
+                <div className="w-1.5 h-1.5 rounded-full bg-rosa-300 mt-2 flex-shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-warm-dark">{log.action}</p>
-                  {log.details && <p className="text-xs text-warm-gray-300 truncate">{log.details}</p>}
+                  {log.details && <p className="text-[11px] text-warm-gray-300 truncate mt-0.5">{log.details}</p>}
                 </div>
-                <p className="text-[10px] text-warm-gray-300 flex-shrink-0">
+                <p className="text-[10px] text-warm-gray-300 flex-shrink-0 tabular-nums">
                   {new Date(log.created_at).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
