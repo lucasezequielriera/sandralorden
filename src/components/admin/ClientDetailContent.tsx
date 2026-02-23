@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { Client, Session, FileRecord, Invoice } from "@/lib/supabase/types";
 import PaymentGrid from "./PaymentGrid";
 
@@ -56,7 +56,12 @@ export default function ClientDetailContent({
         const updated = await res.json();
         setClient(updated);
         setEditing(false);
+      } else {
+        const data = await res.json().catch(() => null);
+        alert(data?.error || "Error al guardar los cambios");
       }
+    } catch {
+      alert("Error de red al guardar los cambios");
     } finally {
       setSaving(false);
     }
@@ -64,9 +69,18 @@ export default function ClientDetailContent({
 
   const handleDelete = async () => {
     if (!confirm("¿Seguro que quieres eliminar este cliente? Se borrarán todos sus datos.")) return;
-    await fetch(`/api/admin/clients/${client.id}`, { method: "DELETE" });
-    router.push("/admin/clientes");
-    router.refresh();
+    try {
+      const res = await fetch(`/api/admin/clients/${client.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        alert(data?.error || "Error al eliminar el cliente");
+        return;
+      }
+      router.push("/admin/clientes");
+      router.refresh();
+    } catch {
+      alert("Error de red al eliminar el cliente");
+    }
   };
 
   return (

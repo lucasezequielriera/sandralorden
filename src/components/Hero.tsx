@@ -20,14 +20,14 @@ export default function Hero() {
 
   useEffect(() => {
     const playVisible = () => {
-      const w = window.innerWidth;
-      const isMobile = w < 768;
+      const isMobile = window.innerWidth < 768;
       [
         { ref: mobileRef, show: isMobile },
         { ref: desktopRef, show: !isMobile },
       ].forEach(({ ref, show }) => {
         if (!ref.current) return;
         if (show) {
+          ref.current.preload = "auto";
           ref.current.style.display = "block";
           ref.current.play().catch(() => {});
         } else {
@@ -49,10 +49,10 @@ export default function Hero() {
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
       >
         {/* Responsive video backgrounds */}
-        <video ref={desktopRef} autoPlay loop muted playsInline className="hidden md:block" style={videoStyle}>
+        <video ref={desktopRef} loop muted playsInline preload="none" aria-hidden="true" style={videoStyle}>
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
-        <video ref={mobileRef} autoPlay loop muted playsInline className="block md:hidden" style={videoStyle}>
+        <video ref={mobileRef} loop muted playsInline preload="none" aria-hidden="true" style={videoStyle}>
           <source src="/videos/hero-bg-mobile.mp4" type="video/mp4" />
         </video>
 

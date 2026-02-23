@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { rateLimit } from "@/lib/rate-limit";
-import { sanitizeField, sanitizeEmail, isHoneypotFilled } from "@/lib/sanitize";
+import { sanitizeField, sanitizeEmail, escapeHtml, isHoneypotFilled } from "@/lib/sanitize";
 
 function getResendClient() {
   const key = process.env.RESEND_API_KEY;
@@ -40,8 +40,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email de destino no configurado" }, { status: 500 });
     }
 
-    const serviceText = service || "No especificado";
-    const messageText = message || "Sin mensaje";
+    const h = {
+      name: escapeHtml(name),
+      email: escapeHtml(email),
+      service: escapeHtml(service || "No especificado"),
+      message: escapeHtml(message || "Sin mensaje"),
+    };
 
     await resend.emails.send({
       from: emailFrom,
@@ -58,7 +62,7 @@ export async function POST(request: NextRequest) {
         <tr>
           <td style="background-color:#3D2C2C;border-radius:16px 16px 0 0;padding:20px 28px;">
             <p style="color:#F2D1D1;font-size:13px;margin:0;letter-spacing:1px;text-transform:uppercase;">📩 Mensaje desde la web</p>
-            <p style="color:#ffffff;font-size:22px;margin:6px 0 0;font-style:italic;font-family:Georgia,'Times New Roman',serif;">${name}</p>
+            <p style="color:#ffffff;font-size:22px;margin:6px 0 0;font-style:italic;font-family:Georgia,'Times New Roman',serif;">${h.name}</p>
           </td>
         </tr>
         <tr>
@@ -66,22 +70,22 @@ export async function POST(request: NextRequest) {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
                 <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">Email</span>
-                <a href="mailto:${email}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${email}</a>
+                <a href="mailto:${h.email}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${h.email}</a>
               </td></tr>
               <tr><td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
                 <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">Servicio</span>
-                <span style="font-size:14px;color:#3D2C2C;">${serviceText}</span>
+                <span style="font-size:14px;color:#3D2C2C;">${h.service}</span>
               </td></tr>
             </table>
 
             <div style="margin-top:20px;background-color:#FFFAF7;border-radius:12px;padding:16px;">
               <p style="font-size:11px;color:#C9A88E;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.8px;">Mensaje</p>
-              <p style="font-size:14px;color:#3D2C2C;margin:0;line-height:1.6;white-space:pre-wrap;">${messageText}</p>
+              <p style="font-size:14px;color:#3D2C2C;margin:0;line-height:1.6;white-space:pre-wrap;">${h.message}</p>
             </div>
 
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
               <tr><td align="center">
-                <a href="mailto:${email}?subject=Re: Tu mensaje en sandralorden.com&body=Hola ${name},%0A%0A" style="display:inline-block;background-color:#3D2C2C;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:12px;font-size:14px;font-weight:600;">
+                <a href="mailto:${h.email}?subject=Re: Tu mensaje en sandralorden.com&body=Hola ${encodeURIComponent(name)},%0A%0A" style="display:inline-block;background-color:#3D2C2C;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:12px;font-size:14px;font-weight:600;">
                   Responder por email
                 </a>
               </td></tr>
@@ -99,7 +103,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Contact form error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Error al enviar el mensaje" },
+      { error: "Error al enviar el mensaje. Inténtalo de nuevo." },
       { status: 500 }
     );
   }

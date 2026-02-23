@@ -14,7 +14,10 @@ export async function GET() {
     .select("*, clients(name, email)")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Invoices GET error:", error.message);
+    return NextResponse.json({ error: "Error al obtener facturas" }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
 
@@ -31,11 +34,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Cliente y concepto son obligatorios" }, { status: 400 });
   }
 
+  const parsedAmount = Number(amount);
+  if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+    return NextResponse.json({ error: "El importe debe ser mayor que 0" }, { status: 400 });
+  }
+
+  const VALID_STATUSES = ["pending", "paid", "cancelled"];
+  if (status && !VALID_STATUSES.includes(status)) {
+    return NextResponse.json({ error: "Estado no válido" }, { status: 400 });
+  }
+
   const { data, error } = await supabase
     .from("invoices")
     .insert({
       client_id,
-      amount: Number(amount) || 0,
+      amount: parsedAmount,
       currency: "EUR",
       concept,
       status: status || "pending",
@@ -44,7 +57,10 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Invoice creation error:", error.message);
+    return NextResponse.json({ error: "Error al crear la factura" }, { status: 500 });
+  }
   await logActivity("Nueva factura creada", `${concept} — ${amount}€`, client_id);
   return NextResponse.json(data, { status: 201 });
 }

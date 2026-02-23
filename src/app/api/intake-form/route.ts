@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
 
     const resend = getResendClient();
     const emailFrom = process.env.EMAIL_FROM || "Sandra Lorden <onboarding@resend.dev>";
-    const sandraEmail = process.env.SANDRA_EMAIL || "sandralordenfit@gmail.com";
+    const sandraEmail = process.env.SANDRA_EMAIL;
+    if (!sandraEmail) throw new Error("SANDRA_EMAIL no configurada.");
 
     const result = await resend.emails.send({
       from: emailFrom,
@@ -57,18 +58,35 @@ export async function POST(request: NextRequest) {
 
     try {
       const supabase = await createServiceClient();
-      await supabase.from("clients").upsert(
-        {
+      const goal = [sanitizedBody.mejoraRendimiento, sanitizedBody.mejoraEstetica].filter(Boolean).join(" | ");
+
+      const { data: existing } = await supabase
+        .from("clients")
+        .select("id")
+        .eq("email", email)
+        .single();
+
+      if (existing) {
+        await supabase
+          .from("clients")
+          .update({
+            name,
+            phone,
+            service_type: sanitizedBody.service || undefined,
+            goal: goal || undefined,
+          })
+          .eq("id", existing.id);
+      } else {
+        await supabase.from("clients").insert({
           name,
           email,
           phone,
           service_type: sanitizedBody.service || "",
-          goal: sanitizedBody.objetivoRendimiento || sanitizedBody.objetivoEstetico || "",
+          goal,
           status: "active",
           notes: "Formulario detallado completado",
-        },
-        { onConflict: "email" }
-      );
+        });
+      }
       await supabase.from("activity_logs").insert({
         action: "Nuevo formulario completado",
         details: `${name} (${email}) — ${sanitizedBody.service || "Sin servicio"}`,

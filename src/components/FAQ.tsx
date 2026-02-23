@@ -47,6 +47,8 @@ export default function FAQ() {
                   onClick={() => toggle(i)}
                   className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left cursor-pointer"
                   aria-expanded={openIndex === i}
+                  aria-controls={`faq-answer-${i}`}
+                  id={`faq-question-${i}`}
                 >
                   <span className="font-medium text-sm sm:text-base text-warm-dark pr-2">
                     {faq.question}
@@ -64,6 +66,9 @@ export default function FAQ() {
                 <AnimatePresence>
                   {openIndex === i && (
                     <m.div
+                      id={`faq-answer-${i}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${i}`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}

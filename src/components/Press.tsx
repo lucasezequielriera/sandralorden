@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
@@ -101,6 +102,13 @@ const pressItems = [
   },
 ];
 
+const TYPE_KEYS: Record<string, string> = {
+  Digital: "typeDigital",
+  Revista: "typeRevista",
+  TV: "typeTV",
+  Entrevista: "typeEntrevista",
+};
+
 export default function Press() {
   const t = useTranslations("Press");
   return (
@@ -134,10 +142,11 @@ export default function Press() {
                 key={logo.name}
                 className="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={logo.src}
                   alt={logo.name}
+                  width={128}
+                  height={48}
                   className="h-8 sm:h-10 md:h-12 w-auto max-w-[8rem] object-contain"
                 />
               </div>
@@ -158,7 +167,7 @@ export default function Press() {
                 {/* Type badge + date */}
                 <div className="flex items-center justify-between mb-2 sm:mb-3">
                   <span className="inline-block text-[10px] sm:text-xs uppercase tracking-widest text-marron-400 font-medium">
-                    {item.type}
+                    {t(TYPE_KEYS[item.type] || item.type)}
                   </span>
                   <span className="text-[10px] sm:text-xs text-warm-gray-300">
                     {item.date}

@@ -1,13 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
+function setCookieConsent(value: string) {
+  localStorage.setItem("cookie-consent", value);
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `cookie-consent=${value}; max-age=31536000; path=/; SameSite=Lax${secure}`;
+  window.dispatchEvent(new CustomEvent("cookie-consent-change", { detail: value }));
+}
+
+export function getCookieConsent(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("cookie-consent");
+}
+
 export default function CookieBanner() {
   const t = useTranslations("CookieBanner");
   const [visible, setVisible] = useState(false);
+
+  const show = useCallback(() => setVisible(true), []);
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
@@ -17,15 +31,18 @@ export default function CookieBanner() {
     }
   }, []);
 
+  useEffect(() => {
+    window.addEventListener("open-cookie-settings", show);
+    return () => window.removeEventListener("open-cookie-settings", show);
+  }, [show]);
+
   const accept = () => {
-    localStorage.setItem("cookie-consent", "all");
-    document.cookie = "cookie-consent=all; max-age=31536000; path=/; SameSite=Lax";
+    setCookieConsent("all");
     setVisible(false);
   };
 
   const reject = () => {
-    localStorage.setItem("cookie-consent", "essential");
-    document.cookie = "cookie-consent=essential; max-age=31536000; path=/; SameSite=Lax";
+    setCookieConsent("essential");
     setVisible(false);
   };
 

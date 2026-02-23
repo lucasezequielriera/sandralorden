@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 interface InvoiceRow {
   id: string;
@@ -95,6 +95,8 @@ export default function ContabilidadContent({
         setShowNew(false);
         setNewInvoice({ client_id: "", amount: "", concept: "", due_date: "" });
         router.refresh();
+      } else {
+        alert("Error al crear la factura. Inténtalo de nuevo.");
       }
     } finally {
       setSaving(false);
@@ -103,20 +105,38 @@ export default function ContabilidadContent({
 
   const handleStatusChange = async (id: string, currentStatus: string) => {
     const newStatus = nextStatus[currentStatus] || "pending";
+
+    if (currentStatus === "paid" && newStatus === "cancelled") {
+      if (!confirm("¿Cambiar factura pagada a cancelada?")) return;
+    }
+
+    const previous = invoices;
     setInvoices((prev) =>
       prev.map((inv) => inv.id === id ? { ...inv, status: newStatus, paid_date: newStatus === "paid" ? new Date().toISOString().split("T")[0] : inv.paid_date } : inv)
     );
-    await fetch(`/api/admin/invoices/${id}`, {
+
+    const res = await fetch(`/api/admin/invoices/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
     });
+
+    if (!res.ok) {
+      setInvoices(previous);
+      alert("Error al actualizar el estado. Inténtalo de nuevo.");
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Eliminar esta factura?")) return;
+    const previous = invoices;
     setInvoices((prev) => prev.filter((inv) => inv.id !== id));
-    await fetch(`/api/admin/invoices/${id}`, { method: "DELETE" });
+
+    const res = await fetch(`/api/admin/invoices/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      setInvoices(previous);
+      alert("Error al eliminar la factura. Inténtalo de nuevo.");
+    }
   };
 
   const scopeLabel = monthFilter !== "all" ? MONTH_NAMES[Number(monthFilter)] : `${thisYear}`;
@@ -252,12 +272,12 @@ export default function ContabilidadContent({
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Concepto</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell">Cliente</th>
-                  <th className="text-right px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Importe</th>
-                  <th className="text-center px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Estado</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden md:table-cell">Fecha</th>
-                  <th className="w-10 py-4"></th>
+                  <th scope="col" className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Concepto</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell">Cliente</th>
+                  <th scope="col" className="text-right px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Importe</th>
+                  <th scope="col" className="text-center px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Estado</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden md:table-cell">Fecha</th>
+                  <th scope="col" className="w-10 py-4"></th>
                 </tr>
               </thead>
               <tbody>

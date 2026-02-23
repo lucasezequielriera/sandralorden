@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 interface FileRow {
   id: string;
@@ -150,11 +150,11 @@ export default function ArchivosContent({
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Archivo</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell">Cliente</th>
-                  <th className="text-center px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden md:table-cell">Tipo</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Fecha</th>
-                  <th className="w-10 py-4"></th>
+                  <th scope="col" className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Archivo</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell">Cliente</th>
+                  <th scope="col" className="text-center px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden md:table-cell">Tipo</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Fecha</th>
+                  <th scope="col" className="w-10 py-4"></th>
                 </tr>
               </thead>
               <tbody>

@@ -32,6 +32,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const supabase = await createClient();
 
   const { month, year, action, amount: bodyAmount } = await request.json();
+
+  if (typeof month !== "number" || month < 0 || month > 11 || !Number.isInteger(month)) {
+    return NextResponse.json({ error: "Mes no válido" }, { status: 400 });
+  }
+  if (typeof year !== "number" || year < 2020 || year > 2100 || !Number.isInteger(year)) {
+    return NextResponse.json({ error: "Año no válido" }, { status: 400 });
+  }
+
   const monthStart = `${year}-${String(month + 1).padStart(2, "0")}-01`;
   const monthEnd = month === 11
     ? `${year + 1}-01-01`
@@ -54,8 +62,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .eq("id", id)
     .single();
 
-  // sin factura → pendiente (con monto, desde modal)
   if (action === "create") {
+    const amt = Number(bodyAmount);
+    if (!Number.isFinite(amt) || amt <= 0) {
+      return NextResponse.json({ error: "El importe debe ser mayor que 0" }, { status: 400 });
+    }
     if (existing) {
       await supabase.from("invoices").update({
         status: "pending",
@@ -91,9 +102,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await logActivity("Pago confirmado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`, id);
         return NextResponse.json({ status: "paid", invoice_id: existing.id });
       } else if (existing.status === "paid") {
-        await supabase.from("invoices").delete().eq("id", existing.id);
-        await logActivity("Pago eliminado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`, id);
-        return NextResponse.json({ status: "none", invoice_id: null });
+        await supabase.from("invoices").update({
+          status: "cancelled",
+          paid_date: null,
+        }).eq("id", existing.id);
+        await logActivity("Pago cancelado", `${client?.name ?? "Cliente"} — ${MONTH_NAMES[month]} ${year}`, id);
+        return NextResponse.json({ status: "cancelled", invoice_id: existing.id });
       }
     }
     return NextResponse.json({ status: "none" });

@@ -1,6 +1,11 @@
+// In-memory rate limiting — works per serverless instance.
+// For production-grade rate limiting, replace with @upstash/ratelimit + @upstash/redis.
+// This still provides protection against rapid sequential abuse within the same instance.
+
 const rateMap = new Map<string, { count: number; resetTime: number }>();
 
 const CLEANUP_INTERVAL = 60_000;
+const MAX_MAP_SIZE = 10_000;
 let lastCleanup = Date.now();
 
 function cleanup() {
@@ -10,6 +15,7 @@ function cleanup() {
   for (const [key, val] of rateMap) {
     if (now > val.resetTime) rateMap.delete(key);
   }
+  if (rateMap.size > MAX_MAP_SIZE) rateMap.clear();
 }
 
 export function rateLimit(

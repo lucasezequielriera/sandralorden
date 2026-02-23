@@ -16,7 +16,10 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     .eq("id", id)
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+  if (error) {
+    console.error("Client GET error:", error.message);
+    return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+  }
   return NextResponse.json(data);
 }
 
@@ -29,14 +32,27 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const body = await request.json();
 
+  const ALLOWED_FIELDS = ["name", "email", "phone", "modality", "service_type", "status", "goal", "notes"];
+  const filtered: Record<string, unknown> = {};
+  for (const key of ALLOWED_FIELDS) {
+    if (key in body) filtered[key] = body[key];
+  }
+
+  if (Object.keys(filtered).length === 0) {
+    return NextResponse.json({ error: "No se proporcionaron campos válidos." }, { status: 400 });
+  }
+
   const { data, error } = await supabase
     .from("clients")
-    .update(body)
+    .update(filtered)
     .eq("id", id)
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Client PATCH error:", error.message);
+    return NextResponse.json({ error: "Error al actualizar el cliente" }, { status: 500 });
+  }
   await logActivity("Cliente actualizado", `${data.name} (${data.email})`, id);
   return NextResponse.json(data);
 }
@@ -65,12 +81,16 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 
   await supabase.from("activity_logs").delete().eq("client_id", id);
   if (client?.name) {
-    await supabase.from("activity_logs").delete().is("client_id", null).ilike("details", `%${client.name}%`);
+    const escapedName = client.name.replace(/[%_\\]/g, "\\$&");
+    await supabase.from("activity_logs").delete().is("client_id", null).ilike("details", `%${escapedName}%`);
   }
 
   const { error } = await supabase.from("clients").delete().eq("id", id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Client DELETE error:", error.message);
+    return NextResponse.json({ error: "Error al eliminar el cliente" }, { status: 500 });
+  }
   await logActivity("Cliente eliminado", `${client?.name ?? "—"} (${client?.email ?? id})`);
   return NextResponse.json({ success: true });
 }

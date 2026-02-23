@@ -12,7 +12,7 @@ export function escapeHtml(str: string): string {
 
 export function sanitizeField(value: unknown, maxLength = 500): string {
   if (typeof value !== "string") return "";
-  return escapeHtml(value.trim().slice(0, maxLength));
+  return value.trim().slice(0, maxLength);
 }
 
 export function sanitizeEmail(value: unknown): string {

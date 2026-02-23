@@ -6,6 +6,24 @@ import { m, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
+const FOOD_KEY_TO_ES: Record<string, string> = {
+  pollo: "Pollo", pavo: "Pavo", ternera: "Ternera", cerdo: "Cerdo", cordero: "Cordero",
+  conejo: "Conejo", jamon: "Jamón", lomo: "Lomo", solomillo: "Solomillo", higado: "Hígado",
+  salmon: "Salmón", atun: "Atún", merluza: "Merluza", bacalao: "Bacalao", lubina: "Lubina",
+  dorada: "Dorada", sardinas: "Sardinas", gambas: "Gambas", langostinos: "Langostinos",
+  mejillones: "Mejillones", pulpo: "Pulpo", calamares: "Calamares", brocoli: "Brócoli",
+  espinacas: "Espinacas", calabacin: "Calabacín", pimiento: "Pimiento", tomate: "Tomate",
+  lechuga: "Lechuga", cebolla: "Cebolla", zanahoria: "Zanahoria", judias_verdes: "Judías verdes",
+  berenjena: "Berenjena", coliflor: "Coliflor", esparragos: "Espárragos", champinones: "Champiñones",
+  alcachofa: "Alcachofa", pepino: "Pepino", platano: "Plátano", manzana: "Manzana", fresas: "Fresas",
+  naranja: "Naranja", mandarina: "Mandarina", uvas: "Uvas", sandia: "Sandía", melon: "Melón",
+  pina: "Piña", kiwi: "Kiwi", pera: "Pera", melocoton: "Melocotón", mango: "Mango",
+  arandanos: "Arándanos", arroz: "Arroz", pasta: "Pasta", pan: "Pan", huevos: "Huevos",
+  avena: "Avena", patata: "Patata", boniato: "Boniato", legumbres: "Legumbres", quinoa: "Quinoa",
+  frutos_secos: "Frutos secos", yogur: "Yogur", queso: "Queso", leche: "Leche",
+  aceite_oliva: "Aceite de oliva", aguacate: "Aguacate", tofu: "Tofu",
+};
+
 function FormularioContent() {
   const t = useTranslations("Formulario");
   const searchParams = useSearchParams();
@@ -86,8 +104,14 @@ function FormularioContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          alimentosPreferidos: Object.entries(foodSelections).filter(([, v]) => v === "liked").map(([k]) => k).join(", "),
-          alimentosNoGustan: Object.entries(foodSelections).filter(([, v]) => v === "disliked").map(([k]) => k).join(", "),
+          alimentosPreferidos: Object.entries(foodSelections)
+            .filter(([, v]) => v === "liked")
+            .map(([k]) => FOOD_KEY_TO_ES[k] || k)
+            .join(", "),
+          alimentosNoGustan: Object.entries(foodSelections)
+            .filter(([, v]) => v === "disliked")
+            .map(([k]) => FOOD_KEY_TO_ES[k] || k)
+            .join(", "),
         }),
       });
       const data = await res.json();
@@ -101,13 +125,13 @@ function FormularioContent() {
     }
   };
 
-  // Define food categories inside component to access t()
-  const FOOD_CATEGORIES: { name: string; emoji: string; items: string[] }[] = [
-    { name: t("foodCatCarnes"), emoji: "🥩", items: ["Pollo", "Pavo", "Ternera", "Cerdo", "Cordero", "Conejo", "Jamón", "Lomo", "Solomillo", "Hígado"] },
-    { name: t("foodCatPescados"), emoji: "🐟", items: ["Salmón", "Atún", "Merluza", "Bacalao", "Lubina", "Dorada", "Sardinas", "Gambas", "Langostinos", "Mejillones", "Pulpo", "Calamares"] },
-    { name: t("foodCatVerduras"), emoji: "🥦", items: ["Brócoli", "Espinacas", "Calabacín", "Pimiento", "Tomate", "Lechuga", "Cebolla", "Zanahoria", "Judías verdes", "Berenjena", "Coliflor", "Espárragos", "Champiñones", "Alcachofa", "Pepino"] },
-    { name: t("foodCatFrutas"), emoji: "🍎", items: ["Plátano", "Manzana", "Fresas", "Naranja", "Mandarina", "Uvas", "Sandía", "Melón", "Piña", "Kiwi", "Pera", "Melocotón", "Mango", "Arándanos"] },
-    { name: t("foodCatOtros"), emoji: "🍳", items: ["Arroz", "Pasta", "Pan", "Huevos", "Avena", "Patata", "Boniato", "Legumbres", "Quinoa", "Frutos secos", "Yogur", "Queso", "Leche", "Aceite de oliva", "Aguacate", "Tofu"] },
+  const f = (key: string) => ({ key, label: t(`food_${key}`) });
+  const FOOD_CATEGORIES: { name: string; emoji: string; items: { key: string; label: string }[] }[] = [
+    { name: t("foodCatCarnes"), emoji: "🥩", items: ["pollo","pavo","ternera","cerdo","cordero","conejo","jamon","lomo","solomillo","higado"].map(f) },
+    { name: t("foodCatPescados"), emoji: "🐟", items: ["salmon","atun","merluza","bacalao","lubina","dorada","sardinas","gambas","langostinos","mejillones","pulpo","calamares"].map(f) },
+    { name: t("foodCatVerduras"), emoji: "🥦", items: ["brocoli","espinacas","calabacin","pimiento","tomate","lechuga","cebolla","zanahoria","judias_verdes","berenjena","coliflor","esparragos","champinones","alcachofa","pepino"].map(f) },
+    { name: t("foodCatFrutas"), emoji: "🍎", items: ["platano","manzana","fresas","naranja","mandarina","uvas","sandia","melon","pina","kiwi","pera","melocoton","mango","arandanos"].map(f) },
+    { name: t("foodCatOtros"), emoji: "🍳", items: ["arroz","pasta","pan","huevos","avena","patata","boniato","legumbres","quinoa","frutos_secos","yogur","queso","leche","aceite_oliva","aguacate","tofu"].map(f) },
   ];
 
   if (isSent) {
@@ -155,64 +179,64 @@ function FormularioContent() {
           {/* ── DATOS PERSONALES ── */}
           <FormSection title={t("sectionAbout")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField label={t("labelName")} value={form.name} onChange={(v) => update("name", v)} required />
-              <InputField label={t("labelEmail")} type="email" value={form.email} onChange={(v) => update("email", v)} required />
-              <InputField label={t("labelPhone")} type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder={t("placeholderPhone")} required />
-              <InputField label={t("labelAge")} value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
+              <InputField id="f-name" label={t("labelName")} value={form.name} onChange={(v) => update("name", v)} required />
+              <InputField id="f-email" label={t("labelEmail")} type="email" value={form.email} onChange={(v) => update("email", v)} required />
+              <InputField id="f-phone" label={t("labelPhone")} type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder={t("placeholderPhone")} required />
+              <InputField id="f-age" label={t("labelAge")} value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <InputField label={t("labelHeight")} value={form.height} onChange={(v) => update("height", v)} placeholder={t("placeholderHeight")} required />
-              <InputField label={t("labelWeight")} value={form.weight} onChange={(v) => update("weight", v)} placeholder={t("placeholderWeight")} required />
-              <InputField label={t("labelGoalWeight")} value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder={t("placeholderGoalWeight")} />
+              <InputField id="f-height" label={t("labelHeight")} value={form.height} onChange={(v) => update("height", v)} placeholder={t("placeholderHeight")} required />
+              <InputField id="f-weight" label={t("labelWeight")} value={form.weight} onChange={(v) => update("weight", v)} placeholder={t("placeholderWeight")} required />
+              <InputField id="f-goalWeight" label={t("labelGoalWeight")} value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder={t("placeholderGoalWeight")} />
             </div>
           </FormSection>
 
           {/* ── SALUD ── */}
           <FormSection title={t("sectionHealth")}>
             <div className="space-y-4">
-              <TextareaField label={t("labelEnfermedades")} value={form.enfermedadesInfancia} onChange={(v) => update("enfermedadesInfancia", v)} placeholder={t("placeholderEnfermedades")} />
-              <TextareaField label={t("labelLesiones")} value={form.lesiones} onChange={(v) => update("lesiones", v)} placeholder={t("placeholderLesiones")} />
-              <TextareaField label={t("labelCirugias")} value={form.cirugias} onChange={(v) => update("cirugias", v)} placeholder={t("placeholderCirugias")} />
+              <TextareaField id="f-enfermedades" label={t("labelEnfermedades")} value={form.enfermedadesInfancia} onChange={(v) => update("enfermedadesInfancia", v)} placeholder={t("placeholderEnfermedades")} />
+              <TextareaField id="f-lesiones" label={t("labelLesiones")} value={form.lesiones} onChange={(v) => update("lesiones", v)} placeholder={t("placeholderLesiones")} />
+              <TextareaField id="f-cirugias" label={t("labelCirugias")} value={form.cirugias} onChange={(v) => update("cirugias", v)} placeholder={t("placeholderCirugias")} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label={t("labelDiabetes")} value={form.diabetes} onChange={(v) => update("diabetes", v)} options={[t("optNo"), t("optDiabetes1"), t("optDiabetes2")]} t={t} />
-                <SelectField label={t("labelHipertension")} value={form.hipertension} onChange={(v) => update("hipertension", v)} options={[t("optNo"), t("optSi")]} t={t} />
+                <SelectField id="f-diabetes" label={t("labelDiabetes")} value={form.diabetes} onChange={(v) => update("diabetes", v)} options={[t("optNo"), t("optDiabetes1"), t("optDiabetes2")]} t={t} />
+                <SelectField id="f-hipertension" label={t("labelHipertension")} value={form.hipertension} onChange={(v) => update("hipertension", v)} options={[t("optNo"), t("optSi")]} t={t} />
               </div>
-              <TextareaField label={t("labelCorazon")} value={form.corazon} onChange={(v) => update("corazon", v)} placeholder={t("placeholderCorazon")} rows={2} />
+              <TextareaField id="f-corazon" label={t("labelCorazon")} value={form.corazon} onChange={(v) => update("corazon", v)} placeholder={t("placeholderCorazon")} rows={2} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label={t("labelHipotiroidismo")} value={form.hipotiroidismo} onChange={(v) => update("hipotiroidismo", v)} options={[t("optNo"), t("optSi")]} t={t} />
-                <SelectField label={t("labelColesterol")} value={form.colesterolTrigliceridos} onChange={(v) => update("colesterolTrigliceridos", v)} options={[t("optNo"), t("optColesterol"), t("optTrigliceridos"), t("optAmbos")]} t={t} />
+                <SelectField id="f-hipotiroidismo" label={t("labelHipotiroidismo")} value={form.hipotiroidismo} onChange={(v) => update("hipotiroidismo", v)} options={[t("optNo"), t("optSi")]} t={t} />
+                <SelectField id="f-colesterol" label={t("labelColesterol")} value={form.colesterolTrigliceridos} onChange={(v) => update("colesterolTrigliceridos", v)} options={[t("optNo"), t("optColesterol"), t("optTrigliceridos"), t("optAmbos")]} t={t} />
               </div>
-              <SelectField label={t("labelDigestivo")} value={form.digestivo} onChange={(v) => update("digestivo", v)} options={[t("optNo"), t("optEstrenimiento"), t("optColon"), t("optDoloresDigestivos"), t("optVarios")]} t={t} />
-              <TextareaField label={t("labelMedicamentos")} value={form.medicamentos} onChange={(v) => update("medicamentos", v)} placeholder={t("placeholderMedicamentos")} rows={2} />
-              <TextareaField label={t("labelFumaOBebe")} value={form.fumaOBebe} onChange={(v) => update("fumaOBebe", v)} placeholder={t("placeholderFumaOBebe")} rows={2} />
-              <InputField label={t("labelDescanso")} value={form.descanso} onChange={(v) => update("descanso", v)} placeholder={t("placeholderDescanso")} />
+              <SelectField id="f-digestivo" label={t("labelDigestivo")} value={form.digestivo} onChange={(v) => update("digestivo", v)} options={[t("optNo"), t("optEstrenimiento"), t("optColon"), t("optDoloresDigestivos"), t("optVarios")]} t={t} />
+              <TextareaField id="f-medicamentos" label={t("labelMedicamentos")} value={form.medicamentos} onChange={(v) => update("medicamentos", v)} placeholder={t("placeholderMedicamentos")} rows={2} />
+              <TextareaField id="f-fumaOBebe" label={t("labelFumaOBebe")} value={form.fumaOBebe} onChange={(v) => update("fumaOBebe", v)} placeholder={t("placeholderFumaOBebe")} rows={2} />
+              <InputField id="f-descanso" label={t("labelDescanso")} value={form.descanso} onChange={(v) => update("descanso", v)} placeholder={t("placeholderDescanso")} />
             </div>
           </FormSection>
 
           {/* ── ALIMENTACIÓN ── */}
           <FormSection title={t("sectionNutricion")}>
             <div className="space-y-4">
-              <TextareaField label={t("labelComidas")} value={form.comidasYHorarios} onChange={(v) => update("comidasYHorarios", v)} placeholder={t("placeholderComidas")} required />
+              <TextareaField id="f-comidas" label={t("labelComidas")} value={form.comidasYHorarios} onChange={(v) => update("comidasYHorarios", v)} placeholder={t("placeholderComidas")} required />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField label={t("labelApetito")} value={form.apetito} onChange={(v) => update("apetito", v)} options={[t("optBueno"), t("optRegular"), t("optMalo")]} t={t} />
-                <InputField label={t("labelMomentoApetito")} value={form.momentoApetito} onChange={(v) => update("momentoApetito", v)} placeholder={t("placeholderMomentoApetito")} />
+                <SelectField id="f-apetito" label={t("labelApetito")} value={form.apetito} onChange={(v) => update("apetito", v)} options={[t("optBueno"), t("optRegular"), t("optMalo")]} t={t} />
+                <InputField id="f-momentoApetito" label={t("labelMomentoApetito")} value={form.momentoApetito} onChange={(v) => update("momentoApetito", v)} placeholder={t("placeholderMomentoApetito")} />
               </div>
 
               <FoodSelector selections={foodSelections} onToggle={toggleFood} foodCategories={FOOD_CATEGORIES} t={t} />
 
-              <TextareaField label={t("labelDiaTipo")} value={form.diaTipo} onChange={(v) => update("diaTipo", v)} placeholder={t("placeholderDiaTipo")} rows={4} required />
-              <TextareaField label={t("labelAlergias")} value={form.alergiasAlimentarias} onChange={(v) => update("alergiasAlimentarias", v)} placeholder={t("placeholderAlergias")} rows={2} />
-              <TextareaField label={t("labelSuplementos")} value={form.suplementacion} onChange={(v) => update("suplementacion", v)} placeholder={t("placeholderSuplementos")} rows={2} />
-              <TextareaField label={t("labelSuplementosInteres")} value={form.suplementacionInteres} onChange={(v) => update("suplementacionInteres", v)} placeholder={t("placeholderSuplementosInteres")} rows={2} />
+              <TextareaField id="f-diaTipo" label={t("labelDiaTipo")} value={form.diaTipo} onChange={(v) => update("diaTipo", v)} placeholder={t("placeholderDiaTipo")} rows={4} required />
+              <TextareaField id="f-alergias" label={t("labelAlergias")} value={form.alergiasAlimentarias} onChange={(v) => update("alergiasAlimentarias", v)} placeholder={t("placeholderAlergias")} rows={2} />
+              <TextareaField id="f-suplementos" label={t("labelSuplementos")} value={form.suplementacion} onChange={(v) => update("suplementacion", v)} placeholder={t("placeholderSuplementos")} rows={2} />
+              <TextareaField id="f-suplementosInteres" label={t("labelSuplementosInteres")} value={form.suplementacionInteres} onChange={(v) => update("suplementacionInteres", v)} placeholder={t("placeholderSuplementosInteres")} rows={2} />
 
               <div className="bg-[#FFFAF7] rounded-xl p-4 border border-[#F0EBE6]">
                 <p className="text-sm font-medium text-[#3D2C2C] mb-1">{t("dietaTitle")}</p>
                 <p className="text-xs text-[#C4B8AD] mb-3">{t("dietaNote")}</p>
                 <div className="space-y-3">
-                  <TextareaField label={t("labelDietaBase")} value={form.dietaAnteriorBase} onChange={(v) => update("dietaAnteriorBase", v)} placeholder={t("placeholderDietaBase")} rows={2} />
-                  <InputField label={t("labelDietaTiempo")} value={form.dietaAnteriorTiempo} onChange={(v) => update("dietaAnteriorTiempo", v)} placeholder={t("placeholderDietaTiempo")} />
-                  <InputField label={t("labelDietaDuracion")} value={form.dietaAnteriorDuracion} onChange={(v) => update("dietaAnteriorDuracion", v)} placeholder={t("placeholderDietaDuracion")} />
-                  <TextareaField label={t("labelDietaResultado")} value={form.dietaAnteriorObservaciones} onChange={(v) => update("dietaAnteriorObservaciones", v)} placeholder={t("placeholderDietaResultado")} rows={2} />
+                  <TextareaField id="f-dietaBase" label={t("labelDietaBase")} value={form.dietaAnteriorBase} onChange={(v) => update("dietaAnteriorBase", v)} placeholder={t("placeholderDietaBase")} rows={2} />
+                  <InputField id="f-dietaTiempo" label={t("labelDietaTiempo")} value={form.dietaAnteriorTiempo} onChange={(v) => update("dietaAnteriorTiempo", v)} placeholder={t("placeholderDietaTiempo")} />
+                  <InputField id="f-dietaDuracion" label={t("labelDietaDuracion")} value={form.dietaAnteriorDuracion} onChange={(v) => update("dietaAnteriorDuracion", v)} placeholder={t("placeholderDietaDuracion")} />
+                  <TextareaField id="f-dietaResultado" label={t("labelDietaResultado")} value={form.dietaAnteriorObservaciones} onChange={(v) => update("dietaAnteriorObservaciones", v)} placeholder={t("placeholderDietaResultado")} rows={2} />
                 </div>
               </div>
             </div>
@@ -221,28 +245,28 @@ function FormularioContent() {
           {/* ── ENTRENAMIENTO ── */}
           <FormSection title={t("sectionEntrenamiento")}>
             <div className="space-y-4">
-              <TextareaField label={t("labelDiasActual")} value={form.diasEntrenoActual} onChange={(v) => update("diasEntrenoActual", v)} placeholder={t("placeholderDiasActual")} required />
-              <TextareaField label={t("labelDiasCompromiso")} value={form.diasEntrenoCompromiso} onChange={(v) => update("diasEntrenoCompromiso", v)} placeholder={t("placeholderDiasCompromiso")} required />
+              <TextareaField id="f-diasActual" label={t("labelDiasActual")} value={form.diasEntrenoActual} onChange={(v) => update("diasEntrenoActual", v)} placeholder={t("placeholderDiasActual")} required />
+              <TextareaField id="f-diasCompromiso" label={t("labelDiasCompromiso")} value={form.diasEntrenoCompromiso} onChange={(v) => update("diasEntrenoCompromiso", v)} placeholder={t("placeholderDiasCompromiso")} required />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField label={t("labelHoraEntreno")} value={form.horaEntreno} onChange={(v) => update("horaEntreno", v)} placeholder={t("placeholderHoraEntreno")} />
-                <InputField label={t("labelDuracionSesion")} value={form.duracionSesion} onChange={(v) => update("duracionSesion", v)} placeholder={t("placeholderDuracionSesion")} />
+                <InputField id="f-horaEntreno" label={t("labelHoraEntreno")} value={form.horaEntreno} onChange={(v) => update("horaEntreno", v)} placeholder={t("placeholderHoraEntreno")} />
+                <InputField id="f-duracionSesion" label={t("labelDuracionSesion")} value={form.duracionSesion} onChange={(v) => update("duracionSesion", v)} placeholder={t("placeholderDuracionSesion")} />
               </div>
-              <SelectField label={t("labelCasaGimnasio")} value={form.casaOGimnasio} onChange={(v) => update("casaOGimnasio", v)} options={[t("optGimnasio"), t("optCasa"), t("optAmbos")]} t={t} />
-              <TextareaField label={t("labelMaterialCasa")} value={form.materialCasa} onChange={(v) => update("materialCasa", v)} placeholder={t("placeholderMaterialCasa")} rows={2} />
+              <SelectField id="f-casaGimnasio" label={t("labelCasaGimnasio")} value={form.casaOGimnasio} onChange={(v) => update("casaOGimnasio", v)} options={[t("optGimnasio"), t("optCasa"), t("optAmbos")]} t={t} />
+              <TextareaField id="f-materialCasa" label={t("labelMaterialCasa")} value={form.materialCasa} onChange={(v) => update("materialCasa", v)} placeholder={t("placeholderMaterialCasa")} rows={2} />
             </div>
           </FormSection>
 
           {/* ── OBJETIVOS DE MEJORA ── */}
           <FormSection title={t("sectionObjetivos")}>
             <div className="space-y-4">
-              <TextareaField label={t("labelRendimiento")} value={form.mejoraRendimiento} onChange={(v) => update("mejoraRendimiento", v)} placeholder={t("placeholderRendimiento")} rows={3} required />
-              <TextareaField label={t("labelEstetica")} value={form.mejoraEstetica} onChange={(v) => update("mejoraEstetica", v)} placeholder={t("placeholderEstetica")} rows={3} required />
+              <TextareaField id="f-rendimiento" label={t("labelRendimiento")} value={form.mejoraRendimiento} onChange={(v) => update("mejoraRendimiento", v)} placeholder={t("placeholderRendimiento")} rows={3} required />
+              <TextareaField id="f-estetica" label={t("labelEstetica")} value={form.mejoraEstetica} onChange={(v) => update("mejoraEstetica", v)} placeholder={t("placeholderEstetica")} rows={3} required />
             </div>
           </FormSection>
 
           {/* ── ALGO MÁS ── */}
           <FormSection title={t("sectionExtra")}>
-            <TextareaField label={t("labelExtra")} value={form.extra} onChange={(v) => update("extra", v)} placeholder={t("placeholderExtra")} rows={4} />
+            <TextareaField id="f-extra" label={t("labelExtra")} value={form.extra} onChange={(v) => update("extra", v)} placeholder={t("placeholderExtra")} rows={4} />
           </FormSection>
 
           {/* Error */}
@@ -301,39 +325,39 @@ function FormSection({ title, children }: { title: string; children: React.React
   );
 }
 
-function InputField({ label, value, onChange, type = "text", placeholder, required }: {
-  label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean;
+function InputField({ label, value, onChange, type = "text", placeholder, required, id }: {
+  label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean; id: string;
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[#3D2C2C] mb-1.5">
+      <label htmlFor={id} className="block text-sm font-medium text-[#3D2C2C] mb-1.5">
         {label} {required && <span className="text-[#E8B4B4]">*</span>}
       </label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] placeholder:text-[#C4B8AD] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm" />
+      <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] placeholder:text-[#C4B8AD] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm" />
     </div>
   );
 }
 
-function TextareaField({ label, value, onChange, placeholder, required, rows = 3 }: {
-  label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean; rows?: number;
+function TextareaField({ label, value, onChange, placeholder, required, rows = 3, id }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean; rows?: number; id: string;
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[#3D2C2C] mb-1.5">
+      <label htmlFor={id} className="block text-sm font-medium text-[#3D2C2C] mb-1.5">
         {label} {required && <span className="text-[#E8B4B4]">*</span>}
       </label>
-      <textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} rows={rows} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] placeholder:text-[#C4B8AD] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all resize-none text-sm" />
+      <textarea id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} rows={rows} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] placeholder:text-[#C4B8AD] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all resize-none text-sm" />
     </div>
   );
 }
 
-function SelectField({ label, value, onChange, options, t }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[]; t: (key: string) => string;
+function SelectField({ label, value, onChange, options, t, id }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[]; t: (key: string) => string; id: string;
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[#3D2C2C] mb-1.5">{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm appearance-none cursor-pointer">
+      <label htmlFor={id} className="block text-sm font-medium text-[#3D2C2C] mb-1.5">{label}</label>
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm appearance-none cursor-pointer">
         <option value="">{t("selectDefault")}</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -346,7 +370,7 @@ function SelectField({ label, value, onChange, options, t }: {
 function FoodSelector({ selections, onToggle, foodCategories, t }: { 
   selections: Record<string, "liked" | "disliked">; 
   onToggle: (food: string) => void;
-  foodCategories: { name: string; emoji: string; items: string[] }[];
+  foodCategories: { name: string; emoji: string; items: { key: string; label: string }[] }[];
   t: (key: string) => string;
 }) {
   return (
@@ -366,12 +390,12 @@ function FoodSelector({ selections, onToggle, foodCategories, t }: {
             <p className="text-xs font-semibold text-[#3D2C2C] mb-2">{cat.emoji} {cat.name}</p>
             <div className="flex flex-wrap gap-2">
               {cat.items.map((food) => {
-                const state = selections[food];
+                const state = selections[food.key];
                 return (
                   <button
-                    key={food}
+                    key={food.key}
                     type="button"
-                    onClick={() => onToggle(food)}
+                    onClick={() => onToggle(food.key)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer border ${
                       state === "liked"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-sm"
@@ -382,7 +406,7 @@ function FoodSelector({ selections, onToggle, foodCategories, t }: {
                   >
                     {state === "liked" && "✓ "}
                     {state === "disliked" && "✗ "}
-                    {food}
+                    {food.label}
                   </button>
                 );
               })}

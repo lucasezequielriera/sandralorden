@@ -37,8 +37,12 @@ export default function Services() {
         {/* Tab selector */}
         <AnimatedSection delay={0.25}>
           <div className="flex justify-center mb-10 sm:mb-14">
-            <div className="inline-flex bg-white rounded-full p-1.5 border border-warm-gray-100/50 shadow-sm">
+            <div className="inline-flex bg-white rounded-full p-1.5 border border-warm-gray-100/50 shadow-sm" role="tablist" aria-label={t("sectionLabel")}>
               <button
+                role="tab"
+                aria-selected={activeTab === "presencial"}
+                aria-controls="panel-presencial"
+                id="tab-presencial"
                 onClick={() => setActiveTab("presencial")}
                 className={`relative px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === "presencial"
@@ -53,9 +57,13 @@ export default function Services() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10">Presencial</span>
+                <span className="relative z-10">{t("tabPresencial")}</span>
               </button>
               <button
+                role="tab"
+                aria-selected={activeTab === "online"}
+                aria-controls="panel-online"
+                id="tab-online"
                 onClick={() => setActiveTab("online")}
                 className={`relative px-5 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === "online"
@@ -70,7 +78,7 @@ export default function Services() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10">Asesoría Online</span>
+                <span className="relative z-10">{t("tabOnline")}</span>
               </button>
             </div>
           </div>
@@ -81,6 +89,9 @@ export default function Services() {
           {activeTab === "presencial" ? (
             <m.div
               key="presencial"
+              role="tabpanel"
+              id="panel-presencial"
+              aria-labelledby="tab-presencial"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -95,25 +106,21 @@ export default function Services() {
                     </svg>
                   </div>
                   <h3 className="font-[family-name:var(--font-display)] italic text-2xl sm:text-3xl font-light text-warm-dark mb-4">
-                    Entrenamiento personal presencial
+                    {t("presencialTitle")}
                   </h3>
                   <p className="text-sm sm:text-base text-warm-gray-400 leading-relaxed mb-4">
-                    Si lo que te gusta es el trato personal y lo que necesitas es una persona que te corrija,
-                    te motive y esté cerca tuyo, esta es tu opción de entrenamiento.
+                    {t("presencialDesc1")}
                   </p>
                   <p className="text-sm sm:text-base text-warm-gray-400 leading-relaxed mb-6">
-                    A domicilio o al aire libre, solo o acompañado. No necesitas disponer de ningún tipo de material,
-                    ya que dispongo de una gran variedad de material portátil que no tiene nada que envidiar a cualquier gimnasio.
-                    Esta es sin duda la opción más completa para llegar al máximo rendimiento y la mejor opción para
-                    quienes se están iniciando en el mundo del entrenamiento.
+                    {t("presencialDesc2")}
                   </p>
                   <ul className="space-y-2.5">
-                    {[
-                      "Corrección postural en tiempo real",
-                      "Material portátil profesional incluido",
-                      "A domicilio o al aire libre",
-                      "Ideal para principiantes y avanzados",
-                    ].map((f) => (
+                    {([
+                      t("presencialFeature1"),
+                      t("presencialFeature2"),
+                      t("presencialFeature3"),
+                      t("presencialFeature4"),
+                    ] as string[]).map((f) => (
                       <li key={f} className="flex items-center gap-2.5 text-xs sm:text-sm text-warm-gray-500">
                         <span className="w-1.5 h-1.5 rounded-full bg-rosa-300 flex-shrink-0" />
                         {f}
@@ -173,6 +180,9 @@ export default function Services() {
           ) : (
             <m.div
               key="online"
+              role="tabpanel"
+              id="panel-online"
+              aria-labelledby="tab-online"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -181,30 +191,17 @@ export default function Services() {
               {/* How it works */}
               <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-warm-gray-100/50 mb-6 sm:mb-8">
                 <h3 className="font-[family-name:var(--font-display)] italic text-2xl sm:text-3xl font-light text-warm-dark mb-4">
-                  Asesoría online
+                  {t("onlineTitle")}
                 </h3>
                 <p className="text-sm sm:text-base text-warm-gray-400 leading-relaxed mb-6">
-                  Las asesorías online son la mejor alternativa para que un profesional realice programas
-                  de entrenamiento y nutrición específicos para tus necesidades, a distancia.
+                  {t("onlineDesc")}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                  {[
-                    {
-                      step: "1",
-                      title: "Cuestionario inicial",
-                      desc: "Rellenas un cuestionario sobre tu estado físico, alimentación, objetivos y lesiones. Con tus respuestas elaboro tu plan a medida.",
-                    },
-                    {
-                      step: "2",
-                      title: "Seguimiento continuo",
-                      desc: "Nos comunicamos por email, WhatsApp o videollamada para resolver dudas y motivarte. El contacto es diario si lo necesitas.",
-                    },
-                    {
-                      step: "3",
-                      title: "Checking mensual",
-                      desc: "Cada 4 semanas renovamos el plan en base a tu progreso, para seguir avanzando sin estancarnos. Sin compromiso de permanencia.",
-                    },
-                  ].map((item) => (
+                  {([
+                    { step: "1", title: t("step1Title"), desc: t("step1Desc") },
+                    { step: "2", title: t("step2Title"), desc: t("step2Desc") },
+                    { step: "3", title: t("step3Title"), desc: t("step3Desc") },
+                  ]).map((item) => (
                     <div key={item.step} className="text-center sm:text-left">
                       <div className="w-10 h-10 mx-auto sm:mx-0 rounded-full bg-rosa-100 text-rosa-500 flex items-center justify-center font-[family-name:var(--font-script)] text-lg mb-3">
                         {item.step}
@@ -226,15 +223,14 @@ export default function Services() {
                     </svg>
                   </div>
                   <h4 className="font-[family-name:var(--font-display)] italic text-xl sm:text-2xl font-light text-warm-dark mb-2">
-                    Nutrición
+                    {t("nutricionTitle")}
                   </h4>
                   <p className="text-sm text-warm-gray-400 leading-relaxed mb-5">
-                    Por mucho que entrenes, sin una nutrición adecuada no conseguirás los resultados deseados.
-                    Plan nutricional personalizado adaptado a tus gustos, horarios y objetivos, con fotos de los alimentos.
+                    {t("nutricionDesc")}
                   </p>
                   <div className="mt-auto pt-4 border-t border-warm-gray-100">
                     <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-warm-dark">59 €</span>
-                    <span className="text-sm text-warm-gray-400"> / mes</span>
+                    <span className="text-sm text-warm-gray-400"> {t("perMonth")}</span>
                   </div>
                 </div>
 
@@ -246,19 +242,18 @@ export default function Services() {
                     </svg>
                   </div>
                   <h4 className="font-[family-name:var(--font-display)] italic text-xl sm:text-2xl font-light text-warm-dark mb-2">
-                    Entrenamiento
+                    {t("entrenamientoTitle")}
                   </h4>
                   <p className="text-sm text-warm-gray-400 leading-relaxed mb-2">
-                    Plan individualizado para gimnasio o para casa, con información detallada, fotos de ejecución y anotaciones.
-                    Si necesitas vídeos de algún ejercicio, solo tienes que pedirlo.
+                    {t("entrenamientoDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-5">
-                    <span className="text-xs bg-marron-50 text-marron-500 px-2.5 py-1 rounded-full">En gimnasio</span>
-                    <span className="text-xs bg-marron-50 text-marron-500 px-2.5 py-1 rounded-full">En casa</span>
+                    <span className="text-xs bg-marron-50 text-marron-500 px-2.5 py-1 rounded-full">{t("enGimnasio")}</span>
+                    <span className="text-xs bg-marron-50 text-marron-500 px-2.5 py-1 rounded-full">{t("enCasa")}</span>
                   </div>
                   <div className="mt-auto pt-4 border-t border-warm-gray-100">
                     <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-warm-dark">59 €</span>
-                    <span className="text-sm text-warm-gray-400"> / mes</span>
+                    <span className="text-sm text-warm-gray-400"> {t("perMonth")}</span>
                   </div>
                 </div>
 
@@ -266,7 +261,7 @@ export default function Services() {
                 <div className="group relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-rosa-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 sm:col-span-2 lg:col-span-1">
                   <div className="absolute -top-3 left-6 sm:left-8">
                     <span className="bg-rosa-400 text-white text-xs font-medium px-3 py-1 rounded-full">
-                      Más popular
+                      {t("masPopular")}
                     </span>
                   </div>
                   <div className="w-12 h-12 rounded-xl bg-rosa-100 text-rosa-500 flex items-center justify-center mb-4">
@@ -275,20 +270,19 @@ export default function Services() {
                     </svg>
                   </div>
                   <h4 className="font-[family-name:var(--font-display)] italic text-xl sm:text-2xl font-light text-warm-dark mb-2">
-                    Pack Completo
+                    {t("packTitle")}
                   </h4>
                   <p className="text-sm text-warm-gray-400 leading-relaxed mb-5">
-                    Entrenamiento + nutrición juntos. La combinación perfecta para maximizar tus resultados
-                    con un plan integral totalmente personalizado.
+                    {t("packDesc")}
                   </p>
                   <ul className="space-y-2 mb-5">
-                    {[
-                      "Plan de entrenamiento (gym o casa)",
-                      "Plan nutricional personalizado",
-                      "Seguimiento diario por WhatsApp",
-                      "Checking mensual con ajustes",
-                      "Formato PDF con fotos y anotaciones",
-                    ].map((f) => (
+                    {([
+                      t("packFeature1"),
+                      t("packFeature2"),
+                      t("packFeature3"),
+                      t("packFeature4"),
+                      t("packFeature5"),
+                    ] as string[]).map((f) => (
                       <li key={f} className="flex items-center gap-2 text-xs sm:text-sm text-warm-gray-500">
                         <svg className="w-4 h-4 text-rosa-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -299,8 +293,8 @@ export default function Services() {
                   </ul>
                   <div className="mt-auto pt-4 border-t border-rosa-100">
                     <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-warm-dark">79 €</span>
-                    <span className="text-sm text-warm-gray-400"> / mes</span>
-                    <p className="text-xs text-rosa-400 mt-1">Ahorras 39 € respecto a contratar por separado</p>
+                    <span className="text-sm text-warm-gray-400"> {t("perMonth")}</span>
+                    <p className="text-xs text-rosa-400 mt-1">{t("packSaving")}</p>
                   </div>
                 </div>
               </div>
@@ -308,9 +302,9 @@ export default function Services() {
               {/* Extra info */}
               <div className="mt-6 sm:mt-8 bg-rosa-50/50 rounded-2xl p-5 sm:p-6 text-center">
                 <p className="text-sm text-warm-gray-500 leading-relaxed">
-                  Todos los planes están en formato PDF e incluyen información detallada, fotografías de ejercicios y alimentos.
+                  {t("extraInfo")}
                   <br className="hidden sm:block" />
-                  Planes de 4 semanas renovables sin compromiso. <strong className="text-warm-dark">Tú decides si quieres seguir.</strong>
+                  {t("extraInfo2")}<strong className="text-warm-dark">{t("extraInfoBold")}</strong>
                 </p>
               </div>
             </m.div>

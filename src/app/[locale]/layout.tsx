@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, Dancing_Script } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
+import ConditionalAnalytics from "@/components/ConditionalAnalytics";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
@@ -12,7 +11,7 @@ import "../globals.css";
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -20,7 +19,7 @@ const cormorant = Cormorant_Garamond({
 const dancingScript = Dancing_Script({
   variable: "--font-script",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -196,7 +195,7 @@ async function JsonLd({ locale }: { locale: string }) {
     image: `${SITE_URL}/opengraph-image`,
     description: t("description"),
     telephone: "+34660140063",
-    email: "hola@sandralordenfit.com",
+    email: "sandralordenfit@gmail.com",
     address: { "@type": "PostalAddress", addressCountry: "ES" },
     geo: { "@type": "GeoCoordinates", latitude: 40.4168, longitude: -3.7038 },
     areaServed: [
@@ -295,12 +294,6 @@ async function JsonLd({ locale }: { locale: string }) {
         },
       ],
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      bestRating: "5",
-      ratingCount: "1000",
-    },
     sameAs: [
       "https://www.instagram.com/sandralordenfit",
       "https://www.instagram.com/sandralorden",
@@ -325,14 +318,6 @@ async function JsonLd({ locale }: { locale: string }) {
           : "Web Developer & Designer",
     },
     inLanguage: locale === "es" ? "es-ES" : "en",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${url}/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 
   const breadcrumbSchema = {
@@ -419,8 +404,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <MotionProvider>{children}</MotionProvider>
         </NextIntlClientProvider>
-        <Analytics />
-        <SpeedInsights />
+        <ConditionalAnalytics />
       </body>
     </html>
   );

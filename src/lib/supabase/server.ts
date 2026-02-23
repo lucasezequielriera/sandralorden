@@ -27,6 +27,9 @@ export async function createClient() {
 }
 
 export async function createServiceClient() {
+  if (typeof window !== "undefined") {
+    throw new Error("createServiceClient cannot be called from the client.");
+  }
   const { createClient } = await import("@supabase/supabase-js");
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,3 +1,5 @@
+import { escapeHtml } from "@/lib/sanitize";
+
 /* ── Email para SANDRA (cliente completó el formulario detallado) ── */
 
 export interface IntakeData {
@@ -54,8 +56,8 @@ function sectionHtml(title: string, rows: { label: string; value: string }[]): s
   const rowsStr = filtered.map((r) => `
     <tr>
       <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
-        <p style="font-size:11px;color:#C9A88E;margin:0 0 3px;text-transform:uppercase;letter-spacing:0.8px;">${r.label}</p>
-        <p style="font-size:13px;color:#3D2C2C;margin:0;white-space:pre-line;">${r.value}</p>
+        <p style="font-size:11px;color:#C9A88E;margin:0 0 3px;text-transform:uppercase;letter-spacing:0.8px;">${escapeHtml(r.label)}</p>
+        <p style="font-size:13px;color:#3D2C2C;margin:0;white-space:pre-line;">${escapeHtml(r.value)}</p>
       </td>
     </tr>`).join("");
 
@@ -132,7 +134,7 @@ export function buildIntakeNotificationEmailHtml(lead: IntakeData): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulario Completo - ${lead.name}</title>
+  <title>Formulario Completo - ${escapeHtml(lead.name)}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#FFFAF7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3D2C2C;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFFAF7;padding:32px 16px;">
@@ -142,7 +144,7 @@ export function buildIntakeNotificationEmailHtml(lead: IntakeData): string {
           <tr>
             <td style="background-color:#3D2C2C;border-radius:16px 16px 0 0;padding:20px 28px;">
               <p style="color:#F2D1D1;font-size:13px;margin:0;letter-spacing:1px;text-transform:uppercase;">Formulario completo recibido</p>
-              <p style="color:#ffffff;font-size:22px;margin:6px 0 0;font-style:italic;font-family:Georgia,'Times New Roman',serif;">${lead.name}</p>
+              <p style="color:#ffffff;font-size:22px;margin:6px 0 0;font-style:italic;font-family:Georgia,'Times New Roman',serif;">${escapeHtml(lead.name)}</p>
             </td>
           </tr>
           <tr>
@@ -153,13 +155,13 @@ export function buildIntakeNotificationEmailHtml(lead: IntakeData): string {
                 <tr>
                   <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
                     <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">Email</span>
-                    <a href="mailto:${lead.email}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${lead.email}</a>
+                    <a href="mailto:${escapeHtml(lead.email)}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${escapeHtml(lead.email)}</a>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding:8px 0;border-bottom:1px solid #F7F3F0;">
                     <span style="font-size:12px;color:#C9A88E;display:inline-block;width:80px;">WhatsApp</span>
-                    <a href="tel:${lead.phone}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${lead.phone}</a>
+                    <a href="tel:${escapeHtml(lead.phone)}" style="font-size:14px;color:#3D2C2C;text-decoration:none;">${escapeHtml(lead.phone)}</a>
                   </td>
                 </tr>
               </table>

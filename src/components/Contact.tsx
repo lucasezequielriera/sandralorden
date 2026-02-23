@@ -78,7 +78,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-warm-dark">Instagram Profesional</p>
+                    <p className="text-sm font-medium text-warm-dark">{t("igPro")}</p>
                     <p className="text-sm text-warm-gray-400 group-hover:text-rosa-400 transition-colors">@sandralordenfit</p>
                   </div>
                 </a>
@@ -90,7 +90,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-warm-dark">Instagram Personal</p>
+                    <p className="text-sm font-medium text-warm-dark">{t("igPersonal")}</p>
                     <p className="text-sm text-warm-gray-400 group-hover:text-rosa-400 transition-colors">@sandralorden</p>
                   </div>
                 </a>
@@ -103,8 +103,8 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-warm-dark">Ubicación</p>
-                    <p className="text-sm text-warm-gray-400">Madrid & Online</p>
+                    <p className="text-sm font-medium text-warm-dark">{t("location")}</p>
+                    <p className="text-sm text-warm-gray-400">{t("locationValue")}</p>
                   </div>
                 </div>
               </div>
@@ -127,16 +127,16 @@ export default function Contact() {
                     </svg>
                   </div>
                   <h3 className="font-[family-name:var(--font-display)] italic text-2xl font-light text-warm-dark mb-2">
-                    ¡Mensaje enviado!
+                    {t("successTitle")}
                   </h3>
                   <p className="text-sm text-warm-gray-400 mb-6 max-w-xs">
-                    Gracias por escribirme. Te responderé lo antes posible.
+                    {t("successDesc")}
                   </p>
                   <button
                     onClick={() => setStatus("idle")}
                     className="text-sm text-rosa-400 hover:text-rosa-500 font-medium transition-colors cursor-pointer"
                   >
-                    Enviar otro mensaje
+                    {t("sendAnother")}
                   </button>
                 </m.div>
               ) : (
@@ -150,7 +150,7 @@ export default function Contact() {
                   <div className="space-y-4 sm:space-y-5">
                     <div>
                       <label htmlFor="contact-name" className="block text-sm font-medium text-warm-dark mb-1.5 sm:mb-2">
-                        Nombre
+                        {t("labelName")}
                       </label>
                       <input
                         type="text"
@@ -159,13 +159,13 @@ export default function Contact() {
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-                        placeholder="Tu nombre"
+                        placeholder={t("placeholderName")}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="contact-email" className="block text-sm font-medium text-warm-dark mb-1.5 sm:mb-2">
-                        Email
+                        {t("labelEmail")}
                       </label>
                       <input
                         type="email"
@@ -174,13 +174,13 @@ export default function Contact() {
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-                        placeholder="tu@email.com"
+                        placeholder={t("placeholderEmail")}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="contact-service" className="block text-sm font-medium text-warm-dark mb-1.5 sm:mb-2">
-                        Servicio de interés
+                        {t("labelService")}
                       </label>
                       <select
                         id="contact-service"
@@ -188,17 +188,17 @@ export default function Contact() {
                         onChange={(e) => setFormState({ ...formState, service: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all duration-300 appearance-none text-sm sm:text-base"
                       >
-                        <option value="">Selecciona un servicio</option>
-                        <option value="Entrenamiento Presencial">Entrenamiento Personal Presencial</option>
-                        <option value="Asesoría Online - Nutrición">Asesoría Online — Nutrición</option>
-                        <option value="Asesoría Online - Entrenamiento">Asesoría Online — Entrenamiento</option>
-                        <option value="Asesoría Online - Pack Completo">Asesoría Online — Pack Completo</option>
+                        <option value="">{t("placeholderService")}</option>
+                        <option value="Entrenamiento Presencial">{t("optPresencial")}</option>
+                        <option value="Asesoría Online - Nutrición">{t("optNutricion")}</option>
+                        <option value="Asesoría Online - Entrenamiento">{t("optEntrenamiento")}</option>
+                        <option value="Asesoría Online - Pack Completo">{t("optPack")}</option>
                       </select>
                     </div>
 
                     <div>
                       <label htmlFor="contact-message" className="block text-sm font-medium text-warm-dark mb-1.5 sm:mb-2">
-                        Mensaje
+                        {t("labelMessage")}
                       </label>
                       <textarea
                         id="contact-message"
@@ -206,7 +206,7 @@ export default function Contact() {
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 focus:border-transparent transition-all duration-300 resize-none text-sm sm:text-base"
-                        placeholder="Cuéntame tus objetivos..."
+                        placeholder={t("placeholderMessage")}
                       />
                     </div>
 
@@ -221,11 +221,13 @@ export default function Contact() {
                       aria-hidden="true"
                     />
 
-                    {status === "error" && (
-                      <p className="text-sm text-red-400 text-center">
-                        {t("errorSend")}
-                      </p>
-                    )}
+                    <div role="alert" aria-live="polite">
+                      {status === "error" && (
+                        <p className="text-sm text-red-400 text-center">
+                          {t("errorSend")}
+                        </p>
+                      )}
+                    </div>
 
                     <label className="flex items-start gap-2.5 cursor-pointer">
                       <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-warm-gray-200 text-rosa-400 focus:ring-rosa-200 accent-rosa-400 cursor-pointer" />

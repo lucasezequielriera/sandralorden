@@ -63,8 +63,8 @@ export default function About() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342" />
                       </svg>
                     ),
-                    title: "Grado en CAFYD",
-                    desc: "Ciencias del Deporte y la Actividad Física",
+                    title: t("credTitle1"),
+                    desc: t("credDesc1"),
                   },
                   {
                     icon: (
@@ -72,8 +72,8 @@ export default function About() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" />
                       </svg>
                     ),
-                    title: "Doble Máster",
-                    desc: "Nutrición deportiva y alto rendimiento",
+                    title: t("credTitle2"),
+                    desc: t("credDesc2"),
                   },
                   {
                     icon: (
@@ -81,8 +81,8 @@ export default function About() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                       </svg>
                     ),
-                    title: "Fuerza femenina",
-                    desc: "Especialista en entrenamiento para mujeres",
+                    title: t("credTitle3"),
+                    desc: t("credDesc3"),
                   },
                   {
                     icon: (
@@ -90,8 +90,8 @@ export default function About() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
                       </svg>
                     ),
-                    title: "Embarazo y ciclo",
-                    desc: "Formación en entrenamiento hormonal",
+                    title: t("credTitle4"),
+                    desc: t("credDesc4"),
                   },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-3">

@@ -14,7 +14,10 @@ export async function GET() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Clients GET error:", error.message);
+    return NextResponse.json({ error: "Error al obtener clientes" }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
 
@@ -25,19 +28,39 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   const body = await request.json();
-  const { name, email, phone, service_type, goal, status, notes } = body;
+  const { name, email, phone, service_type, modality, goal, status, notes } = body;
 
   if (!name || !email || !phone) {
     return NextResponse.json({ error: "Nombre, email y teléfono son obligatorios" }, { status: 400 });
   }
 
+  const { data: existing } = await supabase
+    .from("clients")
+    .select("id")
+    .eq("email", email)
+    .single();
+
+  if (existing) {
+    return NextResponse.json({ error: "Ya existe un cliente con ese email" }, { status: 409 });
+  }
+
   const { data, error } = await supabase
     .from("clients")
-    .insert({ name, email, phone, service_type: service_type || "", goal: goal || "", status: status || "lead", notes: notes || "" })
+    .insert({
+      name, email, phone,
+      service_type: service_type || "",
+      modality: modality || "",
+      goal: goal || "",
+      status: status || "lead",
+      notes: notes || "",
+    })
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Client creation error:", error.message);
+    return NextResponse.json({ error: "Error al crear el cliente" }, { status: 500 });
+  }
   await logActivity("Nuevo cliente creado", `${name} (${email})`, data.id);
   return NextResponse.json(data, { status: 201 });
 }

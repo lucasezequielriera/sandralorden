@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 interface Stats {
   totalClients: number;
@@ -256,11 +256,11 @@ export default function DashboardContent({
           <table className="w-full">
             <thead>
               <tr>
-                <th className="text-left py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Mes</th>
-                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Clientes</th>
-                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Cobrado</th>
-                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pendiente</th>
-                <th className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Facturas</th>
+                <th scope="col" className="text-left py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Mes</th>
+                <th scope="col" className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Clientes</th>
+                <th scope="col" className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Cobrado</th>
+                <th scope="col" className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pendiente</th>
+                <th scope="col" className="text-right py-2 px-3 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Facturas</th>
               </tr>
             </thead>
             <tbody>
@@ -418,7 +418,7 @@ function DeltaBadge({ pct, invert }: { pct: number | null; invert?: boolean }) {
     <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full ${
       positive ? "bg-[#A8D5BA] text-[#3D6B4F]" : negative ? "bg-[#F2B8B5] text-[#8C4A47]" : "bg-warm-gray-100 text-warm-gray-400"
     }`}>
-      {isUp ? "+" : isDown ? "" : ""}{pct}%
+      {isUp ? "↑" : isDown ? "↓" : ""}{isUp ? "+" : ""}{pct}%
     </span>
   );
 }

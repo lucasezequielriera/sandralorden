@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
@@ -38,6 +38,42 @@ export default function Navigation() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+
+  const trapFocus = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsMobileMenuOpen(false);
+      menuToggleRef.current?.focus();
+      return;
+    }
+    if (e.key !== "Tab") return;
+    const container = mobileMenuRef.current;
+    if (!container) return;
+    const focusable = container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    document.addEventListener("keydown", trapFocus);
+    requestAnimationFrame(() => {
+      const container = mobileMenuRef.current;
+      const first = container?.querySelector<HTMLElement>('a[href], button:not([disabled])');
+      first?.focus();
+    });
+    return () => document.removeEventListener("keydown", trapFocus);
+  }, [isMobileMenuOpen, trapFocus]);
 
   return (
     <m.nav
@@ -122,10 +158,12 @@ export default function Navigation() {
               </svg>
             </Link>
             <button
+              ref={menuToggleRef}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="flex flex-col gap-1.5 p-2"
               aria-label={isMobileMenuOpen ? t("ariaCloseMenu") : t("ariaOpenMenu")}
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
             <m.span
               animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
@@ -148,6 +186,11 @@ export default function Navigation() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <m.div
+            ref={mobileMenuRef}
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("ariaOpenMenu")}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

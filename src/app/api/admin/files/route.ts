@@ -13,7 +13,10 @@ export async function GET() {
     .select("*, clients(name)")
     .order("uploaded_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Files GET error:", error.message);
+    return NextResponse.json({ error: "Error al obtener archivos" }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
 
@@ -31,6 +34,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Archivo y cliente son obligatorios" }, { status: 400 });
   }
 
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(clientId)) {
+    return NextResponse.json({ error: "ID de cliente no válido" }, { status: 400 });
+  }
+
+  const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+  const ALLOWED_TYPES = new Set([
+    "application/pdf",
+    "image/jpeg", "image/png", "image/webp",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/csv",
+  ]);
+
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: "El archivo excede el límite de 10 MB" }, { status: 400 });
+  }
+
+  if (!ALLOWED_TYPES.has(file.type)) {
+    return NextResponse.json({ error: "Tipo de archivo no permitido" }, { status: 400 });
+  }
+
   const ext = file.name.split(".").pop();
   const path = `${clientId}/${Date.now()}.${ext}`;
 
@@ -38,7 +63,10 @@ export async function POST(request: NextRequest) {
     .from("client-files")
     .upload(path, file);
 
-  if (uploadError) return NextResponse.json({ error: uploadError.message }, { status: 500 });
+  if (uploadError) {
+    console.error("File upload error:", uploadError.message);
+    return NextResponse.json({ error: "Error al subir el archivo" }, { status: 500 });
+  }
 
   const { data: { publicUrl } } = supabase.storage
     .from("client-files")
@@ -55,6 +83,9 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("File DB insert error:", error.message);
+    return NextResponse.json({ error: "Error al registrar el archivo" }, { status: 500 });
+  }
   return NextResponse.json(data, { status: 201 });
 }

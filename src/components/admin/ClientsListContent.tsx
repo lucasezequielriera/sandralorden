@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { Client } from "@/lib/supabase/types";
 
 const modalityColors: Record<string, string> = {
@@ -15,6 +16,7 @@ const modalityLabels: Record<string, string> = {
 };
 
 export default function ClientsListContent({ clients, paymentMap = {} }: { clients: Client[]; paymentMap?: Record<string, Record<number, string>> }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [modalityFilter, setModalityFilter] = useState<string>("all");
@@ -114,16 +116,16 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] w-[200px]">Nombre</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell w-[100px]">Tipo</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pagos {new Date().getFullYear()}</th>
-                  <th className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden lg:table-cell w-[100px]">Desde</th>
-                  <th className="w-12 py-4"></th>
+                  <th scope="col" className="text-left pl-6 pr-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] w-[200px]">Nombre</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden sm:table-cell w-[100px]">Tipo</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em]">Pagos {new Date().getFullYear()}</th>
+                  <th scope="col" className="text-left px-3 py-4 text-[9px] font-medium text-warm-gray-300 uppercase tracking-[0.12em] hidden lg:table-cell w-[100px]">Desde</th>
+                  <th scope="col" className="w-12 py-4"></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((client) => (
-                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" onClick={() => window.location.href = `/admin/clientes/${client.id}`}>
+                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" onClick={() => router.push(`/admin/clientes/${client.id}`)}>
                     <td className="pl-6 pr-3 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-rosa-100/60 flex items-center justify-center flex-shrink-0">
