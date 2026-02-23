@@ -138,6 +138,11 @@
     "typeTV": "TV",
     "typeEntrevista": "Interview"
   },
+  "Partners": {
+    "title": "I collaborate with",
+    "gravlDesc": "Training platform",
+    "entrenaDesc": "Online fitness"
+  },
   "FAQ": {
     "sectionLabel": "FAQ",
     "titleStart": "Frequently asked ",
@@ -284,6 +289,15 @@
     "foodDisliked": "I don't like it",
     "foodInstruction3": " · Tap again = unmarked",
     "foodNeutral": "Those left unmarked will be considered neutral.",
+    "foodLikedSR": "liked",
+    "foodDislikedSR": "disliked",
+    "foodNeutralSR": "not selected",
+    "retryButton": "Try again",
+    "labelService": "Which service are you interested in?",
+    "servicePresencial": "In-person personal training",
+    "serviceOnline": "Online coaching",
+    "serviceNutricion": "Nutrition only",
+    "servicePack": "Complete pack",
     "foodCatCarnes": "Meats",
     "foodCatPescados": "Fish & Seafood",
     "foodCatVerduras": "Vegetables",
@@ -414,5 +428,10 @@
   },
   "Page": {
     "skipToContent": "Skip to main content"
+  },
+  "LegalMeta": {
+    "cookies": "Cookie Policy",
+    "privacy": "Privacy Policy",
+    "legal": "Legal Notice"
   }
 }

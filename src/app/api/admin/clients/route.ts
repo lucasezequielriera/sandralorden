@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/supabase/log-activity";
 import { requireAdmin } from "@/lib/supabase/check-role";
 
 export async function GET() {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const supabase = await createClient();
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const { data, error } = await supabase
     .from("clients")
@@ -22,10 +20,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const supabase = await createClient();
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const body = await request.json();
   const { name, email, phone, service_type, modality, goal, status, notes } = body;

@@ -1,15 +1,17 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
 export default function Partners() {
+  const t = useTranslations("Partners");
   return (
-    <section className="py-16 sm:py-20 md:py-28 bg-crema">
+    <section className="py-16 sm:py-20 md:py-28 bg-crema" aria-labelledby="partners-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         <AnimatedSection>
-          <p className="text-center text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-10 sm:mb-14">
-            Colaboro con
-          </p>
+          <h2 id="partners-heading" className="text-center text-xs sm:text-sm uppercase tracking-[0.3em] text-marron-400 font-medium mb-10 sm:mb-14">
+            {t("title")}
+          </h2>
         </AnimatedSection>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-20 md:gap-32">
@@ -20,7 +22,7 @@ export default function Partners() {
                   Gravl
                 </span>
               </div>
-              <p className="text-xs text-warm-gray-400">Plataforma de entrenamiento</p>
+              <p className="text-xs text-warm-gray-400">{t("gravlDesc")}</p>
             </div>
           </AnimatedSection>
 
@@ -31,7 +33,7 @@ export default function Partners() {
                   EntrenaVirtual
                 </span>
               </div>
-              <p className="text-xs text-warm-gray-400">Fitness online</p>
+              <p className="text-xs text-warm-gray-400">{t("entrenaDesc")}</p>
             </div>
           </AnimatedSection>
         </div>

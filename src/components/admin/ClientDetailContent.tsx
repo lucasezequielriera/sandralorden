@@ -129,12 +129,12 @@ export default function ClientDetailContent({
       {editing && (
         <div className="bg-white rounded-2xl border border-warm-gray-100 p-6 mb-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Nombre" value={editForm.name} onChange={(v) => setEditForm({ ...editForm, name: v })} />
-            <FormField label="Email" value={editForm.email} onChange={(v) => setEditForm({ ...editForm, email: v })} />
-            <FormField label="Teléfono" value={editForm.phone} onChange={(v) => setEditForm({ ...editForm, phone: v })} />
+            <FormField id="cd-name" label="Nombre" value={editForm.name} onChange={(v) => setEditForm({ ...editForm, name: v })} />
+            <FormField id="cd-email" label="Email" value={editForm.email} onChange={(v) => setEditForm({ ...editForm, email: v })} />
+            <FormField id="cd-phone" label="Teléfono" value={editForm.phone} onChange={(v) => setEditForm({ ...editForm, phone: v })} />
             <div>
-              <label className="block text-sm font-medium text-warm-dark mb-1.5">Estado</label>
-              <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Client["status"] })}
+              <label htmlFor="cd-status" className="block text-sm font-medium text-warm-dark mb-1.5">Estado</label>
+              <select id="cd-status" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Client["status"] })}
                 className="w-full px-4 py-2.5 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200">
                 <option value="lead">Lead</option>
                 <option value="active">Activo</option>
@@ -142,7 +142,7 @@ export default function ClientDetailContent({
               </select>
             </div>
           </div>
-          <FormField label="Servicio" value={editForm.service_type} onChange={(v) => setEditForm({ ...editForm, service_type: v })} />
+          <FormField id="cd-service" label="Servicio" value={editForm.service_type} onChange={(v) => setEditForm({ ...editForm, service_type: v })} />
           <div>
             <label className="block text-sm font-medium text-warm-dark mb-2">Modalidad</label>
             <div className="flex gap-3">
@@ -167,10 +167,10 @@ export default function ClientDetailContent({
               </button>
             </div>
           </div>
-          <FormField label="Objetivo" value={editForm.goal} onChange={(v) => setEditForm({ ...editForm, goal: v })} />
+          <FormField id="cd-goal" label="Objetivo" value={editForm.goal} onChange={(v) => setEditForm({ ...editForm, goal: v })} />
           <div>
-            <label className="block text-sm font-medium text-warm-dark mb-1.5">Notas</label>
-            <textarea rows={3} value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+            <label htmlFor="cd-notes" className="block text-sm font-medium text-warm-dark mb-1.5">Notas</label>
+            <textarea id="cd-notes" rows={3} value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
               className="w-full px-4 py-2.5 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200 resize-none" />
           </div>
           <button onClick={handleSave} disabled={saving}
@@ -277,11 +277,11 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function FormField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function FormField({ label, value, onChange, id }: { label: string; value: string; onChange: (v: string) => void; id: string }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-warm-dark mb-1.5">{label}</label>
-      <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
+      <label htmlFor={id} className="block text-sm font-medium text-warm-dark mb-1.5">{label}</label>
+      <input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-2.5 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200" />
     </div>
   );

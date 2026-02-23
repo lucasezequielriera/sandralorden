@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
 
 const mediaLogos = [
@@ -20,84 +20,84 @@ const pressItems = [
     name: "MSN",
     title: "Sandra Lorden, entrenadora: hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
     type: "Digital",
-    date: "Oct 2025",
+    date: "2025-10-01",
     url: "https://www.msn.com/es-mx/salud/other/sandra-lorden-entrenadora-hay-sesiones-de-ejercicio-de-6-minutos-con-las-que-quemas-calor%C3%ADas-incluso-en-reposo/ar-AA1NSpe7",
   },
   {
     name: "¡Hola!",
     title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
     type: "Digital",
-    date: "Oct 2025",
+    date: "2025-10-01",
     url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
   },
   {
     name: "Semana",
     title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
     type: "Revista",
-    date: "Sep 2025",
+    date: "2025-09-01",
     url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
   },
   {
     name: "Cuerpomente",
     title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
     type: "Revista",
-    date: "Jul 2025",
+    date: "2025-07-01",
     url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
   },
   {
     name: "¡Hola!",
     title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
     type: "Digital",
-    date: "Jun 2025",
+    date: "2025-06-01",
     url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
   },
   {
     name: "ELLE",
     title: "Los 5 ejercicios que de verdad tonifican y reafirman el cuerpo para ponerse en forma de aquí al verano",
     type: "Revista",
-    date: "Abr 2025",
+    date: "2025-04-01",
     url: "https://www.elle.com/es/belleza/a64483685/los-5-ejercicios-que-de-verdad-tonifican-y-reafirman-el-cuerpo-para-ponerse-en-forma-de-aqui-al-verano-segun-una-entrenadora/",
   },
   {
     name: "¡Hola!",
     title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
     type: "Digital",
-    date: "Sep 2024",
+    date: "2024-09-01",
     url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
   },
   {
     name: "Mediaset — Solos",
     title: "La entrenadora personal Sandra Lorden visita el pisito para poner en forma a los inquilinos",
     type: "TV",
-    date: "Jun 2023",
+    date: "2023-06-01",
     url: "https://www.mediasetinfinity.es/programas-tv/solos/keyla-y-napoli/episodios/programa-480-40_09934104/player/",
   },
   {
     name: "JeFemme",
     title: "Entrevista a Sandra Lordén Álvarez, entrenadora personal",
     type: "Entrevista",
-    date: "Dic 2022",
+    date: "2022-12-01",
     url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
   },
   {
     name: "Vogue España",
     title: "Este es el número de días (y el tiempo) que hay que entrenar a la semana para tener un cuerpo tonificado",
     type: "Revista",
-    date: "Sep 2020",
+    date: "2020-09-01",
     url: "https://www.vogue.es/belleza/articulos/cuantos-dias-semana-tiempo-entrenar-obtener-resultados-tonificar-cuerpo",
   },
   {
     name: "Vogue España",
     title: "Así deberías entrenar si solo tienes 20-30 minutos al día para hacer ejercicio",
     type: "Revista",
-    date: "Sep 2020",
+    date: "2020-09-01",
     url: "https://www.vogue.es/belleza/articulos/entrenar-20-30-minutos-al-dia-entrenamientos-hacer-ejercicio-tonificar-cuerpo",
   },
   {
     name: "Vogue España",
     title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
     type: "Revista",
-    date: "Ene 2020",
+    date: "2020-01-01",
     url: "https://www.vogue.es/belleza/articulos/ejercicios-abdominales-velocidad-repeticiones-primer-dia-gimnasio",
   },
 ];
@@ -111,6 +111,7 @@ const TYPE_KEYS: Record<string, string> = {
 
 export default function Press() {
   const t = useTranslations("Press");
+  const locale = useLocale();
   return (
     <section id="prensa" className="py-20 sm:py-28 md:py-36 bg-white" aria-labelledby="press-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
@@ -170,7 +171,7 @@ export default function Press() {
                     {t(TYPE_KEYS[item.type] || item.type)}
                   </span>
                   <span className="text-[10px] sm:text-xs text-warm-gray-300">
-                    {item.date}
+                    {new Date(item.date).toLocaleDateString(locale, { month: "short", year: "numeric" })}
                   </span>
                 </div>
 

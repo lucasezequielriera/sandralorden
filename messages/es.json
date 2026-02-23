@@ -138,6 +138,11 @@
     "typeTV": "TV",
     "typeEntrevista": "Entrevista"
   },
+  "Partners": {
+    "title": "Colaboro con",
+    "gravlDesc": "Plataforma de entrenamiento",
+    "entrenaDesc": "Fitness online"
+  },
   "FAQ": {
     "sectionLabel": "FAQ",
     "titleStart": "Preguntas ",
@@ -284,6 +289,15 @@
     "foodDisliked": "no me gusta",
     "foodInstruction3": " · Pulsa otra vez = sin marcar",
     "foodNeutral": "Los que no marques los tomaré como neutros.",
+    "foodLikedSR": "me gusta",
+    "foodDislikedSR": "no me gusta",
+    "foodNeutralSR": "sin seleccionar",
+    "retryButton": "Reintentar",
+    "labelService": "¿Qué servicio te interesa?",
+    "servicePresencial": "Entrenamiento personal presencial",
+    "serviceOnline": "Coaching online",
+    "serviceNutricion": "Solo nutrición",
+    "servicePack": "Pack completo",
     "foodCatCarnes": "Carnes",
     "foodCatPescados": "Pescados y mariscos",
     "foodCatVerduras": "Verduras y hortalizas",
@@ -414,5 +428,10 @@
   },
   "Page": {
     "skipToContent": "Saltar al contenido principal"
+  },
+  "LegalMeta": {
+    "cookies": "Política de Cookies",
+    "privacy": "Política de Privacidad",
+    "legal": "Aviso Legal"
   }
 }

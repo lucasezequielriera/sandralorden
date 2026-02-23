@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       subject: `📋 Formulario completo: ${name} - ${sanitizedBody.service || "Sin especificar"}`,
       html: buildIntakeNotificationEmailHtml(intakeData),
     });
-    console.log("Sandra intake email result:", JSON.stringify(result));
+    void result;
 
     try {
       const supabase = await createServiceClient();
@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
         details: `${name} (${email}) — ${sanitizedBody.service || "Sin servicio"}`,
       });
     } catch (dbErr) {
-      console.error("Supabase insert error (non-blocking):", dbErr);
+      console.error("Supabase insert error (non-blocking):", dbErr instanceof Error ? dbErr.message : "unknown");
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in intake-form:", error);
+    console.error("Error in intake-form:", error instanceof Error ? error.message : "unknown");
     return NextResponse.json(
       { error: "Error al enviar el formulario. Por favor, intentalo de nuevo." },
       { status: 500 }

@@ -31,6 +31,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <div
           className="fixed inset-0 z-40 bg-black/30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          role="presentation"
         />
       )}
 
@@ -92,8 +93,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-lg hover:bg-warm-gray-100 transition-colors cursor-pointer"
+            aria-label="Abrir menú"
+            aria-expanded={sidebarOpen}
           >
-            <svg className="w-6 h-6 text-warm-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="w-6 h-6 text-warm-dark" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>

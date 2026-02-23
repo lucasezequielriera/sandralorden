@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Contact form error:", error);
+    console.error("Contact form error:", error instanceof Error ? error.message : "unknown");
     return NextResponse.json(
       { error: "Error al enviar el mensaje. Inténtalo de nuevo." },
       { status: 500 }

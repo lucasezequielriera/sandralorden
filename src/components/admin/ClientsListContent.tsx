@@ -91,6 +91,7 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre, email o teléfono..."
+          aria-label="Buscar clientes"
           className="flex-1 px-4 py-2.5 rounded-2xl bg-crema text-warm-dark placeholder:text-warm-gray-300 focus:outline-none focus:ring-2 focus:ring-rosa-200 text-sm"
         />
         <select
@@ -125,7 +126,7 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
               </thead>
               <tbody>
                 {filtered.map((client) => (
-                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" onClick={() => router.push(`/admin/clientes/${client.id}`)}>
+                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" tabIndex={0} role="link" onClick={() => router.push(`/admin/clientes/${client.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`/admin/clientes/${client.id}`); } }}>
                     <td className="pl-6 pr-3 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-rosa-100/60 flex items-center justify-center flex-shrink-0">

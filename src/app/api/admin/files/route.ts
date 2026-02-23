@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/supabase/check-role";
 
 export async function GET() {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const supabase = await createClient();
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const { data, error } = await supabase
     .from("files")
@@ -21,10 +19,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const supabase = await createClient();
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
@@ -68,16 +65,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Error al subir el archivo" }, { status: 500 });
   }
 
-  const { data: { publicUrl } } = supabase.storage
+  const { data: signedData, error: signedError } = await supabase.storage
     .from("client-files")
-    .getPublicUrl(path);
+    .createSignedUrl(path, 60 * 60 * 24 * 365);
+
+  const fileUrl = signedData?.signedUrl;
+  if (signedError || !fileUrl) {
+    console.error("Signed URL error:", signedError?.message);
+    return NextResponse.json({ error: "Error al generar URL del archivo" }, { status: 500 });
+  }
 
   const { data, error } = await supabase
     .from("files")
     .insert({
       client_id: clientId,
       file_name: file.name,
-      file_url: publicUrl,
+      file_url: fileUrl,
       file_type: file.type || ext || "",
     })
     .select()

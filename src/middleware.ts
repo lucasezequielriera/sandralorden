@@ -5,15 +5,21 @@ import { routing } from "@/i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
 
+const LOCALE_PREFIXES = routing.locales.map((l) => `/${l}/`);
+
+function stripLocalePrefix(pathname: string): string {
+  for (const prefix of LOCALE_PREFIXES) {
+    if (pathname.startsWith(prefix)) return pathname.slice(prefix.length - 1);
+  }
+  return pathname;
+}
+
 function isAdminPath(pathname: string): boolean {
-  return (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/en/admin")
-  );
+  return stripLocalePrefix(pathname).startsWith("/admin");
 }
 
 function isLoginPath(pathname: string): boolean {
-  return pathname === "/admin/login" || pathname === "/en/admin/login";
+  return stripLocalePrefix(pathname) === "/admin/login";
 }
 
 export async function middleware(request: NextRequest) {

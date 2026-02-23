@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Aviso Legal",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "LegalMeta" });
+  return { title: t("legal"), robots: { index: false, follow: false } };
+}
 
 export default function AvisoLegalPage() {
   return (
@@ -25,11 +26,13 @@ export default function AvisoLegalPage() {
             <p>En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se informa al usuario de los siguientes datos:</p>
             <ul className="list-none space-y-1 pl-0">
               <li><strong>Titular:</strong> Sandra Lorden Álvarez</li>
+              <li><strong>NIF:</strong> [Pendiente de incluir]</li>
               <li><strong>Actividad profesional:</strong> Entrenadora personal y nutricionista deportiva</li>
-              <li><strong>Domicilio:</strong> Madrid, España</li>
+              <li><strong>Domicilio profesional:</strong> [Pendiente de incluir dirección completa], Madrid, España</li>
               <li><strong>Email de contacto:</strong> sandralordenfit@gmail.com</li>
               <li><strong>Sitio web:</strong> www.sandralorden.com</li>
             </ul>
+            <p className="text-xs italic text-rosa-400 mt-2">Nota: Los campos marcados como [Pendiente de incluir] deben ser completados con los datos reales del titular para cumplir con el artículo 10 de la LSSI-CE.</p>
           </section>
 
           <section>

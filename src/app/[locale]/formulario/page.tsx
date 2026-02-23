@@ -182,12 +182,13 @@ function FormularioContent() {
               <InputField id="f-name" label={t("labelName")} value={form.name} onChange={(v) => update("name", v)} required />
               <InputField id="f-email" label={t("labelEmail")} type="email" value={form.email} onChange={(v) => update("email", v)} required />
               <InputField id="f-phone" label={t("labelPhone")} type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder={t("placeholderPhone")} required />
-              <InputField id="f-age" label={t("labelAge")} value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
+              <SelectField id="f-service" label={t("labelService")} value={form.service} onChange={(v) => update("service", v)} options={[t("servicePresencial"), t("serviceOnline"), t("serviceNutricion"), t("servicePack")]} t={t} />
+              <InputField id="f-age" label={t("labelAge")} type="number" value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <InputField id="f-height" label={t("labelHeight")} value={form.height} onChange={(v) => update("height", v)} placeholder={t("placeholderHeight")} required />
-              <InputField id="f-weight" label={t("labelWeight")} value={form.weight} onChange={(v) => update("weight", v)} placeholder={t("placeholderWeight")} required />
-              <InputField id="f-goalWeight" label={t("labelGoalWeight")} value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder={t("placeholderGoalWeight")} />
+              <InputField id="f-height" label={t("labelHeight")} type="number" value={form.height} onChange={(v) => update("height", v)} placeholder={t("placeholderHeight")} required />
+              <InputField id="f-weight" label={t("labelWeight")} type="number" value={form.weight} onChange={(v) => update("weight", v)} placeholder={t("placeholderWeight")} required />
+              <InputField id="f-goalWeight" label={t("labelGoalWeight")} type="number" value={form.goalWeight} onChange={(v) => update("goalWeight", v)} placeholder={t("placeholderGoalWeight")} />
             </div>
           </FormSection>
 
@@ -272,8 +273,11 @@ function FormularioContent() {
           {/* Error */}
           <AnimatePresence>
             {error && (
-              <m.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
-                {error}
+              <m.div role="alert" aria-live="assertive" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+                <span>{error}</span>
+                <button type="submit" className="shrink-0 text-xs font-medium text-red-700 underline underline-offset-2 hover:text-red-900 cursor-pointer">
+                  {t("retryButton")}
+                </button>
               </m.div>
             )}
           </AnimatePresence>
@@ -396,6 +400,8 @@ function FoodSelector({ selections, onToggle, foodCategories, t }: {
                     key={food.key}
                     type="button"
                     onClick={() => onToggle(food.key)}
+                    aria-label={`${food.label}: ${state === "liked" ? t("foodLikedSR") : state === "disliked" ? t("foodDislikedSR") : t("foodNeutralSR")}`}
+                    aria-pressed={state ? true : false}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer border ${
                       state === "liked"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-sm"

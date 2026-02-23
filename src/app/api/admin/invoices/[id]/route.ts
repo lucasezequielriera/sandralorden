@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/supabase/log-activity";
 import { requireAdmin } from "@/lib/supabase/check-role";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const { id } = await params;
-  const supabase = await createClient();
 
   const body = await request.json();
 
@@ -56,11 +55,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { authorized } = await requireAdmin();
+  const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const { id } = await params;
-  const supabase = await createClient();
 
   const { data: inv } = await supabase.from("invoices").select("client_id, concept").eq("id", id).single();
   const { error } = await supabase.from("invoices").delete().eq("id", id);
