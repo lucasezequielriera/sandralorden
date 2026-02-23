@@ -18,7 +18,10 @@ export default async function Home() {
   const t = await getTranslations("Page");
   return (
     <>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-warm-dark focus:text-white focus:rounded-lg focus:text-sm">
+      <a
+        href="#main-content"
+        className="fixed top-4 left-4 z-[100] px-4 py-2 bg-warm-dark text-white rounded-lg text-sm -translate-y-20 opacity-0 pointer-events-none focus:translate-y-0 focus:opacity-100 focus:pointer-events-auto transition-all"
+      >
         {t("skipToContent")}
       </a>
       <Navigation />
