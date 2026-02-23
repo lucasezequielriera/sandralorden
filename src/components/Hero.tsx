@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
-import TransformationModal from "./TransformationModal";
+import { Link } from "@/i18n/navigation";
 
 const videoStyle: React.CSSProperties = {
   position: "absolute",
@@ -15,15 +15,8 @@ const videoStyle: React.CSSProperties = {
 
 export default function Hero() {
   const t = useTranslations("Hero");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const desktopRef = useRef<HTMLVideoElement>(null);
   const mobileRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const openModal = () => setIsModalOpen(true);
-    window.addEventListener("open-transformation-modal", openModal);
-    return () => window.removeEventListener("open-transformation-modal", openModal);
-  }, []);
 
   useEffect(() => {
     const playVisible = () => {
@@ -120,12 +113,12 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.9 }}
             className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0"
           >
-            <button
-              onClick={() => setIsModalOpen(true)}
+            <Link
+              href="/formulario"
               className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
             >
               {t("ctaPrimary")}
-            </button>
+            </Link>
             <a
               href="#sobre-mi"
               className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-warm-dark bg-white/60 backdrop-blur-sm border border-warm-gray-200 rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-0.5"
@@ -173,10 +166,6 @@ export default function Hero() {
         </m.div>
       </section>
 
-      <TransformationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   );
 }

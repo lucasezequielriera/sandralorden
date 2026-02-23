@@ -4,7 +4,6 @@ import { useState, useEffect, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
 
 export default function Navigation() {
   const t = useTranslations("Navigation");
@@ -78,12 +77,12 @@ export default function Navigation() {
 
           {/* CTA + Lang + Admin */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent("open-transformation-modal"))}
+            <Link
+              href="/formulario"
               className="inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
             >
               {t("cta")}
-            </button>
+            </Link>
             <button
               onClick={switchLocale}
               disabled={isPending}
@@ -169,15 +168,13 @@ export default function Navigation() {
                   {link.label}
                 </m.a>
               ))}
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  window.dispatchEvent(new CustomEvent("open-transformation-modal"));
-                }}
+              <Link
+                href="/formulario"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full cursor-pointer"
               >
                 {t("cta")}
-              </button>
+              </Link>
             </div>
           </m.div>
         )}

@@ -1,0 +1,93 @@
+---
+description: Comprehensive audit of the sandralorden project with prioritized improvements to implement
+alwaysApply: true
+---
+
+# Project Audit — Pending Improvements
+
+## Critical Bugs
+
+1. **Double HTML escaping** (`src/lib/sanitize.ts`): `sanitizeField` applies `escapeHtml` before DB storage. React auto-escapes on render, producing double-encoded output (`&amp;` shown literally). Fix: escape only at render time, not at storage time.
+
+2. **Intake form goal field bug** (`src/app/api/intake-form/route.ts`): Goal reads `objetivoRendimiento` / `objetivoEstetico` but the form sends `mejoraRendimiento` / `mejoraEstetica`. Goal always saves as empty.
+
+3. ~~RESOLVED: Dead code in TransformationModal~~ — TransformationModal, ThankYouScreen, and generate-plan API removed. CTAs now link directly to /formulario.
+
+## Security (High Priority)
+
+4. **Rate limiting is non-functional in production** (`src/lib/rate-limit.ts`): In-memory `Map` resets per serverless invocation on Vercel. Replace with Upstash Redis or Vercel KV.
+
+5. ~~RESOLVED: Prompt injection~~ — generate-plan API route removed along with OpenAI dependency.
+
+6. ~~RESOLVED: PII in URL params~~ — generate-plan API route removed.
+
+7. **Admin PATCH without field filtering** (`src/app/api/admin/clients/[id]/route.ts`): Request body passed directly to `.update(body)`. Should whitelist allowed fields.
+
+8. **CSP weakened** (`next.config.ts`): `script-src` includes `'unsafe-inline'` and `'unsafe-eval'`, negating XSS protection. Consider nonce-based CSP.
+
+9. **Cookie consent not enforced** (`src/components/CookieBanner.tsx`): Records preference but never blocks non-essential cookies. No granular preferences. No way to change consent after initial choice. Missing `Secure` flag on cookie.
+
+10. **Upsert overwrites client data** (`src/app/api/intake-form/route.ts`): Upsert on email conflict silently overwrites admin-set notes, status, and other fields.
+
+## Internationalization (Systemic)
+
+11. **Hardcoded Spanish in components** — English users see a mix of languages:
+    - `Services.tsx`: tabs, titles, descriptions, feature lists, pricing — almost everything
+    - `Contact.tsx`: form labels, placeholders, select options, success messages
+    - `About.tsx`: credential titles and descriptions
+    - `formulario/page.tsx`: food item names in the interactive selector
+    - `Press.tsx`: press item titles, dates, media logos
+
+## Accessibility (WCAG Gaps)
+
+12. **TransformationModal**: No focus trap, no Escape key close, missing `role="dialog"` / `aria-modal="true"` / `aria-labelledby`, focus doesn't move to modal on open.
+
+13. **No skip-to-content link** (WCAG 2.4.1).
+
+14. **Services tabs**: Missing ARIA tab pattern (`role="tablist"`, `role="tab"`, `aria-selected`, `aria-controls`).
+
+15. **FAQ accordion**: Missing `aria-controls` / `id` pairing on answer panels.
+
+16. **Form errors**: No `role="alert"` or `aria-live` on contact form error messages.
+
+17. **Hero videos**: Missing `aria-hidden="true"` on decorative background videos.
+
+## Performance
+
+18. **Hero videos**: Both download immediately (no `preload="none"`, no `poster`). CSS classes and JS `style.display` conflict, causing potential flash.
+
+19. **Translation payload**: Entire messages JSON (~26KB) sent to client via `NextIntlClientProvider`. Should filter by namespace.
+
+20. **Intake form re-renders**: 30+ fields in one flat `useState`. Every keystroke re-renders the entire form. Consider splitting into sections or using `useReducer`.
+
+21. **Google Fonts**: ~14 font files loaded (3 families, multiple weights/styles). Audit which are actually used.
+
+22. **Sequential emails** (`generate-plan/route.ts`): Client email and Sandra's email sent sequentially. Use `Promise.all`.
+
+23. **Redundant auth calls**: `requireAdmin()` in `check-role.ts` calls `getUser()` twice (once inside `getUserRole`, once directly). Middleware also makes 2+ DB queries per admin request.
+
+## UX
+
+24. **Admin links lose locale**: `DashboardContent.tsx` and `ClientsListContent.tsx` use standard `next/link` instead of `@/i18n/navigation` Link. Clicking links in `/en/admin` drops to Spanish routes.
+
+25. **Admin uses `window.location.href`** for client navigation (`ClientsListContent.tsx` line 126), causing full page reloads instead of client-side navigation.
+
+26. **Intake form**: No progress indicator for a 6-section, 30+ field form. No draft/save functionality.
+
+27. **Invoice status cycling** (`ContabilidadContent.tsx`): Status cycles on single click (pending→paid→cancelled) with no confirmation for destructive transitions. Optimistic UI without rollback on API failure.
+
+28. **No error feedback** for failed invoice creation, status changes, or deletion.
+
+## Architecture
+
+29. **No automated tests**: Zero testing dependencies or test files.
+
+30. **No schema validation**: All input validation is manual. Consider Zod for robust, maintainable validation.
+
+31. **Unused middleware duplicate**: `src/lib/supabase/middleware.ts` duplicates logic from `src/middleware.ts`.
+
+32. **SearchAction schema misleading** (layout.tsx): JSON-LD SearchAction points to `/?q={search_term}` but no search functionality exists on the site.
+
+33. **Service role key exposure risk** (`src/lib/supabase/server.ts`): `createServiceClient` is exported without a runtime guard against accidental client-side import.
+
+34. **Hardcoded email** (`intake-form/route.ts`): `sandralordenfit@gmail.com` hardcoded as fallback — PII in source code.
