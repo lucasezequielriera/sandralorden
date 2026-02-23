@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -10,9 +11,9 @@ export default function AvisoLegalPage() {
   return (
     <main className="min-h-screen bg-crema py-20 px-4 sm:px-6">
       <article className="mx-auto max-w-3xl prose prose-warm-dark prose-sm sm:prose-base">
-        <a href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
+        <Link href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
           ← Volver a la web
-        </a>
+        </Link>
 
         <h1 className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl font-light text-warm-dark mb-2">
           Aviso Legal
@@ -69,7 +70,7 @@ export default function AvisoLegalPage() {
 
           <section>
             <h2>7. Protección de datos</h2>
-            <p>El tratamiento de datos personales se rige por nuestra <a href="/privacidad">Política de Privacidad</a>, conforme al Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).</p>
+            <p>El tratamiento de datos personales se rige por nuestra <Link href="/privacidad">Política de Privacidad</Link>, conforme al Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).</p>
           </section>
 
           <section>

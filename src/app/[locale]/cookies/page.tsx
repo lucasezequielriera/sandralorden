@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -10,9 +11,9 @@ export default function CookiesPage() {
   return (
     <main className="min-h-screen bg-crema py-20 px-4 sm:px-6">
       <article className="mx-auto max-w-3xl prose prose-warm-dark prose-sm sm:prose-base">
-        <a href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
+        <Link href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
           ← Volver a la web
-        </a>
+        </Link>
 
         <h1 className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl font-light text-warm-dark mb-2">
           Política de Cookies
@@ -93,7 +94,7 @@ export default function CookiesPage() {
 
           <section>
             <h2>4. Más información</h2>
-            <p>Para más información sobre cómo tratamos tus datos, consulta nuestra <a href="/privacidad">Política de Privacidad</a>. Si tienes dudas, escríbenos a <a href="mailto:sandralordenfit@gmail.com">sandralordenfit@gmail.com</a>.</p>
+            <p>Para más información sobre cómo tratamos tus datos, consulta nuestra <Link href="/privacidad">Política de Privacidad</Link>. Si tienes dudas, escríbenos a <a href="mailto:sandralordenfit@gmail.com">sandralordenfit@gmail.com</a>.</p>
           </section>
         </div>
       </article>

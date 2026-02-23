@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -12,11 +13,8 @@ export default function AdminLogin() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    if (searchParams.get("error") === "unauthorized") {
-      setError("No tienes permisos de administrador");
-    }
-  }, [searchParams]);
+  const unauthorizedError = searchParams.get("error") === "unauthorized" ? "No tienes permisos de administrador" : null;
+  const displayError = error || unauthorizedError;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,8 +102,8 @@ export default function AdminLogin() {
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-red-400 text-center">{error}</p>
+            {displayError && (
+              <p className="text-sm text-red-400 text-center">{displayError}</p>
             )}
 
             <button
@@ -119,9 +117,9 @@ export default function AdminLogin() {
         </form>
 
         <div className="text-center mt-6">
-          <a href="/" className="text-sm text-warm-gray-400 hover:text-warm-dark transition-colors">
+          <Link href="/" className="text-sm text-warm-gray-400 hover:text-warm-dark transition-colors">
             ← Volver a la web
-          </a>
+          </Link>
         </div>
       </div>
     </div>

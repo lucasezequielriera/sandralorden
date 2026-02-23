@@ -52,7 +52,6 @@ export default function ContabilidadContent({
   const [newInvoice, setNewInvoice] = useState({ client_id: "", amount: "", concept: "", due_date: "" });
   const [saving, setSaving] = useState(false);
 
-  const thisMonth = new Date().getMonth();
   const thisYear = new Date().getFullYear();
 
   const filtered = invoices.filter((i) => {

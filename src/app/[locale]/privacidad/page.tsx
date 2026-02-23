@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -10,9 +11,9 @@ export default function PrivacidadPage() {
   return (
     <main className="min-h-screen bg-crema py-20 px-4 sm:px-6">
       <article className="mx-auto max-w-3xl prose prose-warm-dark prose-sm sm:prose-base">
-        <a href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
+        <Link href="/" className="inline-block text-sm text-warm-gray-400 hover:text-warm-dark transition-colors mb-8">
           ← Volver a la web
-        </a>
+        </Link>
 
         <h1 className="font-[family-name:var(--font-display)] italic text-3xl sm:text-4xl font-light text-warm-dark mb-2">
           Política de Privacidad
@@ -100,7 +101,7 @@ export default function PrivacidadPage() {
 
           <section>
             <h2>9. Cookies</h2>
-            <p>Este sitio web utiliza cookies técnicas necesarias para su funcionamiento y cookies analíticas para mejorar la experiencia del usuario. Puedes consultar más información en nuestra <a href="/cookies">Política de Cookies</a>.</p>
+            <p>Este sitio web utiliza cookies técnicas necesarias para su funcionamiento y cookies analíticas para mejorar la experiencia del usuario. Puedes consultar más información en nuestra <Link href="/cookies">Política de Cookies</Link>.</p>
           </section>
 
           <section>
