@@ -12,6 +12,14 @@ export interface Client {
   updated_at: string;
 }
 
+export interface IntakeForm {
+  id: string;
+  client_id: string | null;
+  email: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+}
+
 export interface Session {
   id: string;
   client_id: string;

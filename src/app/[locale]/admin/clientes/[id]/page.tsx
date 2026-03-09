@@ -33,6 +33,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     .eq("client_id", id)
     .order("created_at", { ascending: false });
 
+  const { data: intakeForms } = await supabase
+    .from("intake_forms")
+    .select("*")
+    .eq("client_id", id)
+    .order("created_at", { ascending: false });
+
   return (
     <AdminShell>
       <ClientDetailContent
@@ -40,6 +46,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         sessions={sessions ?? []}
         files={files ?? []}
         invoices={invoices ?? []}
+        intakeForms={intakeForms ?? []}
       />
     </AdminShell>
   );

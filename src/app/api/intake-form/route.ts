@@ -66,7 +66,10 @@ export async function POST(request: NextRequest) {
         .eq("email", email)
         .single();
 
+      let clientId: string | null = null;
+
       if (existing) {
+        clientId = existing.id;
         await supabase
           .from("clients")
           .update({
@@ -77,19 +80,31 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", existing.id);
       } else {
-        await supabase.from("clients").insert({
-          name,
-          email,
-          phone,
-          service_type: sanitizedBody.service || "",
-          goal,
-          status: "active",
-          notes: "Formulario detallado completado",
-        });
+        const { data: created } = await supabase
+          .from("clients")
+          .insert({
+            name,
+            email,
+            phone,
+            service_type: sanitizedBody.service || "",
+            goal,
+            status: "active",
+            notes: "Formulario detallado completado",
+          })
+          .select("id")
+          .single();
+        clientId = created?.id ?? null;
       }
+
       await supabase.from("activity_logs").insert({
         action: "Nuevo formulario completado",
         details: `${name} (${email}) — ${sanitizedBody.service || "Sin servicio"}`,
+      });
+
+      await supabase.from("intake_forms").insert({
+        client_id: clientId,
+        email,
+        payload: intakeData,
       });
     } catch (dbErr) {
       console.error("Supabase insert error (non-blocking):", dbErr instanceof Error ? dbErr.message : "unknown");

@@ -30,6 +30,7 @@ export interface IntakeData {
   momentoApetito: string;
   alimentosPreferidos: string;
   alimentosNoGustan: string;
+  alimentosNeutros: string;
   diaTipo: string;
   alergiasAlimentarias: string;
   suplementacion: string;
@@ -104,6 +105,7 @@ export function buildIntakeNotificationEmailHtml(lead: IntakeData): string {
     { label: "Momento con mayor apetito", value: lead.momentoApetito },
     { label: "✅ Alimentos que le gustan", value: lead.alimentosPreferidos },
     { label: "❌ Alimentos que NO le gustan", value: lead.alimentosNoGustan },
+    { label: "⬜ Alimentos no seleccionados (neutros)", value: lead.alimentosNeutros },
     { label: "Día tipo de comidas", value: lead.diaTipo },
     { label: "Alergias alimentarias", value: lead.alergiasAlimentarias },
     { label: "Suplementacion actual", value: lead.suplementacion },

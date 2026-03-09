@@ -112,6 +112,10 @@ function FormularioContent() {
             .filter(([, v]) => v === "disliked")
             .map(([k]) => FOOD_KEY_TO_ES[k] || k)
             .join(", "),
+          alimentosNeutros: Object.keys(FOOD_KEY_TO_ES)
+            .filter((key) => !foodSelections[key])
+            .map((key) => FOOD_KEY_TO_ES[key] || key)
+            .join(", "),
         }),
       });
       const data = await res.json();

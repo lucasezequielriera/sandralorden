@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import type { Client, Session, FileRecord, Invoice } from "@/lib/supabase/types";
+import type { Client, Session, FileRecord, Invoice, IntakeForm } from "@/lib/supabase/types";
 import PaymentGrid from "./PaymentGrid";
 
 const statusColors: Record<string, string> = {
@@ -19,17 +19,20 @@ export default function ClientDetailContent({
   sessions,
   files,
   invoices,
+  intakeForms = [],
 }: {
   client: Client;
   sessions: Session[];
   files: FileRecord[];
   invoices: Invoice[];
+  intakeForms?: IntakeForm[];
 }) {
   const router = useRouter();
   const [client, setClient] = useState(initialClient);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({ ...initialClient });
+  const [showIntake, setShowIntake] = useState(false);
 
   const cleanPhone = client.phone.replace(/\D/g, "");
   const waPhone = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
@@ -114,6 +117,16 @@ export default function ClientDetailContent({
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 0 0 .917.917l4.458-1.495A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0Zm0 22a9.94 9.94 0 0 1-5.39-1.584l-.386-.242-2.646.887.887-2.646-.242-.386A9.94 9.94 0 0 1 2 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10Z"/></svg>
             WhatsApp
           </a>
+          <button
+            type="button"
+            onClick={() => setShowIntake((prev) => !prev)}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-warm-dark bg-warm-gray-100 rounded-xl hover:bg-warm-gray-200 transition-all cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.5h16.5M3.75 9.75h16.5M3.75 15h8.25" />
+            </svg>
+            Datos del cliente
+          </button>
           <button onClick={() => { setEditForm({ ...client }); setEditing(!editing); }}
             className="px-4 py-2 text-sm font-medium text-warm-dark bg-warm-gray-100 rounded-xl hover:bg-warm-gray-200 transition-all cursor-pointer">
             {editing ? "Cancelar" : "Editar"}
@@ -186,6 +199,35 @@ export default function ClientDetailContent({
         <InfoCard label="Objetivo" value={client.goal || "Sin especificar"} />
         <InfoCard label="Fecha de registro" value={new Date(client.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })} />
       </div>
+
+      {showIntake && intakeForms.length > 0 && (
+        <div className="bg-white rounded-2xl border border-warm-gray-100 p-6 mb-6">
+          <h3 className="font-medium text-warm-dark mb-3 text-sm">Datos del formulario detallado</h3>
+          <p className="text-xs text-warm-gray-300 mb-3">
+            Mostrando el último formulario completado por este cliente.
+          </p>
+          {(() => {
+            const latest = [...intakeForms].sort(
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )[0];
+            const entries = Object.entries(latest.payload || {});
+            return (
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                {entries.map(([key, value]) => (
+                  <div key={key} className="bg-warm-gray-50 rounded-xl p-3 border border-warm-gray-100">
+                    <dt className="text-[11px] uppercase tracking-wide text-warm-gray-400 mb-1">
+                      {key}
+                    </dt>
+                    <dd className="text-warm-dark whitespace-pre-wrap break-words text-xs">
+                      {typeof value === "string" ? value : JSON.stringify(value, null, 2)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            );
+          })()}
+        </div>
+      )}
 
       {client.notes && (
         <div className="bg-white rounded-2xl border border-warm-gray-100 p-6 mb-6">
