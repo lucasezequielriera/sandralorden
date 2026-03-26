@@ -17,6 +17,13 @@ const mediaLogos = [
 
 const pressItems = [
   {
+    name: "Glamour España",
+    title: "Andar 10000 pasos al día es bueno, ¿verdad o mito?",
+    type: "Digital",
+    date: "2026-03-17",
+    url: "https://www.glamour.es/articulos/es-necesario-andar-10000-pasos-al-dia",
+  },
+  {
     name: "MSN",
     title: "Sandra Lorden, entrenadora: hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
     type: "Digital",
