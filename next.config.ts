@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/landing", destination: "/programa-de-90-dias", permanent: true },
       { source: "/en/landing", destination: "/en/90-days-program", permanent: true },
+      /** Página de prueba Sentry eliminada del repo; evita hits a bundles viejos en CDN. */
+      { source: "/sentry-example-page", destination: "/", permanent: true },
+      { source: "/en/sentry-example-page", destination: "/", permanent: true },
     ];
   },
   /** Alias por si en Stripe se configuró la ruta en plural u otra variante (evita 404 HTML). */
