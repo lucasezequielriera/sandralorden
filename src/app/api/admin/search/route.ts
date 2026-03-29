@@ -28,16 +28,15 @@ export async function GET(request: NextRequest) {
     ...(clients ?? []).map((c) => ({
       type: "client" as const,
       id: c.id,
+      clientId: c.id,
       title: c.name,
       subtitle: `${c.email} · ${c.service_type || "Sin servicio"}`,
-      href: `/admin/clientes/${c.id}`,
     })),
     ...(invoices ?? []).map((i) => ({
       type: "invoice" as const,
       id: i.id,
       title: i.concept,
       subtitle: `${i.amount}€ · ${i.status}`,
-      href: "/admin/contabilidad",
     })),
   ];
 

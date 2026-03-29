@@ -51,6 +51,15 @@ interface LogEntry {
   created_at: string;
 }
 
+interface FunnelStats {
+  premiumClick: number;
+  premiumFormSubmit: number;
+  checkoutStarted: number;
+  checkoutSuccess: number;
+  checkoutCancelled: number;
+  monthlyOfferAccepted: number;
+}
+
 const statusColors: Record<string, string> = {
   active: "bg-[#A8D5BA]/30 text-[#3D6B4F]",
   lead: "bg-[#E8D5F0]/50 text-[#6B3A7E]",
@@ -81,6 +90,7 @@ export default function DashboardContent({
   recentClients,
   recentInvoices,
   recentLogs,
+  funnel,
 }: {
   stats: Stats;
   monthlyData: MonthData[];
@@ -88,6 +98,7 @@ export default function DashboardContent({
   recentClients: RecentClient[];
   recentInvoices: RecentInvoice[];
   recentLogs: LogEntry[];
+  funnel: FunnelStats;
 }) {
   const currentMonth = new Date().getMonth();
   const currentMonthName = MONTH_NAMES[currentMonth];
@@ -96,6 +107,8 @@ export default function DashboardContent({
   const selected = selectedMonth !== null ? monthlyData[selectedMonth] : null;
 
   const maxRevenue = Math.max(...monthlyData.map((m) => m.revenue), 1);
+  const clickToPaidPct = funnel.premiumClick > 0 ? Math.round((funnel.checkoutSuccess / funnel.premiumClick) * 100) : 0;
+  const submitToPaidPct = funnel.premiumFormSubmit > 0 ? Math.round((funnel.checkoutSuccess / funnel.premiumFormSubmit) * 100) : 0;
 
   return (
     <div>
@@ -324,7 +337,7 @@ export default function DashboardContent({
               {recentClients.map((client) => (
                 <Link
                   key={client.id}
-                  href={`/admin/clientes/${client.id}`}
+                  href={{ pathname: "/admin/clientes/[id]", params: { id: client.id } }}
                   className="flex items-center justify-between p-3 rounded-2xl hover:bg-warm-white transition-all duration-200 group"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -382,6 +395,24 @@ export default function DashboardContent({
       </div>
 
       {/* Activity Logs */}
+      <div className="bg-crema rounded-3xl p-6 mb-4">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-[family-name:var(--font-display)] italic text-lg text-warm-dark">Funnel 90 días · Programa 90 días</h3>
+          <span className="text-[10px] text-warm-gray-300 uppercase tracking-wider">Conversión click→pago: {clickToPaidPct}%</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          <FunnelBox label="Clicks premium" value={funnel.premiumClick} />
+          <FunnelBox label="Submit premium" value={funnel.premiumFormSubmit} />
+          <FunnelBox label="Checkout iniciado" value={funnel.checkoutStarted} />
+          <FunnelBox label="Pago exitoso" value={funnel.checkoutSuccess} tone="ok" />
+          <FunnelBox label="Checkout cancelado" value={funnel.checkoutCancelled} tone="warn" />
+          <FunnelBox label="Oferta mensual aceptada" value={funnel.monthlyOfferAccepted} />
+        </div>
+        <p className="text-[11px] text-warm-gray-400 mt-3">
+          Conversión submit→pago: {submitToPaidPct}%
+        </p>
+      </div>
+
       <div className="bg-crema rounded-3xl p-6">
         <h3 className="font-[family-name:var(--font-display)] italic text-lg text-warm-dark mb-5">Actividad reciente</h3>
         {recentLogs.length === 0 ? (
@@ -393,7 +424,9 @@ export default function DashboardContent({
                 <div className="w-1.5 h-1.5 rounded-full bg-rosa-300 mt-2 flex-shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-warm-dark">{log.action}</p>
-                  {log.details && <p className="text-[11px] text-warm-gray-300 truncate mt-0.5">{log.details}</p>}
+                  {log.details && (
+                    <p className="text-[11px] text-warm-gray-300 mt-0.5 line-clamp-3 break-words">{log.details}</p>
+                  )}
                 </div>
                 <p className="text-[10px] text-warm-gray-300 flex-shrink-0 tabular-nums">
                   {new Date(log.created_at).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
@@ -403,6 +436,17 @@ export default function DashboardContent({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function FunnelBox({ label, value, tone }: { label: string; value: number; tone?: "ok" | "warn" }) {
+  return (
+    <div className={`rounded-2xl p-3.5 ${
+      tone === "ok" ? "bg-[#A8D5BA]/20" : tone === "warn" ? "bg-[#F2B8B5]/20" : "bg-warm-white"
+    }`}>
+      <p className="text-[9px] text-warm-gray-300 uppercase tracking-[0.1em]">{label}</p>
+      <p className="text-xl font-[family-name:var(--font-display)] italic text-warm-dark mt-1">{value}</p>
     </div>
   );
 }

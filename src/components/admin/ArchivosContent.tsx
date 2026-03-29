@@ -45,6 +45,7 @@ export default function ArchivosContent({
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
+  const [filePurpose, setFilePurpose] = useState<"general" | "training_plan" | "nutrition_plan">("general");
   const [search, setSearch] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,6 +63,7 @@ export default function ArchivosContent({
       const formData = new FormData();
       formData.append("file", file);
       formData.append("client_id", selectedClient);
+      formData.append("file_purpose", filePurpose);
       const res = await fetch("/api/admin/files", { method: "POST", body: formData });
       if (res.ok) router.refresh();
     } finally {
@@ -106,6 +108,18 @@ export default function ArchivosContent({
               className="w-full px-4 py-2.5 rounded-2xl bg-warm-white text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200">
               <option value="">Seleccionar cliente</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div className="flex-1 w-full">
+            <label className="block text-[10px] font-medium text-warm-gray-400 uppercase tracking-[0.1em] mb-1.5">Tipo de archivo</label>
+            <select
+              value={filePurpose}
+              onChange={(e) => setFilePurpose(e.target.value as "general" | "training_plan" | "nutrition_plan")}
+              className="w-full px-4 py-2.5 rounded-2xl bg-warm-white text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200"
+            >
+              <option value="general">General</option>
+              <option value="training_plan">Plan de entrenamiento</option>
+              <option value="nutrition_plan">Plan de nutrición</option>
             </select>
           </div>
           <label className={`inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-2xl transition-all cursor-pointer whitespace-nowrap ${
@@ -160,6 +174,11 @@ export default function ArchivosContent({
               <tbody>
                 {filtered.map((f) => {
                   const cat = getFileCategory(f.file_type, f.file_name);
+                  const isTrainingPlan = f.file_name.startsWith("PLAN_TRAINING__");
+                  const isNutritionPlan = f.file_name.startsWith("PLAN_NUTRITION__");
+                  const cleanName = f.file_name
+                    .replace(/^PLAN_TRAINING__/, "")
+                    .replace(/^PLAN_NUTRITION__/, "");
                   return (
                     <tr key={f.id} className="group hover:bg-warm-white transition-all duration-200">
                       <td className="pl-6 pr-3 py-3.5">
@@ -168,8 +187,13 @@ export default function ArchivosContent({
                             <span className="text-[9px] font-bold">{typeIcons[cat] ?? "FILE"}</span>
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm text-warm-dark truncate max-w-[180px] group-hover:text-rosa-500 transition-colors">{f.file_name}</p>
+                            <p className="text-sm text-warm-dark truncate max-w-[180px] group-hover:text-rosa-500 transition-colors">{cleanName}</p>
                             <p className="text-[10px] text-warm-gray-300 sm:hidden">{f.clients?.name ?? "—"}</p>
+                            {(isTrainingPlan || isNutritionPlan) && (
+                              <p className="text-[10px] text-amber-600">
+                                {isTrainingPlan ? "Plan de entrenamiento" : "Plan de nutrición"}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>

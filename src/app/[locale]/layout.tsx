@@ -6,6 +6,8 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import MotionProvider from "@/components/MotionProvider";
+import ToastProvider from "@/components/ToastProvider";
+import SupabaseAuthRecoveryBridge from "@/components/SupabaseAuthRecoveryBridge";
 import "../globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -402,7 +404,9 @@ export default async function LocaleLayout({
         className={`${cormorant.variable} ${dancingScript.variable} ${dmSans.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
+          <SupabaseAuthRecoveryBridge />
           <MotionProvider>{children}</MotionProvider>
+          <ToastProvider />
         </NextIntlClientProvider>
         <ConditionalAnalytics />
       </body>

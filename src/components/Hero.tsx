@@ -17,7 +17,6 @@ export default function Hero() {
   const t = useTranslations("Hero");
   const desktopRef = useRef<HTMLVideoElement>(null);
   const mobileRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     const playVisible = () => {
       const isMobile = window.innerWidth < 768;
@@ -114,10 +113,16 @@ export default function Hero() {
             className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0"
           >
             <Link
-              href="/formulario"
+              href="/programa-de-90-dias"
               className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
             >
-              {t("ctaPrimary")}
+              {t("ctaPrimaryPremium")}
+            </Link>
+            <Link
+              href={{ pathname: "/formulario", query: { program: "estandar" } }}
+              className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-warm-dark bg-white/60 backdrop-blur-sm border border-warm-gray-200 rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+            >
+              {t("ctaPrimaryStandard")}
             </Link>
             <a
               href="#sobre-mi"
@@ -125,6 +130,12 @@ export default function Hero() {
             >
               {t("ctaSecondary")}
             </a>
+            <Link
+              href="/cita-virtual"
+              className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-sm font-medium text-rosa-500 bg-white/80 backdrop-blur-sm border border-rosa-200/80 rounded-full transition-all duration-300 hover:bg-rosa-50 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+            >
+              {t("ctaVirtual")}
+            </Link>
           </m.div>
 
           {/* Stats */}
@@ -165,7 +176,6 @@ export default function Hero() {
           </m.div>
         </m.div>
       </section>
-
     </>
   );
 }

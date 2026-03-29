@@ -16,8 +16,10 @@ const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "
 
 export default function PaymentGrid({ clientId }: { clientId: string }) {
   const router = useRouter();
-  const year = new Date().getFullYear();
+  const [gridYear, setGridYear] = useState(() => new Date().getFullYear());
+  const year = gridYear;
   const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
   const [invoices, setInvoices] = useState<InvoiceMonth[]>([]);
   const [toggling, setToggling] = useState<number | null>(null);
   const [modal, setModal] = useState<{ month: number } | null>(null);
@@ -27,16 +29,17 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchPayments = useCallback(async () => {
-    const res = await fetch(`/api/admin/clients/${clientId}/payments`);
+    const res = await fetch(`/api/admin/clients/${clientId}/payments?year=${gridYear}`);
     if (res.ok) setInvoices(await res.json());
-  }, [clientId]);
+  }, [clientId, gridYear]);
 
   useEffect(() => { fetchPayments(); }, [fetchPayments]);
 
   const getMonthStatus = (month: number): "paid" | "pending" | "none" => {
     const inv = invoices.find((i) => {
       if (!i.due_date) return false;
-      return new Date(i.due_date + "T00:00:00").getMonth() === month;
+      const d = new Date(i.due_date + "T00:00:00");
+      return d.getMonth() === month && d.getFullYear() === year;
     });
     if (!inv) return "none";
     return inv.status as "paid" | "pending";
@@ -45,7 +48,8 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
   const getMonthAmount = (month: number): number => {
     const inv = invoices.find((i) => {
       if (!i.due_date) return false;
-      return new Date(i.due_date + "T00:00:00").getMonth() === month;
+      const d = new Date(i.due_date + "T00:00:00");
+      return d.getMonth() === month && d.getFullYear() === year;
     });
     return inv?.amount ?? 0;
   };
@@ -120,8 +124,26 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
   return (
     <>
       <div className="bg-white rounded-2xl border border-warm-gray-100 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-medium text-warm-dark">Pagos {year}</h3>
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setGridYear((y) => y - 1)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-warm-gray-200 text-warm-dark hover:bg-warm-gray-50 text-lg leading-none cursor-pointer"
+              aria-label="Año anterior"
+            >
+              ‹
+            </button>
+            <h3 className="font-medium text-warm-dark min-w-[7rem] text-center">Pagos {year}</h3>
+            <button
+              type="button"
+              onClick={() => setGridYear((y) => y + 1)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-warm-gray-200 text-warm-dark hover:bg-warm-gray-50 text-lg leading-none cursor-pointer"
+              aria-label="Año siguiente"
+            >
+              ›
+            </button>
+          </div>
           <div className="flex items-center gap-3 text-[10px]">
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
@@ -142,8 +164,8 @@ export default function PaymentGrid({ clientId }: { clientId: string }) {
           {MONTHS.map((name, i) => {
             const status = getMonthStatus(i);
             const monthAmount = getMonthAmount(i);
-            const isCurrentMonth = i === currentMonth;
-            const isFuture = i > currentMonth;
+            const isCurrentMonth = i === currentMonth && year === currentYear;
+            const isFuture = year > currentYear || (year === currentYear && i > currentMonth);
             const isToggling = toggling === i;
 
             return (

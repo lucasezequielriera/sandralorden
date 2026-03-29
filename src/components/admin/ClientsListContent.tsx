@@ -15,6 +15,17 @@ const modalityLabels: Record<string, string> = {
   virtual: "Virtual",
 };
 
+function getProgramBadge(notes: string) {
+  const n = notes.toLowerCase();
+  if (n.includes("premium 90")) {
+    return { label: "Premium 90 días", className: "bg-amber-100 text-amber-700" };
+  }
+  if (n.includes("programa:")) {
+    return { label: "Estándar", className: "bg-slate-100 text-slate-600" };
+  }
+  return null;
+}
+
 export default function ClientsListContent({ clients, paymentMap = {} }: { clients: Client[]; paymentMap?: Record<string, Record<number, string>> }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -126,14 +137,34 @@ export default function ClientsListContent({ clients, paymentMap = {} }: { clien
               </thead>
               <tbody>
                 {filtered.map((client) => (
-                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" tabIndex={0} role="link" onClick={() => router.push(`/admin/clientes/${client.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`/admin/clientes/${client.id}`); } }}>
+                  <tr key={client.id} className="group hover:bg-warm-white transition-all duration-200 cursor-pointer" tabIndex={0} role="link" onClick={() =>
+                    router.push({ pathname: "/admin/clientes/[id]", params: { id: client.id } })
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push({ pathname: "/admin/clientes/[id]", params: { id: client.id } });
+                    }
+                  }}>
                     <td className="pl-6 pr-3 py-3.5">
+                      {(() => {
+                        const programBadge = getProgramBadge(client.notes || "");
+                        return (
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-rosa-100/60 flex items-center justify-center flex-shrink-0">
                           <span className="text-[11px] font-medium text-rosa-400">{client.name.charAt(0).toUpperCase()}</span>
                         </div>
-                        <span className="text-sm text-warm-dark group-hover:text-rosa-500 transition-colors truncate">{client.name}</span>
+                        <div className="min-w-0">
+                          <span className="text-sm text-warm-dark group-hover:text-rosa-500 transition-colors truncate block">{client.name}</span>
+                          {programBadge && (
+                            <span className={`inline-flex mt-1 text-[9px] px-2 py-0.5 rounded-full font-medium ${programBadge.className}`}>
+                              {programBadge.label}
+                            </span>
+                          )}
+                        </div>
                       </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-3 py-3.5 hidden sm:table-cell">
                       <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium ${modalityColors[client.modality] ?? "bg-warm-gray-100 text-warm-gray-400"}`}>

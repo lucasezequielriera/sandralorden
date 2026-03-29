@@ -4,14 +4,17 @@ import { requireAdmin } from "@/lib/supabase/check-role";
 
 const MONTH_NAMES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { authorized, rateLimited, supabase } = await requireAdmin();
   if (!authorized) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   if (rateLimited) return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429 });
 
   const { id } = await params;
 
-  const year = new Date().getFullYear();
+  const rawYear = request.nextUrl.searchParams.get("year");
+  const parsed = rawYear ? Number(rawYear) : NaN;
+  const year =
+    Number.isFinite(parsed) && parsed >= 2020 && parsed <= 2100 ? Math.floor(parsed) : new Date().getFullYear();
   const { data } = await supabase
     .from("invoices")
     .select("id, amount, status, concept, due_date, paid_date, created_at")

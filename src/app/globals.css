@@ -103,3 +103,42 @@ html, body {
     font-size: 16px;
   }
 }
+
+/* Sandra-brand toasts (Sonner) */
+[data-sonner-toaster] [data-sonner-toast].sandra-toast {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+[data-sonner-toaster] [data-sonner-toast].sandra-toast [data-title] {
+  color: var(--color-warm-dark);
+  font-weight: 600;
+}
+
+[data-sonner-toaster] [data-sonner-toast].sandra-toast [data-description] {
+  color: var(--color-warm-gray-500);
+}
+
+[data-sonner-toaster] [data-sonner-toast].sandra-toast [data-close-button] {
+  background: var(--color-warm-gray-100);
+  color: var(--color-warm-gray-500);
+  border: 1px solid var(--color-warm-gray-200);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"].sandra-toast {
+  border-left: 4px solid #8fb996;
+  background: #f5fbf6;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"].sandra-toast {
+  border-left: 4px solid #d4908f;
+  background: #fff5f5;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"].sandra-toast {
+  border-left: 4px solid #c9a88e;
+  background: #fff8f5;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="info"].sandra-toast {
+  border-left: 4px solid #8b7e7e;
+}

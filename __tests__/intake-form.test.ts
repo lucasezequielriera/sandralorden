@@ -6,9 +6,14 @@ vi.mock("@/lib/rate-limit", () => ({
   rateLimit: vi.fn(() => ({ success: true, remaining: 10 })),
 }));
 
-const mockSend = vi.fn().mockResolvedValue({ id: "mock-email-id" });
-vi.mock("resend", () => ({
-  Resend: vi.fn(() => ({ emails: { send: mockSend } })),
+/** sendMail de nodemailer (mismo contrato que usan las expectativas: to, subject, html…) */
+const mockSend = vi.fn().mockResolvedValue(undefined);
+vi.mock("nodemailer", () => ({
+  default: {
+    createTransport: vi.fn(() => ({
+      sendMail: mockSend,
+    })),
+  },
 }));
 
 let supabaseInserts: Record<string, unknown>[] = [];
@@ -42,10 +47,14 @@ vi.mock("@/lib/supabase/server", () => ({
   createServiceClient: vi.fn(async () => mockSupabase),
 }));
 
-/* ─── env ─── */
-process.env.RESEND_API_KEY = "re_test_123";
-process.env.EMAIL_FROM = "Test <test@resend.dev>";
+/* ─── env (sendEmail usa SMTP + EMAIL_FROM) ─── */
+process.env.SMTP_HOST = "smtp.test.local";
+process.env.SMTP_PORT = "587";
+process.env.SMTP_USER = "test-smtp-user";
+process.env.SMTP_PASS = "test-smtp-pass";
+process.env.EMAIL_FROM = "Test <test@example.com>";
 process.env.SANDRA_EMAIL = "sandra@test.com";
+process.env.EMAIL_SKIP_BREVO_SENDER_WARN = "1";
 
 /* ─── helper ─── */
 function makeRequest(body: Record<string, unknown>) {
@@ -107,7 +116,7 @@ const { POST } = await import("@/app/api/intake-form/route");
 describe("POST /api/intake-form", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockSend.mockResolvedValue({ id: "mock-email-id" });
+    mockSend.mockResolvedValue(undefined);
     selectSingleResult = { data: null, error: null };
     mockSupabase = createSupabaseMock();
   });

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
-import { Link, useRouter, usePathname } from "@/i18n/navigation";
+import { Link, useRouter, usePathname, replacePathLocale } from "@/i18n/navigation";
 
 export default function Navigation() {
   const t = useTranslations("Navigation");
@@ -13,13 +13,12 @@ export default function Navigation() {
   const [isPending, startTransition] = useTransition();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const otherLocale = locale === "es" ? "en" : "es";
   const otherLabel = locale === "es" ? "EN" : "ES";
 
   function switchLocale() {
     startTransition(() => {
-      router.replace(pathname, { locale: otherLocale });
+      replacePathLocale(router, pathname, otherLocale);
     });
   }
 
@@ -75,7 +74,13 @@ export default function Navigation() {
     return () => document.removeEventListener("keydown", trapFocus);
   }, [isMobileMenuOpen, trapFocus]);
 
+  const loginLinkClassMd =
+    "w-9 h-9 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all";
+  const loginLinkClassSm =
+    "w-8 h-8 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all";
+
   return (
+    <>
     <m.nav
       aria-label={t("ariaNav")}
       initial={{ y: -100 }}
@@ -114,10 +119,10 @@ export default function Navigation() {
           {/* CTA + Lang + Admin */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/formulario"
+              href="/programa-de-90-dias"
               className="inline-flex items-center px-5 lg:px-6 py-2.5 text-sm font-medium text-white bg-warm-dark rounded-full transition-all duration-300 hover:bg-warm-gray-500 hover:shadow-lg cursor-pointer"
             >
-              {t("cta")}
+              {t("ctaPremium90d")}
             </Link>
             <button
               onClick={switchLocale}
@@ -128,12 +133,16 @@ export default function Navigation() {
               {otherLabel}
             </button>
             <Link
-              href="/admin"
-              className="w-9 h-9 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
-              aria-label={t("ariaAdmin")}
+              href="/login"
+              className={loginLinkClassMd}
+              aria-label={t("ariaLogin")}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                />
               </svg>
             </Link>
           </div>
@@ -148,13 +157,13 @@ export default function Navigation() {
             >
               {otherLabel}
             </button>
-            <Link
-              href="/admin"
-              className="w-8 h-8 rounded-full border border-warm-gray-200/60 flex items-center justify-center text-warm-gray-400 hover:text-warm-dark hover:border-warm-gray-300 transition-all"
-              aria-label={t("ariaAdmin")}
-            >
+            <Link href="/login" className={loginLinkClassSm} aria-label={t("ariaLogin")}>
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                />
               </svg>
             </Link>
             <button
@@ -212,16 +221,17 @@ export default function Navigation() {
                 </m.a>
               ))}
               <Link
-                href="/formulario"
+                href="/programa-de-90-dias"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-warm-dark rounded-full cursor-pointer"
               >
-                {t("cta")}
+                {t("ctaPremium90d")}
               </Link>
             </div>
           </m.div>
         )}
       </AnimatePresence>
     </m.nav>
+    </>
   );
 }

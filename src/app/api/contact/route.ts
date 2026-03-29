@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { rateLimit } from "@/lib/rate-limit";
 import { sanitizeField, sanitizeEmail, escapeHtml, isHoneypotFilled } from "@/lib/sanitize";
-
-function getResendClient() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error("RESEND_API_KEY not configured");
-  return new Resend(key);
-}
+import { sendEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,8 +26,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Nombre y email son obligatorios" }, { status: 400 });
     }
 
-    const resend = getResendClient();
-    const emailFrom = process.env.EMAIL_FROM || "Sandra Lorden <onboarding@resend.dev>";
     const sandraEmail = process.env.SANDRA_EMAIL;
 
     if (!sandraEmail) {
@@ -47,8 +39,7 @@ export async function POST(request: NextRequest) {
       message: escapeHtml(message || "Sin mensaje"),
     };
 
-    await resend.emails.send({
-      from: emailFrom,
+    await sendEmail({
       to: sandraEmail,
       subject: `📩 Nuevo mensaje de contacto: ${name}`,
       html: `

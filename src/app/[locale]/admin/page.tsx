@@ -91,6 +91,23 @@ export default async function AdminPage() {
     .order("created_at", { ascending: false })
     .limit(10);
 
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const { data: funnelLogs } = await supabase
+    .from("activity_logs")
+    .select("details")
+    .eq("action", "Funnel event")
+    .gte("created_at", ninetyDaysAgo.toISOString());
+
+  const funnel = {
+    premiumClick: (funnelLogs ?? []).filter((l) => l.details?.includes("event:premium_click")).length,
+    premiumFormSubmit: (funnelLogs ?? []).filter((l) => l.details?.includes("event:premium_form_submit")).length,
+    checkoutStarted: (funnelLogs ?? []).filter((l) => l.details?.includes("event:checkout_started")).length,
+    checkoutSuccess: (funnelLogs ?? []).filter((l) => l.details?.includes("event:checkout_success")).length,
+    checkoutCancelled: (funnelLogs ?? []).filter((l) => l.details?.includes("event:checkout_cancelled")).length,
+    monthlyOfferAccepted: (funnelLogs ?? []).filter((l) => l.details?.includes("event:monthly_offer_accepted")).length,
+  };
+
   return (
     <AdminShell>
       <DashboardContent
@@ -112,6 +129,7 @@ export default async function AdminPage() {
         recentClients={recentClients ?? []}
         recentInvoices={recentInvoices ?? []}
         recentLogs={recentLogs ?? []}
+        funnel={funnel}
       />
     </AdminShell>
   );

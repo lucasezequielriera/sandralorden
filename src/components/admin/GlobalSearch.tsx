@@ -8,7 +8,7 @@ interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
-  href: string;
+  clientId?: string;
 }
 
 export default function GlobalSearch() {
@@ -38,7 +38,11 @@ export default function GlobalSearch() {
   }, []);
 
   const selectResult = useCallback((r: SearchResult) => {
-    router.push(r.href);
+    if (r.type === "client" && r.clientId) {
+      router.push({ pathname: "/admin/clientes/[id]", params: { id: r.clientId } });
+    } else {
+      router.push("/admin/contabilidad");
+    }
     setOpen(false);
     setQuery("");
     setActiveIndex(-1);

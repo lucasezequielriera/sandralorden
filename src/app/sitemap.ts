@@ -40,5 +40,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/programa-de-90-dias`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
+      alternates: {
+        languages: {
+          es: `${baseUrl}/programa-de-90-dias`,
+          en: `${baseUrl}/en/90-days-program`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/en/90-days-program`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
   ];
 }

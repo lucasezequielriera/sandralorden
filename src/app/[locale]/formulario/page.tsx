@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useMemo, useState, Suspense, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import type { SandraNotifyResult } from "@/lib/checkout-notify-sandra";
 
 const FOOD_KEY_TO_ES: Record<string, string> = {
   pollo: "Pollo", pavo: "Pavo", ternera: "Ternera", cerdo: "Cerdo", cordero: "Cordero",
@@ -26,15 +27,31 @@ const FOOD_KEY_TO_ES: Record<string, string> = {
 
 function FormularioContent() {
   const t = useTranslations("Formulario");
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const prefillName = searchParams.get("name") || "";
   const prefillEmail = searchParams.get("email") || "";
   const prefillPhone = searchParams.get("phone") || "";
   const prefillService = searchParams.get("service") || "";
+  const prefillClientId = searchParams.get("clientId") || "";
+  const prefillProgramRaw = searchParams.get("program") || "";
+  const checkoutStatus = searchParams.get("checkout");
+  const checkoutSessionId = searchParams.get("session_id");
+  const checkoutOffer = searchParams.get("offer");
+  const programStandardLabel = t("programStandard");
+  const programPremiumLabel = t("programPremium90d");
+  const resolvedProgramType =
+    prefillProgramRaw === "premium-90-dias" ? programPremiumLabel : programStandardLabel;
+  const isPremiumForm = resolvedProgramType === programPremiumLabel;
+  const fixedPremiumService = t("serviceTrainingNutritionOnline");
 
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMonthlyCheckoutLoading, setIsMonthlyCheckoutLoading] = useState(false);
+  const [checkoutConfirmed, setCheckoutConfirmed] = useState(false);
+  const [checkoutConfirmError, setCheckoutConfirmError] = useState<string | null>(null);
+  const [sandraNotifyDevHint, setSandraNotifyDevHint] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: prefillName,
@@ -80,6 +97,13 @@ function FormularioContent() {
   });
 
   const [foodSelections, setFoodSelections] = useState<Record<string, "liked" | "disliked">>({});
+  const trackedCheckoutStateRef = useRef<string | null>(null);
+  const showMonthlyOfferModal = useMemo(
+    () => checkoutStatus === "cancelled" && checkoutOffer === "monthly",
+    [checkoutOffer, checkoutStatus]
+  );
+  const homeHardRedirectUrl = locale === "en" ? "/en" : "/";
+  const premiumButtonText = isPremiumForm ? t("submitButtonPremium") : t("submitButton");
 
   const toggleFood = (food: string) => {
     setFoodSelections((prev) => {
@@ -94,6 +118,86 @@ function FormularioContent() {
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
+  const trackFunnel = useCallback((eventName: string, stage: string, extra?: Record<string, string>) => {
+    void fetch("/api/funnel-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventName,
+        stage,
+        planType: isPremiumForm ? "premium_90d" : "standard",
+        locale,
+        clientId: prefillClientId || "",
+        email: form.email || prefillEmail || "",
+        ...(extra || {}),
+      }),
+      keepalive: true,
+    });
+  }, [isPremiumForm, form.email, locale, prefillClientId, prefillEmail]);
+
+  useEffect(() => {
+    if (!checkoutStatus) return;
+    const key = `${checkoutStatus}:${checkoutOffer || ""}`;
+    if (trackedCheckoutStateRef.current === key) return;
+    trackedCheckoutStateRef.current = key;
+
+    if (checkoutStatus === "success") {
+      trackFunnel("checkout_success", "checkout_return");
+    } else if (checkoutStatus === "cancelled") {
+      trackFunnel("checkout_cancelled", "checkout_return", {
+        offer: checkoutOffer || "",
+      });
+    }
+  }, [checkoutOffer, checkoutStatus, trackFunnel]);
+
+  useEffect(() => {
+    if (checkoutStatus !== "success" || !checkoutSessionId || checkoutConfirmed) return;
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const res = await fetch("/api/checkout/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: checkoutSessionId }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (process.env.NODE_ENV === "development" && data?.sandraNotify) {
+          const sn = data.sandraNotify as SandraNotifyResult;
+          if (!sn.sent && sn.reason === "missing_sandra_email") {
+            setSandraNotifyDevHint(t("checkoutSandraNotifyMissingEnv"));
+          } else if (!sn.sent && sn.reason === "smtp_error") {
+            setSandraNotifyDevHint(t("checkoutSandraNotifySmtp", { message: sn.message }));
+          } else {
+            setSandraNotifyDevHint(null);
+          }
+        }
+        if (!res.ok && data?.error) {
+          if (!cancelled) setCheckoutConfirmError(String(data.error));
+        } else if (!res.ok) {
+          if (!cancelled) setCheckoutConfirmError("No se pudo completar el acceso. Revisa el correo más tarde o contacta con Sandra.");
+        }
+      } catch {
+        if (!cancelled) {
+          setCheckoutConfirmError("Error de red al confirmar el pago. Puedes recargar la página para reintentar.");
+        }
+      } finally {
+        if (!cancelled) setCheckoutConfirmed(true);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [checkoutConfirmed, checkoutSessionId, checkoutStatus, t]);
+
+  useEffect(() => {
+    if (checkoutStatus !== "success") return;
+    const timeout = window.setTimeout(() => {
+      window.location.href = homeHardRedirectUrl;
+    }, 10000);
+    return () => window.clearTimeout(timeout);
+  }, [checkoutStatus, homeHardRedirectUrl]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSending(true);
@@ -104,6 +208,8 @@ function FormularioContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          programType: resolvedProgramType,
+          service: isPremiumForm ? fixedPremiumService : form.service,
           alimentosPreferidos: Object.entries(foodSelections)
             .filter(([, v]) => v === "liked")
             .map(([k]) => FOOD_KEY_TO_ES[k] || k)
@@ -120,12 +226,64 @@ function FormularioContent() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      if (isPremiumForm) {
+        trackFunnel("premium_form_submit", "form_submit");
+        const checkoutRes = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            programType: resolvedProgramType,
+            planType: "premium_90d",
+            clientId: data.clientId || "",
+            intakeFormId: data.intakeFormId || "",
+            locale,
+          }),
+        });
+        const checkoutData = await checkoutRes.json();
+        if (!checkoutRes.ok || !checkoutData.url) {
+          throw new Error(checkoutData.error || t("checkoutError"));
+        }
+        window.location.href = checkoutData.url as string;
+        return;
+      }
       setIsSent(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errorDefault"));
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleMonthlyCheckout = async () => {
+    if (!prefillClientId) {
+      setError(t("monthlyOfferNeedComplete"));
+      return;
+    }
+    setIsMonthlyCheckoutLoading(true);
+    setError(null);
+    try {
+      trackFunnel("monthly_offer_accepted", "offer_modal", { offer: "monthly_50" });
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: prefillClientId,
+          planType: "monthly_50",
+          programType: "Plan Mensual Objetivo",
+          locale,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || t("checkoutError"));
+      window.location.href = data.url as string;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("checkoutError"));
+    } finally {
+      setIsMonthlyCheckoutLoading(false);
     }
   };
 
@@ -168,8 +326,99 @@ function FormularioContent() {
     );
   }
 
+  if (checkoutStatus === "success") {
+    return (
+      <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#FFFAF7]">
+        <div className="w-full max-w-lg text-center px-2">
+          <m.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, delay: 0.2 }} className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#A8D5BA] to-[#7EB691] flex items-center justify-center">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+          </m.div>
+          <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-3xl font-light italic text-[#3D2C2C] mb-4">
+            {t("checkoutSuccessTitle")}
+          </h1>
+          <p className="text-[#8B7E7E] leading-relaxed mb-3">{t("checkoutSuccessDesc")}</p>
+          <p className="text-sm text-[#8B7E7E] leading-relaxed mb-2">
+            Revisa tu bandeja de email (y spam/promociones) para ver los pasos de acceso al sistema.
+          </p>
+          <p className="text-xs text-[#8B7E7E] mb-7">
+            {checkoutConfirmed
+              ? checkoutConfirmError
+                ? "Hubo un problema al enviar el email automático."
+                : "Acceso y notificaciones listos."
+              : "Verificando pago..."}
+          </p>
+          {checkoutConfirmError && (
+            <p className="text-sm text-red-600 mb-4 px-2" role="alert">
+              {checkoutConfirmError}
+            </p>
+          )}
+          {process.env.NODE_ENV === "development" && sandraNotifyDevHint && (
+            <p className="text-xs text-left text-amber-900 bg-amber-50 border border-amber-200/80 rounded-lg px-3 py-2 mb-4 max-w-md mx-auto" role="status">
+              <span className="font-semibold uppercase tracking-wide text-[10px] text-amber-800 block mb-1">
+                {t("checkoutSandraNotifyDevEyebrow")}
+              </span>
+              {sandraNotifyDevHint}
+            </p>
+          )}
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#3D2C2C] text-white text-sm font-medium hover:bg-[#5A4545] transition-all"
+          >
+            Ir a la página principal
+          </Link>
+          <p className="mt-5 text-xs text-[#C4B8AD]">Redirigiendo automáticamente en 10 segundos...</p>
+        </div>
+      </m.div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FFFAF7] py-8 sm:py-12 px-3 sm:px-4">
+      <AnimatePresence>
+        {showMonthlyOfferModal && (
+          <>
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[120] bg-black/40"
+            />
+            <m.div
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              className="fixed inset-0 z-[121] flex items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("monthlyOfferTitle")}
+            >
+              <div className="w-full max-w-md rounded-3xl bg-white border border-warm-gray-100 p-6 shadow-2xl">
+                <p className="text-xs uppercase tracking-[0.18em] text-rosa-400 font-medium mb-2">{t("monthlyOfferEyebrow")}</p>
+                <h2 className="font-[family-name:var(--font-display)] italic text-2xl font-light text-warm-dark mb-2">{t("monthlyOfferTitle")}</h2>
+                <p className="text-sm text-warm-gray-400 mb-4 leading-relaxed">{t("monthlyOfferDesc")}</p>
+                <ul className="space-y-2 mb-5">
+                  {[t("monthlyOfferBenefit1"), t("monthlyOfferBenefit2"), t("monthlyOfferBenefit3")].map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-warm-gray-500">
+                      <span className="mt-1 w-1.5 h-1.5 rounded-full bg-rosa-400 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={handleMonthlyCheckout}
+                  disabled={isMonthlyCheckoutLoading}
+                  className="w-full py-3 rounded-full bg-warm-dark text-white text-sm font-medium hover:bg-warm-gray-500 transition-colors disabled:opacity-60 cursor-pointer"
+                >
+                  {isMonthlyCheckoutLoading ? t("submitSending") : t("monthlyOfferCta")}
+                </button>
+              </div>
+            </m.div>
+          </>
+        )}
+      </AnimatePresence>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <p style={{ fontFamily: "Georgia, 'Times New Roman', serif" }} className="text-2xl sm:text-3xl font-light italic text-[#3D2C2C] mb-2">Sandra Lorden</p>
@@ -186,7 +435,17 @@ function FormularioContent() {
               <InputField id="f-name" label={t("labelName")} value={form.name} onChange={(v) => update("name", v)} required />
               <InputField id="f-email" label={t("labelEmail")} type="email" value={form.email} onChange={(v) => update("email", v)} required />
               <InputField id="f-phone" label={t("labelPhone")} type="tel" value={form.phone} onChange={(v) => update("phone", v)} placeholder={t("placeholderPhone")} required />
-              <SelectField id="f-service" label={t("labelService")} value={form.service} onChange={(v) => update("service", v)} options={[t("servicePresencial"), t("serviceOnline"), t("serviceNutricion"), t("servicePack")]} t={t} />
+              {!isPremiumForm && (
+                <SelectField
+                  id="f-service"
+                  label={t("labelService")}
+                  value={form.service}
+                  onChange={(v) => update("service", v)}
+                  options={[t("servicePresencial"), t("serviceOnline"), t("serviceNutricion"), t("servicePack")]}
+                  t={t}
+                  required
+                />
+              )}
               <InputField id="f-age" label={t("labelAge")} type="number" value={form.age} onChange={(v) => update("age", v)} placeholder={t("placeholderAge")} required />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -301,7 +560,7 @@ function FormularioContent() {
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                   {t("submitSending")}
                 </span>
-              ) : t("submitButton")}
+              ) : premiumButtonText}
             </button>
             <p className="mt-3 text-xs text-[#C4B8AD]">{t("submitNote")}</p>
           </div>
@@ -359,13 +618,15 @@ function TextareaField({ label, value, onChange, placeholder, required, rows = 3
   );
 }
 
-function SelectField({ label, value, onChange, options, t, id }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[]; t: (key: string) => string; id: string;
+function SelectField({ label, value, onChange, options, t, id, required }: {
+  label: string; value: string; onChange: (v: string) => void; options: string[]; t: (key: string) => string; id: string; required?: boolean;
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-[#3D2C2C] mb-1.5">{label}</label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm appearance-none cursor-pointer">
+      <label htmlFor={id} className="block text-sm font-medium text-[#3D2C2C] mb-1.5">
+        {label} {required && <span className="text-[#E8B4B4]">*</span>}
+      </label>
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} required={required} className="w-full px-4 py-3 rounded-xl bg-[#FFFAF7] border border-[#F0EBE6] text-[#3D2C2C] focus:outline-none focus:ring-2 focus:ring-[#F2D1D1] focus:border-transparent transition-all text-sm appearance-none cursor-pointer">
         <option value="">{t("selectDefault")}</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>

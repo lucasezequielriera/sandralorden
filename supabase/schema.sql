@@ -12,6 +12,8 @@ create table if not exists clients (
   name text not null,
   email text not null,
   phone text not null,
+  stripe_customer_id text,
+  stripe_subscription_id text,
   service_type text default '',
   modality text default 'virtual' check (modality in ('presencial', 'virtual')),
   goal text default '',
@@ -23,6 +25,8 @@ create table if not exists clients (
 
 -- To add modality to an existing table, run:
 -- alter table clients add column if not exists modality text default 'virtual' check (modality in ('presencial', 'virtual'));
+-- alter table clients add column if not exists stripe_customer_id text;
+-- alter table clients add column if not exists stripe_subscription_id text;
 
 -- ══════════════════════════════════════
 -- SESSIONS (training/nutrition sessions)
@@ -96,10 +100,21 @@ as $$
   select role from public.user_roles where user_id = auth.uid();
 $$;
 
+create or replace function public.get_auth_email()
+returns text
+language sql
+security definer
+stable
+as $$
+  select email from auth.users where id = auth.uid();
+$$;
+
 -- ══════════════════════════════════════
 -- INDEXES
 -- ══════════════════════════════════════
 create unique index if not exists idx_clients_email on clients(email);
+create index if not exists idx_clients_stripe_customer on clients(stripe_customer_id);
+create index if not exists idx_clients_stripe_subscription on clients(stripe_subscription_id);
 create index if not exists idx_clients_status on clients(status);
 create index if not exists idx_sessions_client on sessions(client_id);
 create index if not exists idx_sessions_date on sessions(date);
@@ -155,6 +170,14 @@ create policy "Admins can update clients"
 create policy "Admins can delete clients"
   on clients for delete to authenticated using (public.get_user_role() = 'admin');
 
+-- CLIENTS: clients can read only their own row
+create policy "Clients can read own client row"
+  on clients for select to authenticated
+  using (
+    public.get_user_role() = 'client'
+    and email = public.get_auth_email()
+  );
+
 -- SESSIONS: admin full access
 create policy "Admins can read sessions"
   on sessions for select to authenticated using (public.get_user_role() = 'admin');
@@ -175,6 +198,16 @@ create policy "Admins can update files"
 create policy "Admins can delete files"
   on files for delete to authenticated using (public.get_user_role() = 'admin');
 
+-- FILES: clients can read files for their own client_id
+create policy "Clients can read own files"
+  on files for select to authenticated
+  using (
+    public.get_user_role() = 'client'
+    and client_id in (
+      select id from clients where email = public.get_auth_email()
+    )
+  );
+
 -- INVOICES: admin full access
 create policy "Admins can read invoices"
   on invoices for select to authenticated using (public.get_user_role() = 'admin');
@@ -184,6 +217,16 @@ create policy "Admins can update invoices"
   on invoices for update to authenticated using (public.get_user_role() = 'admin') with check (public.get_user_role() = 'admin');
 create policy "Admins can delete invoices"
   on invoices for delete to authenticated using (public.get_user_role() = 'admin');
+
+-- INVOICES: clients can read their own invoices
+create policy "Clients can read own invoices"
+  on invoices for select to authenticated
+  using (
+    public.get_user_role() = 'client'
+    and client_id in (
+      select id from clients where email = public.get_auth_email()
+    )
+  );
 
 -- ACTIVITY LOGS: admin full access
 create policy "Admins can read logs"
@@ -199,20 +242,69 @@ create policy "Service role can insert clients"
 create policy "Service role can insert logs"
   on activity_logs for insert to service_role with check (true);
 
+-- INTAKE_FORMS (if table exists): admin full access + client own read
+do $$
+begin
+  if to_regclass('public.intake_forms') is not null then
+    execute 'alter table intake_forms enable row level security';
+
+    if not exists (
+      select 1 from pg_policies
+      where schemaname = 'public' and tablename = 'intake_forms' and policyname = 'Admins can read intake forms'
+    ) then
+      execute 'create policy "Admins can read intake forms" on intake_forms for select to authenticated using (public.get_user_role() = ''admin'')';
+    end if;
+
+    if not exists (
+      select 1 from pg_policies
+      where schemaname = 'public' and tablename = 'intake_forms' and policyname = 'Clients can read own intake forms'
+    ) then
+      execute 'create policy "Clients can read own intake forms" on intake_forms for select to authenticated using (public.get_user_role() = ''client'' and email = public.get_auth_email())';
+    end if;
+
+    if not exists (
+      select 1 from pg_policies
+      where schemaname = 'public' and tablename = 'intake_forms' and policyname = 'Service role can manage intake forms'
+    ) then
+      execute 'create policy "Service role can manage intake forms" on intake_forms for all to service_role using (true) with check (true)';
+    end if;
+  end if;
+end $$;
+
 -- ══════════════════════════════════════
 -- STORAGE BUCKET for client files
 -- ══════════════════════════════════════
 insert into storage.buckets (id, name, public) values ('client-files', 'client-files', false)
 on conflict (id) do nothing;
 
-create policy "Authenticated users can upload files"
+create policy "Admins can upload files"
   on storage.objects for insert to authenticated
-  with check (bucket_id = 'client-files');
+  with check (
+    bucket_id = 'client-files'
+    and public.get_user_role() = 'admin'
+  );
 
-create policy "Authenticated users can read files"
+create policy "Admins can read files storage"
   on storage.objects for select to authenticated
-  using (bucket_id = 'client-files');
+  using (
+    bucket_id = 'client-files'
+    and public.get_user_role() = 'admin'
+  );
 
-create policy "Authenticated users can delete files"
+create policy "Admins can delete files storage"
   on storage.objects for delete to authenticated
-  using (bucket_id = 'client-files');
+  using (
+    bucket_id = 'client-files'
+    and public.get_user_role() = 'admin'
+  );
+
+-- CLIENTS: read only their own folder "<client_id>/..."
+create policy "Clients can read own storage files"
+  on storage.objects for select to authenticated
+  using (
+    bucket_id = 'client-files'
+    and public.get_user_role() = 'client'
+    and split_part(name, '/', 1) in (
+      select id::text from clients where email = public.get_auth_email()
+    )
+  );

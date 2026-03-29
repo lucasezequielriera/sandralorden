@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import type { Client, Session, FileRecord, Invoice, IntakeForm } from "@/lib/supabase/types";
 import PaymentGrid from "./PaymentGrid";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
@@ -13,6 +14,17 @@ const statusColors: Record<string, string> = {
   paid: "bg-green-100 text-green-700",
   cancelled: "bg-red-100 text-red-700",
 };
+
+function getProgramBadge(notes: string) {
+  const n = notes.toLowerCase();
+  if (n.includes("premium 90")) {
+    return { label: "Premium 90 días", className: "bg-amber-100 text-amber-700" };
+  }
+  if (n.includes("programa:")) {
+    return { label: "Estándar", className: "bg-slate-100 text-slate-600" };
+  }
+  return null;
+}
 
 export default function ClientDetailContent({
   client: initialClient,
@@ -33,6 +45,13 @@ export default function ClientDetailContent({
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({ ...initialClient });
   const [showIntake, setShowIntake] = useState(false);
+  const [uploadingPlan, setUploadingPlan] = useState<"training" | "nutrition" | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ training: number; nutrition: number }>({
+    training: 0,
+    nutrition: 0,
+  });
+  const [resendAccessLoading, setResendAccessLoading] = useState(false);
+  const programBadge = getProgramBadge(client.notes || "");
 
   const cleanPhone = client.phone.replace(/\D/g, "");
   const waPhone = cleanPhone.startsWith("34") ? cleanPhone : `34${cleanPhone}`;
@@ -59,14 +78,38 @@ export default function ClientDetailContent({
         const updated = await res.json();
         setClient(updated);
         setEditing(false);
+        toast.success("Cambios guardados");
       } else {
         const data = await res.json().catch(() => null);
-        alert(data?.error || "Error al guardar los cambios");
+        toast.error(data?.error || "Error al guardar los cambios");
       }
     } catch {
-      alert("Error de red al guardar los cambios");
+      toast.error("Error de red al guardar los cambios");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleResendAccessEmail = async () => {
+    if (!client.email?.trim()) {
+      toast.error("Este cliente no tiene email");
+      return;
+    }
+    setResendAccessLoading(true);
+    try {
+      const res = await fetch(`/api/admin/clients/${client.id}/resend-access-email`, {
+        method: "POST",
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok) {
+        toast.success("Correo de acceso enviado");
+      } else {
+        toast.error(data?.error || "No se pudo enviar el correo");
+      }
+    } catch {
+      toast.error("Error de red al enviar el correo");
+    } finally {
+      setResendAccessLoading(false);
     }
   };
 
@@ -76,15 +119,102 @@ export default function ClientDetailContent({
       const res = await fetch(`/api/admin/clients/${client.id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        alert(data?.error || "Error al eliminar el cliente");
+        toast.error(data?.error || "Error al eliminar el cliente");
         return;
       }
       router.push("/admin/clientes");
       router.refresh();
     } catch {
-      alert("Error de red al eliminar el cliente");
+      toast.error("Error de red al eliminar el cliente");
     }
   };
+
+  const uploadPlan = async (file: File, purpose: "training_plan" | "nutrition_plan") => {
+    const target = purpose === "training_plan" ? "training" : "nutrition";
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const ALLOWED_TYPES = new Set([
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/csv",
+    ]);
+
+    if (!ALLOWED_TYPES.has(file.type)) {
+      toast.error("Tipo de archivo no permitido. Usa PDF, imagen, DOCX, XLSX o CSV.");
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      toast.error("El archivo excede 10 MB.");
+      return;
+    }
+
+    setUploadingPlan(target);
+    setUploadProgress((prev) => ({ ...prev, [target]: 0 }));
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("client_id", client.id);
+      formData.append("file_purpose", purpose);
+
+      const res = await new Promise<{ ok: boolean; status: number; body: unknown }>((resolve) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/admin/files");
+        xhr.upload.onprogress = (event) => {
+          if (!event.lengthComputable) return;
+          const pct = Math.max(1, Math.min(100, Math.round((event.loaded / event.total) * 100)));
+          setUploadProgress((prev) => ({ ...prev, [target]: pct }));
+        };
+        xhr.onload = () => {
+          let body: unknown = null;
+          try {
+            body = JSON.parse(xhr.responseText);
+          } catch {
+            body = null;
+          }
+          resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status, body });
+        };
+        xhr.onerror = () => resolve({ ok: false, status: 0, body: null });
+        xhr.send(formData);
+      });
+
+      if (!res.ok) {
+        const maybeError =
+          typeof res.body === "object" && res.body !== null && "error" in res.body
+            ? (res.body as { error?: string }).error
+            : null;
+        toast.error(maybeError || "No se pudo subir el plan");
+        return;
+      }
+
+      setUploadProgress((prev) => ({ ...prev, [target]: 100 }));
+      router.refresh();
+      toast.success(
+        purpose === "training_plan"
+          ? "Plan de entrenamiento subido correctamente"
+          : "Plan de alimentación subido correctamente"
+      );
+    } catch {
+      toast.error("Error de red al subir el plan");
+    } finally {
+      setUploadingPlan(null);
+      setTimeout(() => {
+        setUploadProgress((prev) => ({ ...prev, [target]: 0 }));
+      }, 500);
+    }
+  };
+
+  const latestTrainingPlan = files
+    .filter((f) => f.file_name.startsWith("PLAN_TRAINING__"))
+    .sort((a, b) => new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime())[0];
+  const latestNutritionPlan = files
+    .filter((f) => f.file_name.startsWith("PLAN_NUTRITION__"))
+    .sort((a, b) => new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime())[0];
+  const hasPaidInvoice = invoices.some((inv) => inv.status === "paid");
+  const trainingStatus = latestTrainingPlan ? "Listo" : hasPaidInvoice ? "En elaboración" : "Pendiente de pago";
+  const nutritionStatus = latestNutritionPlan ? "Listo" : hasPaidInvoice ? "En elaboración" : "Pendiente de pago";
 
   return (
     <div>
@@ -108,6 +238,11 @@ export default function ClientDetailContent({
             }`}>
               {client.modality === "presencial" ? "Presencial" : "Virtual"}
             </span>
+            {programBadge && (
+              <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium ${programBadge.className}`}>
+                {programBadge.label}
+              </span>
+            )}
           </div>
           <p className="text-sm text-warm-gray-400 mt-1">{client.email} · {client.phone}</p>
         </div>
@@ -117,6 +252,17 @@ export default function ClientDetailContent({
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 0 0 .917.917l4.458-1.495A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0Zm0 22a9.94 9.94 0 0 1-5.39-1.584l-.386-.242-2.646.887.887-2.646-.242-.386A9.94 9.94 0 0 1 2 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10Z"/></svg>
             WhatsApp
           </a>
+          <button
+            type="button"
+            onClick={handleResendAccessEmail}
+            disabled={resendAccessLoading || !client.email?.trim()}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-warm-dark bg-rosa-50 border border-rosa-200/60 rounded-xl hover:bg-rosa-100/80 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+            {resendAccessLoading ? "Enviando…" : "Reenviar acceso"}
+          </button>
           <button
             type="button"
             onClick={() => setShowIntake((prev) => !prev)}
@@ -241,6 +387,42 @@ export default function ClientDetailContent({
         <PaymentGrid clientId={client.id} />
       </div>
 
+      {/* Planes del cliente */}
+      <div className="bg-white rounded-2xl border border-warm-gray-100 p-6 mb-6">
+        <h3 className="font-medium text-warm-dark mb-4">Planes del cliente</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div className="rounded-xl border border-warm-gray-100 bg-warm-gray-50 p-3">
+            <p className="text-[11px] uppercase tracking-wide text-warm-gray-400 mb-1">Entrenamiento</p>
+            <p className="text-sm text-warm-dark">{trainingStatus}</p>
+          </div>
+          <div className="rounded-xl border border-warm-gray-100 bg-warm-gray-50 p-3">
+            <p className="text-[11px] uppercase tracking-wide text-warm-gray-400 mb-1">Alimentación</p>
+            <p className="text-sm text-warm-dark">{nutritionStatus}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <PlanUploaderCard
+            title="Plan de entrenamiento"
+            latestFile={latestTrainingPlan}
+            loading={uploadingPlan === "training"}
+            progress={uploadProgress.training}
+            onUpload={(file) => uploadPlan(file, "training_plan")}
+            stripPrefix="PLAN_TRAINING__"
+          />
+          <PlanUploaderCard
+            title="Plan de alimentación"
+            latestFile={latestNutritionPlan}
+            loading={uploadingPlan === "nutrition"}
+            progress={uploadProgress.nutrition}
+            onUpload={(file) => uploadPlan(file, "nutrition_plan")}
+            stripPrefix="PLAN_NUTRITION__"
+          />
+        </div>
+        <p className="text-xs text-warm-gray-300 mt-3">
+          Al subir un plan, el cliente lo verá en su panel y recibirá email automático.
+        </p>
+      </div>
+
       {/* Tabs: Sessions, Files, Invoices */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sessions */}
@@ -325,6 +507,70 @@ function FormField({ label, value, onChange, id }: { label: string; value: strin
       <label htmlFor={id} className="block text-sm font-medium text-warm-dark mb-1.5">{label}</label>
       <input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-2.5 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200" />
+    </div>
+  );
+}
+
+function PlanUploaderCard({
+  title,
+  latestFile,
+  loading,
+  progress,
+  onUpload,
+  stripPrefix,
+}: {
+  title: string;
+  latestFile?: FileRecord;
+  loading: boolean;
+  progress: number;
+  onUpload: (file: File) => void;
+  stripPrefix: string;
+}) {
+  return (
+    <div className="rounded-xl border border-warm-gray-100 bg-warm-gray-50 p-4">
+      <p className="text-sm font-medium text-warm-dark mb-3">{title}</p>
+      {latestFile ? (
+        <a
+          href={latestFile.file_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-lg border border-warm-gray-100 bg-white p-3 mb-3 hover:bg-warm-gray-50 transition-colors"
+        >
+          <p className="text-sm text-warm-dark truncate">{latestFile.file_name.replace(stripPrefix, "")}</p>
+          <p className="text-[11px] text-warm-gray-300 mt-1">
+            Último: {new Date(latestFile.uploaded_at).toLocaleDateString("es-ES")}
+          </p>
+        </a>
+      ) : (
+        <p className="text-xs text-warm-gray-300 mb-3">Todavía no hay plan subido.</p>
+      )}
+      <label
+        className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all cursor-pointer ${
+          loading ? "bg-warm-gray-200 text-warm-gray-400" : "bg-warm-dark text-white hover:bg-warm-gray-500"
+        }`}
+      >
+        {loading ? `Subiendo... ${progress}%` : "Subir plan"}
+        <input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,.docx,.xlsx,.csv"
+          className="hidden"
+          disabled={loading}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onUpload(file);
+            e.currentTarget.value = "";
+          }}
+        />
+      </label>
+      <p className="text-[11px] text-warm-gray-300 mt-2">Máximo 10 MB · PDF, imagen, DOCX, XLSX o CSV</p>
+      {loading && (
+        <div className="mt-2 h-1.5 w-full rounded-full bg-warm-gray-200 overflow-hidden">
+          <div
+            className="h-full bg-warm-dark transition-all duration-150"
+            style={{ width: `${Math.max(4, progress)}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }

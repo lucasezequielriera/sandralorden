@@ -1,13 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./GlobalSearch";
 
-const navItems = [
+type AdminNavHref =
+  | "/admin"
+  | "/admin/clientes"
+  | "/admin/citas-virtuales"
+  | "/admin/contabilidad"
+  | "/admin/archivos";
+
+const navItems: Array<{
+  href: AdminNavHref;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}> = [
   { href: "/admin", label: "Dashboard", icon: DashboardIcon },
   { href: "/admin/clientes", label: "Clientes", icon: ClientsIcon },
+  { href: "/admin/citas-virtuales", label: "Citas virtuales", icon: CalendarIcon },
   { href: "/admin/contabilidad", label: "Contabilidad", icon: InvoiceIcon },
   { href: "/admin/archivos", label: "Archivos", icon: FilesIcon },
 ];
@@ -20,7 +32,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/admin/login");
+    router.push("/login");
     router.refresh();
   };
 
@@ -113,6 +125,18 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 }
 
 /* ── Icons ── */
+
+function CalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5"
+      />
+    </svg>
+  );
+}
 
 function DashboardIcon({ className }: { className?: string }) {
   return (

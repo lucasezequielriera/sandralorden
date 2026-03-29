@@ -3,6 +3,8 @@ export interface Client {
   name: string;
   email: string;
   phone: string;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
   service_type: string;
   modality: "presencial" | "virtual";
   goal: string;

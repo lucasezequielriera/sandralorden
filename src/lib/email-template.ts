@@ -6,6 +6,7 @@ export interface IntakeData {
   name: string;
   email: string;
   phone: string;
+  programType: string;
   service: string;
   age: string;
   height: string;
@@ -77,6 +78,7 @@ export function buildIntakeNotificationEmailHtml(lead: IntakeData): string {
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(`Hola ${lead.name}! Soy Sandra Lorden. Ya he revisado todo tu formulario y tengo ideas increibles para ti. Cuando quieras hablamos sobre tu plan! 💪`)}`;
 
   const datosPersonales = sectionHtml("Datos Personales", [
+    { label: "Programa", value: lead.programType },
     { label: "Servicio", value: lead.service },
     { label: "Edad", value: lead.age },
     { label: "Altura", value: lead.height },

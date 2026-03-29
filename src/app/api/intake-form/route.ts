@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { buildIntakeNotificationEmailHtml, type IntakeData } from "@/lib/email-template";
 import { rateLimit } from "@/lib/rate-limit";
 import { sanitizeField, sanitizeEmail, sanitizePhone, isHoneypotFilled } from "@/lib/sanitize";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendEmail } from "@/lib/email";
 
-function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY no configurada.");
-  return new Resend(apiKey);
-}
+const PREMIUM_PROGRAM_LABELS = new Set(["Programa Premium 90 días", "Premium 90-Day Program"]);
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,19 +38,22 @@ export async function POST(request: NextRequest) {
     sanitizedBody.email = email;
     sanitizedBody.phone = phone;
     const intakeData = sanitizedBody as unknown as IntakeData;
+    const normalizedProgramType = sanitizedBody.programType || "Programa no especificado";
 
-    const resend = getResendClient();
-    const emailFrom = process.env.EMAIL_FROM || "Sandra Lorden <onboarding@resend.dev>";
-    const sandraEmail = process.env.SANDRA_EMAIL;
-    if (!sandraEmail) throw new Error("SANDRA_EMAIL no configurada.");
+    const isPremiumProgram = PREMIUM_PROGRAM_LABELS.has(normalizedProgramType);
+    if (!isPremiumProgram) {
+      const sandraEmail = process.env.SANDRA_EMAIL;
+      if (!sandraEmail) throw new Error("SANDRA_EMAIL no configurada.");
 
-    const result = await resend.emails.send({
-      from: emailFrom,
-      to: sandraEmail,
-      subject: `📋 Formulario completo: ${name} - ${sanitizedBody.service || "Sin especificar"}`,
-      html: buildIntakeNotificationEmailHtml(intakeData),
-    });
-    void result;
+      await sendEmail({
+        to: sandraEmail,
+        subject: `📋 Formulario completo: ${name} - ${normalizedProgramType} - ${sanitizedBody.service || "Sin especificar"}`,
+        html: buildIntakeNotificationEmailHtml(intakeData),
+      });
+    }
+
+    let persistedClientId: string | null = null;
+    let persistedIntakeFormId: string | null = null;
 
     try {
       const supabase = await createServiceClient();
@@ -70,6 +69,7 @@ export async function POST(request: NextRequest) {
 
       if (existing) {
         clientId = existing.id;
+        persistedClientId = existing.id;
         await supabase
           .from("clients")
           .update({
@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
             phone,
             service_type: sanitizedBody.service || undefined,
             goal: goal || undefined,
+            notes: `${isPremiumProgram ? "Pendiente de pago" : "Formulario completado"} · Programa: ${normalizedProgramType}`,
           })
           .eq("id", existing.id);
       } else {
@@ -88,12 +89,13 @@ export async function POST(request: NextRequest) {
             phone,
             service_type: sanitizedBody.service || "",
             goal,
-            status: "active",
-            notes: "Formulario detallado completado",
+            status: isPremiumProgram ? "lead" : "active",
+            notes: `${isPremiumProgram ? "Pendiente de pago" : "Formulario detallado completado"} · Programa: ${normalizedProgramType}`,
           })
           .select("id")
           .single();
         clientId = created?.id ?? null;
+        persistedClientId = created?.id ?? null;
       }
 
       await supabase.from("activity_logs").insert({
@@ -101,16 +103,26 @@ export async function POST(request: NextRequest) {
         details: `${name} (${email}) — ${sanitizedBody.service || "Sin servicio"}`,
       });
 
-      await supabase.from("intake_forms").insert({
-        client_id: clientId,
-        email,
-        payload: intakeData,
-      });
+      const { data: intakeInserted } = await supabase
+        .from("intake_forms")
+        .insert({
+          client_id: clientId,
+          email,
+          payload: intakeData,
+        })
+        .select("id")
+        .single();
+      persistedIntakeFormId = intakeInserted?.id ?? null;
     } catch (dbErr) {
       console.error("Supabase insert error (non-blocking):", dbErr instanceof Error ? dbErr.message : "unknown");
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      clientId: persistedClientId,
+      intakeFormId: persistedIntakeFormId,
+      pendingPayment: isPremiumProgram,
+    });
   } catch (error) {
     console.error("Error in intake-form:", error instanceof Error ? error.message : "unknown");
     return NextResponse.json(
