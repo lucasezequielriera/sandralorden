@@ -287,7 +287,7 @@ async function JsonLd({ locale }: { locale: string }) {
           },
           priceSpecification: {
             "@type": "PriceSpecification",
-            price: "79",
+            price: "89",
             priceCurrency: "EUR",
             unitText: locale === "es" ? "mes" : "month",
           },

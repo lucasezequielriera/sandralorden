@@ -292,7 +292,7 @@ export default function Services() {
                     ))}
                   </ul>
                   <div className="mt-auto pt-4 border-t border-rosa-100">
-                    <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-warm-dark">79 €</span>
+                    <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-warm-dark">89 €</span>
                     <span className="text-sm text-warm-gray-400"> {t("perMonth")}</span>
                     <p className="text-xs text-rosa-400 mt-1">{t("packSaving")}</p>
                   </div>
