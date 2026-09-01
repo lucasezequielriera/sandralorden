@@ -3,118 +3,7 @@
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import AnimatedSection from "./AnimatedSection";
-
-const mediaLogos = [
-  { name: "Vogue", src: "/images/logos/vogue.svg" },
-  { name: "ELLE", src: "/images/logos/elle.svg" },
-  { name: "¡Hola!", src: "/images/logos/hola.svg" },
-  { name: "Semana", src: "/images/logos/logo-semana_header.png" },
-  { name: "Cuerpomente", src: "/images/logos/cuerpomente.png" },
-  { name: "Mediaset", src: "/images/logos/mediaset.svg" },
-  { name: "MSN", src: "/images/logos/msn.svg" },
-  { name: "JeFemme", src: "/images/logos/jefemme.png" },
-];
-
-const pressItems = [
-  {
-    name: "Glamour España",
-    title: "Andar 10000 pasos al día es bueno, ¿verdad o mito?",
-    type: "Digital",
-    date: "2026-03-17",
-    url: "https://www.glamour.es/articulos/es-necesario-andar-10000-pasos-al-dia",
-  },
-  {
-    name: "MSN",
-    title: "Sandra Lorden, entrenadora: hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
-    type: "Digital",
-    date: "2025-10-01",
-    url: "https://www.msn.com/es-mx/salud/other/sandra-lorden-entrenadora-hay-sesiones-de-ejercicio-de-6-minutos-con-las-que-quemas-calor%C3%ADas-incluso-en-reposo/ar-AA1NSpe7",
-  },
-  {
-    name: "¡Hola!",
-    title: "Hay sesiones de ejercicio de 6 minutos con las que quemas calorías incluso en reposo",
-    type: "Digital",
-    date: "2025-10-01",
-    url: "https://www.hola.com/estar-bien/20251005857074/entrenamiento-quema-grasa-resistencia-6-minutos-hiit/",
-  },
-  {
-    name: "Semana",
-    title: "Si quieres una espalda fuerte y definida pero no sabes qué hacer, este entreno es para ti",
-    type: "Revista",
-    date: "2025-09-01",
-    url: "https://www.semana.es/bienestar/sandra-lorden-entrenadora-personal-si-quieres-espalda-fuerte-y-definida-pero-no-sabes-que-hacer-este-entreno-es-para-ti_2803912",
-  },
-  {
-    name: "Cuerpomente",
-    title: "Aumentar el tamaño de los glúteos y aplanar el abdomen al mismo tiempo, ¿misión imposible?",
-    type: "Revista",
-    date: "2025-07-01",
-    url: "https://www.cuerpomente.com/salud-natural/ejercicios/sandra-lorden-entrenadora-no-puedes-aumentar-tamano-gluteos-y-perder-abdomen-mismo-tiempo-son-objetivos-opuestos_15960",
-  },
-  {
-    name: "¡Hola!",
-    title: "Ejercicios para fortalecer el core en casa: el error que impide que se marquen tus abdominales",
-    type: "Digital",
-    date: "2025-06-01",
-    url: "https://www.hola.com/belleza/20250624838867/ejercicios-fortalecer-core-casa-error-impide-marquen-abdominales/",
-  },
-  {
-    name: "ELLE",
-    title: "Los 5 ejercicios que de verdad tonifican y reafirman el cuerpo para ponerse en forma de aquí al verano",
-    type: "Revista",
-    date: "2025-04-01",
-    url: "https://www.elle.com/es/belleza/a64483685/los-5-ejercicios-que-de-verdad-tonifican-y-reafirman-el-cuerpo-para-ponerse-en-forma-de-aqui-al-verano-segun-una-entrenadora/",
-  },
-  {
-    name: "¡Hola!",
-    title: "Ponte en forma este otoño con las novedades en ejercicios y disciplinas fitness",
-    type: "Digital",
-    date: "2024-09-01",
-    url: "https://www.hola.com/belleza/20240902715863/novedades-fitness-ejercicios-ponerse-en-forma/",
-  },
-  {
-    name: "Mediaset — Solos",
-    title: "La entrenadora personal Sandra Lorden visita el pisito para poner en forma a los inquilinos",
-    type: "TV",
-    date: "2023-06-01",
-    url: "https://www.mediasetinfinity.es/programas-tv/solos/keyla-y-napoli/episodios/programa-480-40_09934104/player/",
-  },
-  {
-    name: "JeFemme",
-    title: "Entrevista a Sandra Lordén Álvarez, entrenadora personal",
-    type: "Entrevista",
-    date: "2022-12-01",
-    url: "https://www.jefemme.es/entrevista-a-sandra-lord%C3%A9n",
-  },
-  {
-    name: "Vogue España",
-    title: "Este es el número de días (y el tiempo) que hay que entrenar a la semana para tener un cuerpo tonificado",
-    type: "Revista",
-    date: "2020-09-01",
-    url: "https://www.vogue.es/belleza/articulos/cuantos-dias-semana-tiempo-entrenar-obtener-resultados-tonificar-cuerpo",
-  },
-  {
-    name: "Vogue España",
-    title: "Así deberías entrenar si solo tienes 20-30 minutos al día para hacer ejercicio",
-    type: "Revista",
-    date: "2020-09-01",
-    url: "https://www.vogue.es/belleza/articulos/entrenar-20-30-minutos-al-dia-entrenamientos-hacer-ejercicio-tonificar-cuerpo",
-  },
-  {
-    name: "Vogue España",
-    title: "La importancia que tiene la velocidad a la que haces los ejercicios abdominales",
-    type: "Revista",
-    date: "2020-01-01",
-    url: "https://www.vogue.es/belleza/articulos/ejercicios-abdominales-velocidad-repeticiones-primer-dia-gimnasio",
-  },
-];
-
-const TYPE_KEYS: Record<string, string> = {
-  Digital: "typeDigital",
-  Revista: "typeRevista",
-  TV: "typeTV",
-  Entrevista: "typeEntrevista",
-};
+import { PRESS_ITEMS, PRESS_TYPE_I18N_KEYS, MEDIA_LOGOS } from "@/lib/press-items";
 
 export default function Press() {
   const t = useTranslations("Press");
@@ -145,7 +34,7 @@ export default function Press() {
         {/* Featured media logos */}
         <AnimatedSection delay={0.15}>
           <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 mb-12 sm:mb-16">
-            {mediaLogos.map((logo) => (
+            {MEDIA_LOGOS.map((logo) => (
               <div
                 key={logo.name}
                 className="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
@@ -164,7 +53,7 @@ export default function Press() {
 
         {/* Press Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {pressItems.map((item, i) => (
+          {PRESS_ITEMS.map((item, i) => (
             <AnimatedSection key={item.url} delay={i * 0.06}>
               <a
                 href={item.url}
@@ -175,7 +64,7 @@ export default function Press() {
                 {/* Type badge + date */}
                 <div className="flex items-center justify-between mb-2 sm:mb-3">
                   <span className="inline-block text-[10px] sm:text-xs uppercase tracking-widest text-marron-400 font-medium">
-                    {t(TYPE_KEYS[item.type] || item.type)}
+                    {t(PRESS_TYPE_I18N_KEYS[item.type])}
                   </span>
                   <span className="text-[10px] sm:text-xs text-warm-gray-300">
                     {new Date(item.date).toLocaleDateString(locale, { month: "short", year: "numeric" })}

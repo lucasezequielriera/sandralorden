@@ -8,6 +8,129 @@ import type {
   MediaKitCollabItem,
   MediaKitPricingItem,
 } from "@/lib/media-kit-settings";
+import {
+  COLLAB_EXAMPLE_CATEGORIES,
+  NEW_COLLAB_CATEGORY_VALUE,
+  type CollabExampleCategory,
+  type MediaKitCollabExample,
+  isKnownCollabCategory,
+  registerCollabCustomCategory,
+} from "@/lib/media-kit-collab-examples";
+
+const COLLAB_CAT_LABELS: Record<CollabExampleCategory, string> = {
+  restaurantes: "Restaurantes",
+  hoteles: "Hoteles",
+  recetas: "Recetas",
+  "on-air": "ON AIR",
+  wellness: "Wellness / productos",
+  myprotein: "MyProtein",
+  teveo: "TeVeo",
+};
+
+function CollabExampleRow({
+  item,
+  customCategories,
+  newCategoryDraft,
+  onNewCategoryDraftChange,
+  onUpdate,
+  onRegisterCategory,
+  onRemove,
+}: {
+  item: MediaKitCollabExample;
+  customCategories: MediaKitSettings["collabCustomCategories"];
+  newCategoryDraft: string;
+  onNewCategoryDraftChange: (value: string) => void;
+  onUpdate: (patch: Partial<MediaKitCollabExample>) => void;
+  onRegisterCategory: (label: string) => void;
+  onRemove: () => void;
+}) {
+  const isNewMode =
+    item.category === NEW_COLLAB_CATEGORY_VALUE ||
+    (!isKnownCollabCategory(item.category, customCategories) && Boolean(newCategoryDraft));
+
+  const selectValue = isNewMode ? NEW_COLLAB_CATEGORY_VALUE : item.category;
+
+  const commitNewCategory = (label: string) => {
+    if (!label.trim()) return;
+    onRegisterCategory(label);
+  };
+
+  return (
+    <div className="grid sm:grid-cols-[minmax(140px,180px)_1fr_1fr_auto] gap-2 items-start border border-warm-gray-100 rounded-xl p-4">
+      <div className="space-y-2">
+        <select
+          value={selectValue}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === NEW_COLLAB_CATEGORY_VALUE) {
+              onUpdate({ category: NEW_COLLAB_CATEGORY_VALUE });
+              onNewCategoryDraftChange("");
+              return;
+            }
+            onNewCategoryDraftChange("");
+            onUpdate({ category: value });
+          }}
+          className={inputClass}
+        >
+          {COLLAB_EXAMPLE_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {COLLAB_CAT_LABELS[cat]}
+            </option>
+          ))}
+          {customCategories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.label}
+            </option>
+          ))}
+          <option value={NEW_COLLAB_CATEGORY_VALUE}>+ Nueva categoría…</option>
+        </select>
+        {selectValue === NEW_COLLAB_CATEGORY_VALUE ? (
+          <input
+            type="text"
+            value={newCategoryDraft}
+            placeholder="Nombre del tema (ej. Spa)"
+            onChange={(e) => onNewCategoryDraftChange(e.target.value)}
+            onBlur={() => commitNewCategory(newCategoryDraft)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitNewCategory(newCategoryDraft);
+              }
+            }}
+            className={inputClass}
+          />
+        ) : null}
+      </div>
+      <input
+        type="url"
+        value={item.url}
+        placeholder="https://www.instagram.com/reel/..."
+        onChange={(e) => onUpdate({ url: e.target.value })}
+        onBlur={() => {
+          if (selectValue === NEW_COLLAB_CATEGORY_VALUE) {
+            commitNewCategory(newCategoryDraft);
+          }
+        }}
+        className={inputClass}
+      />
+      <input
+        type="text"
+        value={item.title}
+        placeholder="Marca o título (opcional)"
+        onChange={(e) => onUpdate({ title: e.target.value })}
+        className={inputClass}
+      />
+      <button
+        type="button"
+        onClick={onRemove}
+        className="px-2 text-warm-gray-400 hover:text-red-500 cursor-pointer"
+        aria-label="Eliminar vídeo"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
 
 const inputClass =
   "w-full px-4 py-2.5 rounded-xl bg-warm-gray-100/50 border border-warm-gray-200/50 text-warm-dark text-sm focus:outline-none focus:ring-2 focus:ring-rosa-200";
@@ -78,6 +201,7 @@ export default function MediaKitSettingsContent({ initialSettings }: { initialSe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [newCategoryDrafts, setNewCategoryDrafts] = useState<Record<number, string>>({});
 
   const localeBlock = localeTab === "es" ? settings.es : settings.en;
 
@@ -91,19 +215,38 @@ export default function MediaKitSettingsContent({ initialSettings }: { initialSe
   const updateCollab = (items: MediaKitCollabItem[]) => updateLocale({ collabItems: items });
   const updatePricing = (items: MediaKitPricingItem[]) => updateLocale({ pricingItems: items });
 
+  const applyNewCategoryDrafts = (current: MediaKitSettings): MediaKitSettings => {
+    let next = current;
+    for (const [indexStr, draft] of Object.entries(newCategoryDrafts)) {
+      const index = Number(indexStr);
+      const item = next.collabExamples[index];
+      if (!item || item.category !== NEW_COLLAB_CATEGORY_VALUE) continue;
+      const trimmed = draft.trim();
+      if (!trimmed) continue;
+      const { categories, id } = registerCollabCustomCategory(next.collabCustomCategories, trimmed);
+      if (!id) continue;
+      const collabExamples = [...next.collabExamples];
+      collabExamples[index] = { ...item, category: id };
+      next = { ...next, collabCustomCategories: categories, collabExamples };
+    }
+    return next;
+  };
+
   const handleSave = async () => {
     setLoading(true);
     setError(null);
     setSuccess(false);
+    const payload = applyNewCategoryDrafts(settings);
     try {
       const res = await fetch("/api/admin/media-kit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settings }),
+        body: JSON.stringify({ settings: payload }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.hint ? `${data.error}\n\n${data.hint}` : data.error || "Error al guardar");
       setSettings(data.settings);
+      setNewCategoryDrafts({});
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al guardar");
@@ -240,6 +383,84 @@ export default function MediaKitSettingsContent({ initialSettings }: { initialSe
               />
             </div>
           ))}
+        </div>
+      </Section>
+
+      <Section title="Ejemplos de colaboraciones (vídeos IG)">
+        <p className="text-sm text-warm-gray-400">
+          Pega el enlace del reel o post de Instagram. Elige una categoría del listado o crea una nueva con «+ Nueva
+          categoría…»; al guardar quedará disponible para los siguientes vídeos.
+        </p>
+        <div className="space-y-4">
+          {settings.collabExamples.map((item, i) => (
+            <CollabExampleRow
+              key={i}
+              item={item}
+              customCategories={settings.collabCustomCategories ?? []}
+              newCategoryDraft={newCategoryDrafts[i] ?? ""}
+              onNewCategoryDraftChange={(value) =>
+                setNewCategoryDrafts((prev) => ({ ...prev, [i]: value }))
+              }
+              onRegisterCategory={(label) => {
+                setSettings((s) => {
+                  const { categories, id } = registerCollabCustomCategory(
+                    s.collabCustomCategories ?? [],
+                    label
+                  );
+                  if (!id) return s;
+                  const nextExamples = [...s.collabExamples];
+                  nextExamples[i] = { ...nextExamples[i], category: id };
+                  return {
+                    ...s,
+                    collabCustomCategories: categories,
+                    collabExamples: nextExamples,
+                  };
+                });
+                setNewCategoryDrafts((prev) => {
+                  const copy = { ...prev };
+                  delete copy[i];
+                  return copy;
+                });
+              }}
+              onUpdate={(patch) => {
+                setSettings((s) => {
+                  const nextExamples = [...s.collabExamples];
+                  nextExamples[i] = { ...nextExamples[i], ...patch };
+                  return { ...s, collabExamples: nextExamples };
+                });
+              }}
+              onRemove={() => {
+                setSettings((s) => ({
+                  ...s,
+                  collabExamples: s.collabExamples.filter((_, idx) => idx !== i),
+                }));
+                setNewCategoryDrafts((prev) => {
+                  const copy: Record<number, string> = {};
+                  for (const [key, value] of Object.entries(prev)) {
+                    const idx = Number(key);
+                    if (idx < i) copy[idx] = value;
+                    if (idx > i) copy[idx - 1] = value;
+                  }
+                  return copy;
+                });
+              }}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setSettings((s) => ({
+                ...s,
+                collabExamples: [
+                  ...s.collabExamples,
+                  { category: "restaurantes", url: "", title: "" } satisfies MediaKitCollabExample,
+                ],
+              }))
+            }
+            className="text-sm text-rosa-500 hover:text-rosa-600 cursor-pointer"
+          >
+            + Añadir vídeo
+          </button>
         </div>
       </Section>
 

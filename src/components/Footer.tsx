@@ -13,12 +13,12 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           {/* Logo */}
           <div className="text-center md:text-left">
-            <a
-              href="#inicio"
+            <Link
+              href={{ pathname: "/", hash: "inicio" }}
               className="font-[family-name:var(--font-script)] text-2xl text-white/90"
             >
               Sandra Lorden
-            </a>
+            </Link>
             <p className="mt-1 text-sm text-white/40">
               {t("subtitle")}
             </p>
@@ -31,6 +31,8 @@ export default function Footer() {
             <Link href="/aviso-legal" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("legalNotice")}</Link>
             <span className="text-white/20">·</span>
             <Link href="/cookies" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("cookiePolicy")}</Link>
+            <span className="text-white/20">·</span>
+            <Link href="/media-kit" className="text-sm text-white/50 hover:text-white/90 transition-colors duration-300">{t("mediaKit")}</Link>
             <span className="text-white/20">·</span>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-cookie-settings"))}

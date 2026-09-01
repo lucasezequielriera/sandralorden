@@ -40,5 +40,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/media-kit`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+      alternates: {
+        languages: {
+          es: `${baseUrl}/media-kit`,
+          en: `${baseUrl}/en/media-kit`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/en/media-kit`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 }

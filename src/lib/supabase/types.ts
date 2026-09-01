@@ -57,3 +57,9 @@ export type InvoiceInsert = Omit<Invoice, "id" | "created_at">;
 export type InvoiceUpdate = Partial<InvoiceInsert>;
 export type SessionInsert = Omit<Session, "id" | "created_at">;
 export type FileInsert = Omit<FileRecord, "id" | "uploaded_at">;
+
+export interface MediaKitSettingsRow {
+  id: string;
+  data: Record<string, unknown>;
+  updated_at: string;
+}

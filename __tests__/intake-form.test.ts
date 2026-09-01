@@ -241,4 +241,14 @@ describe("POST /api/intake-form", () => {
     expect(res.status).toBe(429);
     expect(mockSend).not.toHaveBeenCalled();
   });
+
+  it("returns 200 when Resend fails but submission was processed", async () => {
+    mockSend.mockRejectedValueOnce(new Error("Resend API error"));
+
+    const res = await POST(makeRequest(VALID_BODY) as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.success).toBe(true);
+  });
 });

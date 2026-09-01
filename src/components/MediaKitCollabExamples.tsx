@@ -3,89 +3,109 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-  COLLAB_EXAMPLE_CATEGORIES,
-  type CollabExampleCategory,
+  type CollabCustomCategory,
   type MediaKitCollabExample,
   instagramUrlToEmbed,
+  isBuiltInCollabCategory,
+  orderedCollabCategoryIds,
 } from "@/lib/media-kit-collab-examples";
 
-type FilterId = "all" | CollabExampleCategory;
+type FilterId = "all" | string;
 
 function CollabVideoCard({
   example,
   categoryLabel,
-  openLabel,
   invalidLabel,
 }: {
   example: MediaKitCollabExample;
   categoryLabel: string;
-  openLabel: string;
   invalidLabel: string;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const embedUrl = instagramUrlToEmbed(example.url);
-  const displayTitle = example.title.trim() || categoryLabel;
+  const customTitle = example.title.trim();
+  const displayTitle = customTitle || categoryLabel;
 
   return (
-    <article className="flex flex-col rounded-2xl border border-warm-gray-100 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <div className="relative bg-crema aspect-[9/16] max-h-[420px] w-full">
-        {expanded && embedUrl ? (
-          <iframe
-            src={embedUrl}
-            title={displayTitle}
-            className="absolute inset-0 w-full h-full border-0"
-            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => embedUrl && setExpanded(true)}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center cursor-pointer group bg-gradient-to-b from-rosa-50/80 to-crema hover:from-rosa-100/90 transition-colors"
-            aria-label={`${openLabel}: ${displayTitle}`}
+    <article className="group relative">
+      <div
+        className="relative overflow-hidden rounded-3xl bg-warm-dark/5 shadow-[0_8px_30px_rgba(45,37,32,0.06)] ring-1 ring-black/[0.04] transition-all duration-300 group-hover:shadow-[0_16px_40px_rgba(45,37,32,0.1)] group-hover:ring-rosa-200/60"
+      >
+        <div className="relative aspect-[9/16] w-full overflow-hidden bg-crema">
+          {embedUrl ? (
+            <>
+              <iframe
+                src={embedUrl}
+                title={displayTitle}
+                className="absolute left-0 w-full border-0 pointer-events-auto"
+                style={{
+                  top: "-52px",
+                  height: "calc(100% + 148px)",
+                }}
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/[0.06]"
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/25 via-black/5 to-transparent"
+                aria-hidden
+              />
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-marron-400 font-medium">
+                {categoryLabel}
+              </span>
+              <span className="text-sm font-medium text-warm-dark">{displayTitle}</span>
+              <span className="text-xs text-red-400">{invalidLabel}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="absolute bottom-3 left-3 right-3 z-10 flex items-end justify-between gap-2 pointer-events-none">
+          <span
+            className="inline-flex max-w-[85%] items-center rounded-full bg-white/92 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-warm-gray-600 shadow-sm backdrop-blur-md"
           >
-            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/90 text-rosa-500 shadow-md group-hover:scale-105 transition-transform">
-              <svg className="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </span>
-            <span className="text-[10px] uppercase tracking-widest text-marron-400 font-medium">{categoryLabel}</span>
-            <span className="text-sm font-medium text-warm-dark line-clamp-2">{displayTitle}</span>
-            {!embedUrl && <span className="text-xs text-red-400">{invalidLabel}</span>}
-          </button>
-        )}
+            {categoryLabel}
+          </span>
+        </div>
       </div>
-      <div className="px-3 py-3 flex items-center justify-between gap-2 border-t border-warm-gray-50">
-        <p className="text-xs text-warm-gray-500 truncate">{displayTitle}</p>
-        <a
-          href={example.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[11px] font-medium text-rosa-500 hover:text-rosa-600 shrink-0"
-        >
-          IG ↗
-        </a>
-      </div>
+
+      {customTitle ? (
+        <p className="mt-2.5 px-1 text-center text-xs text-warm-gray-500 leading-snug line-clamp-2">
+          {customTitle}
+        </p>
+      ) : null}
     </article>
   );
 }
 
-export default function MediaKitCollabExamples({ examples }: { examples: MediaKitCollabExample[] }) {
+export default function MediaKitCollabExamples({
+  examples,
+  customCategories = [],
+}: {
+  examples: MediaKitCollabExample[];
+  customCategories?: CollabCustomCategory[];
+}) {
   const t = useTranslations("MediaKit");
   const [filter, setFilter] = useState<FilterId>("all");
 
-  const categoryLabel = (id: CollabExampleCategory) =>
-    t(`collabExCat_${id}` as "collabExCat_restaurantes");
-
-  const categoriesWithContent = useMemo(() => {
-    const set = new Set<CollabExampleCategory>();
-    for (const ex of examples) {
-      if (instagramUrlToEmbed(ex.url)) set.add(ex.category);
+  const categoryLabel = (id: string) => {
+    if (isBuiltInCollabCategory(id)) {
+      return t(`collabExCat_${id}` as "collabExCat_restaurantes");
     }
-    return COLLAB_EXAMPLE_CATEGORIES.filter((c) => set.has(c));
-  }, [examples]);
+    const custom = customCategories.find((c) => c.id === id);
+    return custom?.label ?? id;
+  };
+
+  const categoriesWithContent = useMemo(
+    () => orderedCollabCategoryIds(examples, customCategories),
+    [examples, customCategories]
+  );
 
   const filtered = useMemo(() => {
     if (filter === "all") return examples;
@@ -105,16 +125,16 @@ export default function MediaKitCollabExamples({ examples }: { examples: MediaKi
         </h2>
         <p className="text-warm-gray-400 text-sm mb-8 max-w-2xl leading-relaxed">{t("collabExamplesSub")}</p>
 
-        <div className="flex flex-wrap gap-2 mb-8" role="tablist" aria-label={t("collabExamplesFilterLabel")}>
+        <div className="flex flex-wrap gap-2 mb-10" role="tablist" aria-label={t("collabExamplesFilterLabel")}>
           <button
             type="button"
             role="tab"
             aria-selected={filter === "all"}
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
               filter === "all"
-                ? "bg-warm-dark text-white"
-                : "bg-white border border-warm-gray-200 text-warm-gray-500 hover:border-rosa-200 hover:text-warm-dark"
+                ? "bg-warm-dark text-white shadow-sm"
+                : "bg-white/80 border border-warm-gray-200/80 text-warm-gray-500 hover:border-rosa-200 hover:text-warm-dark hover:bg-white"
             }`}
           >
             {t("collabExFilterAll")}
@@ -126,10 +146,10 @@ export default function MediaKitCollabExamples({ examples }: { examples: MediaKi
               role="tab"
               aria-selected={filter === cat}
               onClick={() => setFilter(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
                 filter === cat
-                  ? "bg-warm-dark text-white"
-                  : "bg-white border border-warm-gray-200 text-warm-gray-500 hover:border-rosa-200 hover:text-warm-dark"
+                  ? "bg-warm-dark text-white shadow-sm"
+                  : "bg-white/80 border border-warm-gray-200/80 text-warm-gray-500 hover:border-rosa-200 hover:text-warm-dark hover:bg-white"
               }`}
             >
               {categoryLabel(cat)}
@@ -140,20 +160,17 @@ export default function MediaKitCollabExamples({ examples }: { examples: MediaKi
         {filtered.length === 0 ? (
           <p className="text-sm text-warm-gray-400">{t("collabExamplesEmpty")}</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
             {filtered.map((example, i) => (
               <CollabVideoCard
                 key={`${example.category}-${example.url}-${i}`}
                 example={example}
                 categoryLabel={categoryLabel(example.category)}
-                openLabel={t("collabExPlay")}
                 invalidLabel={t("collabExInvalidUrl")}
               />
             ))}
           </div>
         )}
-
-        <p className="mt-8 text-xs text-warm-gray-400 max-w-2xl">{t("collabExamplesHint")}</p>
       </div>
     </section>
   );

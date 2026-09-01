@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" role="img" aria-label="ON AIR Fitness">
+  <text
+    x="100"
+    y="20"
+    text-anchor="middle"
+    font-family="'Helvetica Neue', Arial, sans-serif"
+    font-size="16"
+    font-weight="800"
+    letter-spacing="0.12em"
+    fill="#202020"
+  >ON AIR</text>
+  <text
+    x="100"
+    y="34"
+    text-anchor="middle"
+    font-family="'Helvetica Neue', Arial, sans-serif"
+    font-size="8"
+    font-weight="600"
+    letter-spacing="0.28em"
+    fill="#202020"
+  >FITNESS</text>
+</svg>

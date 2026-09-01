@@ -5,6 +5,14 @@ import { m, AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
 
+type HashNavLink = { type: "hash"; hash: string; label: string };
+type RouteNavLink = { type: "route"; href: "/media-kit"; label: string };
+type NavLink = HashNavLink | RouteNavLink;
+
+function navLinkKey(link: NavLink): string {
+  return link.type === "hash" ? link.hash : link.href;
+}
+
 export default function Navigation() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
@@ -14,6 +22,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isHome = pathname === "/";
   const otherLocale = locale === "es" ? "en" : "es";
   const otherLabel = locale === "es" ? "EN" : "ES";
 
@@ -23,13 +32,59 @@ export default function Navigation() {
     });
   }
 
-  const navLinks = [
-    { href: "#inicio", label: t("home") },
-    { href: "#sobre-mi", label: t("about") },
-    { href: "#servicios", label: t("services") },
-    { href: "#prensa", label: t("press") },
-    { href: "#contacto", label: t("contact") },
+  const navLinks: NavLink[] = [
+    { type: "hash", hash: "inicio", label: t("home") },
+    { type: "hash", hash: "sobre-mi", label: t("about") },
+    { type: "hash", hash: "servicios", label: t("services") },
+    { type: "hash", hash: "prensa", label: t("press") },
+    { type: "route", href: "/media-kit", label: t("mediaKit") },
+    { type: "hash", hash: "contacto", label: t("contact") },
   ];
+
+  const navLinkClassName =
+    "text-sm font-medium text-warm-gray-500 transition-colors duration-300 hover:text-warm-dark relative group";
+
+  function renderNavLink(link: NavLink, onClick?: () => void, mobile = false) {
+    const className = mobile
+      ? "text-base font-medium text-warm-gray-500 hover:text-warm-dark transition-colors"
+      : navLinkClassName;
+
+    if (link.type === "route") {
+      return (
+        <Link key={navLinkKey(link)} href={link.href} className={className} onClick={onClick}>
+          {link.label}
+          {!mobile && (
+            <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-rosa-300 transition-all duration-300 group-hover:w-full" />
+          )}
+        </Link>
+      );
+    }
+
+    if (isHome) {
+      return (
+        <a key={navLinkKey(link)} href={`#${link.hash}`} className={className} onClick={onClick}>
+          {link.label}
+          {!mobile && (
+            <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-rosa-300 transition-all duration-300 group-hover:w-full" />
+          )}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        key={navLinkKey(link)}
+        href={{ pathname: "/", hash: link.hash }}
+        className={className}
+        onClick={onClick}
+      >
+        {link.label}
+        {!mobile && (
+          <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-rosa-300 transition-all duration-300 group-hover:w-full" />
+        )}
+      </Link>
+    );
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,6 +130,16 @@ export default function Navigation() {
     return () => document.removeEventListener("keydown", trapFocus);
   }, [isMobileMenuOpen, trapFocus]);
 
+  const logo = isHome ? (
+    <a href="#inicio" className="font-[family-name:var(--font-script)] text-xl sm:text-2xl text-warm-dark">
+      Sandra Lorden
+    </a>
+  ) : (
+    <Link href="/" className="font-[family-name:var(--font-script)] text-xl sm:text-2xl text-warm-dark">
+      Sandra Lorden
+    </Link>
+  );
+
   return (
     <m.nav
       aria-label={t("ariaNav")}
@@ -89,29 +154,12 @@ export default function Navigation() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         <div className="flex h-16 sm:h-20 items-center justify-between">
-          {/* Logo */}
-          <a
-            href="#inicio"
-            className="font-[family-name:var(--font-script)] text-xl sm:text-2xl text-warm-dark"
-          >
-            Sandra Lorden
-          </a>
+          {logo}
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6 lg:gap-10">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-warm-gray-500 transition-colors duration-300 hover:text-warm-dark relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-rosa-300 transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+            {navLinks.map((link) => renderNavLink(link))}
           </div>
 
-          {/* CTA + Lang + Admin */}
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/formulario"
@@ -138,7 +186,6 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* Mobile: Lang + Admin + Menu */}
           <div className="md:hidden flex items-center gap-2">
             <button
               onClick={switchLocale}
@@ -182,7 +229,6 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <m.div
@@ -199,17 +245,14 @@ export default function Navigation() {
           >
             <div className="px-4 sm:px-6 py-6 flex flex-col gap-4">
               {navLinks.map((link, i) => (
-                <m.a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                <m.div
+                  key={navLinkKey(link)}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="text-base font-medium text-warm-gray-500 hover:text-warm-dark transition-colors"
                 >
-                  {link.label}
-                </m.a>
+                  {renderNavLink(link, () => setIsMobileMenuOpen(false), true)}
+                </m.div>
               ))}
               <Link
                 href="/formulario"

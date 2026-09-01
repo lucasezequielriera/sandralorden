@@ -5,12 +5,6 @@ import { rateLimit } from "@/lib/rate-limit";
 import { sanitizeField, sanitizeEmail, sanitizePhone, isHoneypotFilled } from "@/lib/sanitize";
 import { createServiceClient } from "@/lib/supabase/server";
 
-function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY no configurada.");
-  return new Resend(apiKey);
-}
-
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -43,19 +37,7 @@ export async function POST(request: NextRequest) {
     sanitizedBody.phone = phone;
     const intakeData = sanitizedBody as unknown as IntakeData;
 
-    const resend = getResendClient();
-    const emailFrom = process.env.EMAIL_FROM || "Sandra Lorden <onboarding@resend.dev>";
-    const sandraEmail = process.env.SANDRA_EMAIL;
-    if (!sandraEmail) throw new Error("SANDRA_EMAIL no configurada.");
-
-    const result = await resend.emails.send({
-      from: emailFrom,
-      to: sandraEmail,
-      subject: `📋 Formulario completo: ${name} - ${sanitizedBody.service || "Sin especificar"}`,
-      html: buildIntakeNotificationEmailHtml(intakeData),
-    });
-    void result;
-
+    /** Primero persistir: si Resend falla o falta env en Vercel, el lead no se pierde. */
     try {
       const supabase = await createServiceClient();
       const goal = [sanitizedBody.mejoraRendimiento, sanitizedBody.mejoraEstetica].filter(Boolean).join(" | ");
@@ -108,6 +90,31 @@ export async function POST(request: NextRequest) {
       });
     } catch (dbErr) {
       console.error("Supabase insert error (non-blocking):", dbErr instanceof Error ? dbErr.message : "unknown");
+    }
+
+    const apiKey = process.env.RESEND_API_KEY?.trim();
+    const sandraEmail = process.env.SANDRA_EMAIL?.trim();
+    const emailFrom = process.env.EMAIL_FROM || "Sandra Lorden <onboarding@resend.dev>";
+
+    if (apiKey && sandraEmail) {
+      try {
+        const resend = new Resend(apiKey);
+        await resend.emails.send({
+          from: emailFrom,
+          to: sandraEmail,
+          subject: `📋 Formulario completo: ${name} - ${sanitizedBody.service || "Sin especificar"}`,
+          html: buildIntakeNotificationEmailHtml(intakeData),
+        });
+      } catch (emailErr) {
+        console.error(
+          "Resend intake email error:",
+          emailErr instanceof Error ? emailErr.message : "unknown"
+        );
+      }
+    } else {
+      console.warn(
+        "intake-form: email not sent (configure RESEND_API_KEY and SANDRA_EMAIL on the server)."
+      );
     }
 
     return NextResponse.json({ success: true });
