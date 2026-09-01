@@ -6,7 +6,7 @@ export function getStripeClient() {
   if (stripeClient) return stripeClient;
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY no configurada.");
-  stripeClient = new Stripe(secretKey, { apiVersion: "2026-02-25.clover" });
+  stripeClient = new Stripe(secretKey, { apiVersion: "2026-08-26.dahlia" });
   return stripeClient;
 }
 

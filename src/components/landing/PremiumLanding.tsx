@@ -4,7 +4,7 @@ import { useEffect, useCallback, useTransition } from "react";
 import Image from "next/image";
 import { m, useReducedMotion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import { Link, usePathname, useRouter, replacePathLocale } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { PREMIUM_90_TOTAL_EUR } from "@/lib/premium-90-invoices";
 import {
   LANDING_COVERAGE_HIGHLIGHTS,
@@ -48,7 +48,7 @@ export default function PremiumLanding() {
 
   const switchLocale = useCallback(() => {
     startLocaleTransition(() => {
-      replacePathLocale(router, pathname, otherLocale);
+      router.replace(pathname, { locale: otherLocale });
     });
   }, [pathname, router, otherLocale]);
 
