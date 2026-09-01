@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "admin:reset-password": "node scripts/reset-auth-password.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -18,6 +19,7 @@
     "framer-motion": "^12.34.0",
     "next": "16.1.6",
     "next-intl": "^4.8.3",
+    "pdfkit": "^0.20.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "resend": "^6.9.2"
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pdfkit": "^0.17.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
