@@ -101,7 +101,7 @@ export default async function MediaKitContent() {
             </div>
             <div className="relative mx-auto lg:mx-0 w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-xl ring-1 ring-warm-gray-100">
               <Image
-                src="/images/IMG_1902.jpg"
+                src="/images/IMG_6836.JPG"
                 alt={tAbout("imageAlt")}
                 fill
                 className="object-cover object-center"
