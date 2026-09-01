@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "admin:reset-password": "node scripts/reset-auth-password.mjs"
+    "admin:reset-password": "node scripts/reset-auth-password.mjs",
+    "db:migrate-media-kit": "node scripts/apply-media-kit-migration.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -32,6 +33,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "pg": "^8.23.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4"
